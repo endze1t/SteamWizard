@@ -40,9 +40,11 @@ function onGetScreenshot(){
 				$getScreenshotButton.text('Queue: ' + result.result.place_in_queue);
 			}else if (result.result.status == Screenshots.STATUS_DONE){
 				$getScreenshotButton.text('Open Screenshot');
+
 				$getScreenshotButton.click(function(){
 					window.open(result.result.image_url);
 				});
+				
 				$getScreenshotButton[0].click();
 			}else{
 				$getScreenshotButton.text('FAILED');
