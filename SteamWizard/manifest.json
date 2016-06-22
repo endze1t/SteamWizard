@@ -1,0 +1,27 @@
+{
+	"manifest_version": 2,
+
+	"name": "SteamWizard",
+	"description": "SteamWizard",
+	"version": "0.1",
+
+	"browser_action": {
+		"default_icon": "images/icon_128.png",
+		"default_popup": "html/popup.html"
+	},
+	"permissions": [
+		"http://steamcommunity.com/*",
+		"https://steamcommunity.com/*"
+	],
+	"background": {
+		"scripts": ["javascript/jquery-3.0.0.min.js","javascript/background.js"]
+	},
+	"content_scripts": [
+		{
+		  "matches": ["http://steamcommunity.com/"],
+		  "run_at": "document_end",
+		  "js": ["javascript/jquery-3.0.0.min.js", "javascript/steam/steamcommunity.js"]
+		}
+	  ],
+	 "web_accessible_resources": ["javascript/jquery-3.0.0.min.js"]
+}
