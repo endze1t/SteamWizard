@@ -29,7 +29,28 @@ function onGetAllFloats(){
 function onGetScreenshot(){
 	var $marketListingRow = this;
 	var inspectLink = getInspectLink($marketListingRow);
-	console.log('getting screenshot using inspect link: ' + inspectLink);
+	
+	var $getScreenshotButton = $marketListingRow.find(".loadScreenshotButton").first();
+	$getScreenshotButton.off();
+	$getScreenshotButton.text('loading...');
+	
+	Screenshots.requestScreenshot(inspectLink, function(result){
+		if (result.success){
+			if(result.result.status == Screenshots.STATUS_QUEUE){
+				$getScreenshotButton.text('Queue: ' + result.result.place_in_queue);
+			}else if (result.result.status == Screenshots.STATUS_DONE){
+				$getScreenshotButton.text('Open Screenshot');
+				$getScreenshotButton.click(function(){
+					window.open(result.result.image_url);
+				});
+				$getScreenshotButton[0].click();
+			}else{
+				$getScreenshotButton.text('FAILED');
+			}
+		}else{
+			$getScreenshotButton.text('FAILED');
+		}
+	});
 }
 
 function init(){
@@ -46,6 +67,7 @@ function init(){
 		//button which gets screenshot
 		var $getScreenshotButton = createSteamButton("Get Screen");
 		$getScreenshotButton.click(onGetScreenshot.bind($marketListingRow));
+		$getScreenshotButton.addClass('loadScreenshotButton');
 		$getFloatButton.after($getScreenshotButton);
 	});
 	
