@@ -1,20 +1,20 @@
 "using strict";
 
-function createSteamButton(text){
+function createSteamButton(text) {
     var $output = $("<div></div>");
     $output.addClass('btn_green_white_innerfade btn_small steam_wizard_load_button');
     $output.text(text);
     return $output;
 }
 
-function getInspectLink($marketListingRow){
+function getInspectLink($marketListingRow) {
     $marketListingRow.find(".market_actionmenu_button")[0].click();
     var inspectLink =  $('#market_action_popup_itemactions').find('a').attr("href");
     $("#market_action_popup").css('display','none');
     return inspectLink;
 }
 
-function onGetFloat(){
+function onGetFloat() {
     var $marketListingRow = this;
     var inspectLink = getInspectLink($marketListingRow);
     
@@ -29,36 +29,36 @@ function onGetFloat(){
         .done(function(data) {
             if(data.success === false) {
                $getFloatButton.text('Failed').addClass('steam_wizard_load_button_failed');
-               $getFloatButton.on();
+               $getFloatButton.on(onGetFloat);
                return;
             }
             
             $getFloatButton.text(data.wear.toFixed(15));
             $getFloatButton.removeClass('btn_grey_white_innerfade').addClass('btn_blue_white_innerfade');
         }).fail(function(jqXHR, textStatus, errorThrown) { 
-            $getFloatButton.on();
+            $getFloatButton.text('Failed').addClass('steam_wizard_load_button_failed');
+            $getFloatButton.on(onGetFloat);
         }).always(function() {         
             
         });
     console.log('getting float using inspect link: ' + inspectLink);
 }
 
-function onGetAllFloats(){
+function onGetAllFloats() {
     $('.steam_wizard_load_button_float').each(function(index, value){
         value.click();
     });
 }
 
-
-function removeOverlay(){
+function removeOverlay() {
 	$(".steam_wizard_screen_overlay").hide();
 }
 
-function showScreenshotPopup(image_url){
+function showScreenshotPopup(image_url) {
 	$(".steam_wizard_screen_overlay").show().find('img').attr('src', image_url);
 }
 
-function onGetScreenshot(){
+function onGetScreenshot() {
 	var $marketListingRow = this;
 	var inspectLink = getInspectLink($marketListingRow);
 	
@@ -87,55 +87,76 @@ function onGetScreenshot(){
 	});
 }
 
-function init(){
-	console.log('init()');
-	$("#searchResultsRows").find(".market_listing_row").each(function(index, marketListingRow){
-		var $marketListingRow = $(marketListingRow);
-		
-		//button which gets float
-		var $getFloatButton = createSteamButton("Get Float");
-		$getFloatButton.click(onGetFloat.bind($marketListingRow));
-		$getFloatButton.addClass('steam_wizard_load_button_float');
-		$marketListingRow.find(".market_listing_item_name").after($getFloatButton);
-		
-		//button which gets screenshot
-		var $getScreenshotButton = createSteamButton("Get Screen");
-		$getScreenshotButton.click(onGetScreenshot.bind($marketListingRow));
-		$getScreenshotButton.addClass('steam_wizard_load_button_screenshot');
-		$getFloatButton.after($getScreenshotButton);
-	});
-	
-	//button to load all floats
-	if ($("#searchResultsRows").find(".market_listing_row").length > 0) {
-		var $getAllFloatsButton = createSteamButton("Load All Floats");
-                $getAllFloatsButton.addClass('steam_wizard_load_button_float_all')
-		$getAllFloatsButton.css({'padding-top':'0px','padding-bottom':'0px'});
-		$getAllFloatsButton.click(onGetAllFloats);
-		 
-		var $container = $(".market_listing_header_namespacer").parent();
-		$container.empty();
-		$container.append($getAllFloatsButton)
-	}
-	
-        /* build sceenshot overlay */
-        var $overlay = $('<div>');
-	$('<img>').appendTo($overlay);
-        
-	var $overlayContainer = $('<div>');
-        $overlayContainer.addClass('steam_wizard_screen_overlay');
-	$overlayContainer.append($overlay);
-	$overlayContainer.click(removeOverlay);
-        $overlayContainer.hide();
-        
-	$('body').append($overlayContainer);
-        
-	//remove overlay on escape
-	$(document).keyup(function(e) {
-            if(e.keyCode === 27)
-               removeOverlay();
-	});
+var steamWizardButtonInterval;
+function initButtons() {
+    $("#searchResultsRows").find(".market_listing_row").each(function(index, marketListingRow) {
+        var $marketListingRow = $(marketListingRow);
+
+        //button which gets float
+        var $getFloatButton = createSteamButton("Get Float");
+        $getFloatButton.click(onGetFloat.bind($marketListingRow));
+        $getFloatButton.addClass('steam_wizard_load_button_float');
+        $marketListingRow.find(".market_listing_item_name").after($getFloatButton);
+
+        //button which gets screenshot
+        var $getScreenshotButton = createSteamButton("Get Screen");
+        $getScreenshotButton.click(onGetScreenshot.bind($marketListingRow));
+        $getScreenshotButton.addClass('steam_wizard_load_button_screenshot');
+        $getFloatButton.after($getScreenshotButton);
+    });
+
+    //button to load all floats
+    if ($("#searchResultsRows").find(".market_listing_row").length > 0) {
+        var $getAllFloatsButton = createSteamButton("Load All Floats");
+        $getAllFloatsButton.addClass('steam_wizard_load_button_float_all');
+        $getAllFloatsButton.click(onGetAllFloats);
+        $getAllFloatsButton.on('remove', function() {alert('removed');});
+
+        var $container = $(".market_listing_header_namespacer").parent();
+        //$container.empty();
+        $container.append($getAllFloatsButton);
+    }
+    
+    /* other pages too */
+    $('#searchResults_links').find('.market_paging_pagelink').on('click', function() {
+        var searchResults_start = $('#searchResults_start').text();
+        var counter = 0;
+        clearInterval(steamWizardButtonInterval);
+        steamWizardButtonInterval = setInterval(function() {
+            /* limit to 5 trials */
+            if($('#searchResults_start').text() === searchResults_start && counter++ < 5)
+               return;
+            
+            initButtons();
+            clearInterval(steamWizardButtonInterval);
+        }, 1000);
+    });
 }
 
-$(document).ready(function(){
-	init();
+function init(){
+    console.log('init()');
+
+    initButtons();
+
+    /* build sceenshot overlay */
+    var $overlay = $('<div>');
+    $('<img>').appendTo($overlay);
+
+    var $overlayContainer = $('<div>');
+    $overlayContainer.addClass('steam_wizard_screen_overlay');
+    $overlayContainer.append($overlay);
+    $overlayContainer.click(removeOverlay);
+    $overlayContainer.hide();
+
+    $('body').append($overlayContainer);
+
+    //remove overlay on escape
+    $(document).keyup(function(e) {
+        if(e.keyCode === 27)
+           removeOverlay();
+    });
+}
+
+$(document).ready(function() {
+    init();
 });
