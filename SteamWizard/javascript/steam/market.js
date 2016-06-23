@@ -63,25 +63,23 @@ function onGetScreenshot() {
 	
 	var $getScreenshotButton = $marketListingRow.find(".steam_wizard_load_button_screenshot").first();
 	$getScreenshotButton.off();
-	$getScreenshotButton.text('loading...');
-	
+	$getScreenshotButton.text('loading...').addClass('btn_grey_white_innerfade');
 	Screenshots.requestScreenshot(inspectLink, function(result){
 		if (result.success) {
 			if(result.result.status == Screenshots.STATUS_QUEUE){
-				$getScreenshotButton.text('Queue: ' + result.result.place_in_queue);
+				$getScreenshotButton.text('Queue: ' + result.result.place_in_queue).addClass('btn_grey_white_innerfade');
 			}else if (result.result.status == Screenshots.STATUS_DONE){
 				$getScreenshotButton.text('Open Screenshot');
-
+				$getScreenshotButton.removeClass('btn_grey_white_innerfade').addClass('btn_blue_white_innerfade');
 				$getScreenshotButton.click(function(){
 					showScreenshotPopup(result.result.image_url);
 				});
-				
 				$getScreenshotButton[0].click();
 			}else{
-				$getScreenshotButton.text('FAILED');
+				 $getScreenshotButton.text('Failed').addClass('steam_wizard_load_button_failed');
 			}
 		} else {
-			$getScreenshotButton.text('FAILED');
+			 $getScreenshotButton.text('Failed').addClass('steam_wizard_load_button_failed');
 		}
 	});
 }

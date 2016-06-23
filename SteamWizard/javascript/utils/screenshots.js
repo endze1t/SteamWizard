@@ -44,12 +44,12 @@ var Screenshots = {
 	},
 	
 	requestScreenshot : function(inspectLink, callback){
-		var cached = Screenshots.getCachedLink(inspectLink);
+		/*var cached = Screenshots.getCachedLink(inspectLink);
 		console.log(cached);
 		if (cached){
 			callback(cached);
 			return;
-		}
+		}*/
 		
 		var requestUrl = Screenshots.API_REQUEST_NEW.format(inspectLink, "");
 		$.getJSON(requestUrl, function(result) {
