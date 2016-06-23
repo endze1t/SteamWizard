@@ -15,13 +15,13 @@ if (!String.prototype.format) {
 
 function loadLocalStorage(name){
 	try{
-		var output = window.localStorage.getItem(name);
+		var output = JSON.parse(window.localStorage.getItem(name));
 		if (output)
 			return output;
 		else
-			return {};
+			return false;
 	}catch(e){
-		return {}
+		return false;
 	}
 }
 
@@ -33,23 +33,30 @@ var Screenshots = {
 	STATUS_FAIL : 3,
 	inspectLinkCache : loadLocalStorage('inspectLinkCache'),
 	
+	getCacheName : function(inspectLink){
+		return "steam_wizard_inspect_cache" + inspectLink;
+	},
+	
 	saveInspectLink : function(inspectLink, resultObject){
-		Screenshots.inspectLinkCache[inspectLink] = resultObject;
-		window.localStorage.setItem('inspectLinkCache', JSON.stringify(Screenshots.inspectLinkCache));
+		window.localStorage.setItem(Screenshots.getCacheName(inspectLink), JSON.stringify(resultObject));
 	},
 	
 	getCachedLink : function(inspectLink){
-		console.log(Screenshots.inspectLinkCache);
-		return Screenshots.inspectLinkCache[inspectLink];
+		return loadLocalStorage(Screenshots.getCacheName(inspectLink));
 	},
 	
 	requestScreenshot : function(inspectLink, callback){
-		/*var cached = Screenshots.getCachedLink(inspectLink);
+		var cached = Screenshots.getCachedLink(inspectLink);
 		console.log(cached);
 		if (cached){
-			callback(cached);
-			return;
-		}*/
+			if (cached.success && cached.result.status == Screenshots.STATUS_QUEUE){
+				Screenshots.updateScreenshot(cached.result.screen_id, callback, inspectLink);
+				return;
+			}else{
+				callback(cached);
+				return;
+			}
+		}
 		
 		var requestUrl = Screenshots.API_REQUEST_NEW.format(inspectLink, "");
 		$.getJSON(requestUrl, function(result) {
@@ -68,6 +75,7 @@ var Screenshots = {
 			
 			//keep updating if still in queue
 			if(result.success == true && result.result.status == Screenshots.STATUS_QUEUE){
+				Screenshots.saveInspectLink(inspectLink, result);
 				setTimeout(function(){
 					Screenshots.updateScreenshot(screen_id, callback, inspectLink);
 				},5000);
