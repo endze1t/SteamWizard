@@ -26,6 +26,25 @@ function onGetAllFloats(){
 	});
 }
 
+
+function removeOverlay(){
+	$(".screenOverlay").remove();
+}
+
+function showScreenshotPopup(image_url){
+	removeOverlay();
+	
+	var $overlayImage = $("<img></img>");
+	$overlayImage.attr('src',image_url);
+	
+	var $overlay = $("<div class='screenOverlay'></div");
+	$overlay.click(removeOverlay);
+	$overlay.append($overlayImage);
+	
+	console.log($overlay);
+	$('body').append($overlay);
+}
+
 function onGetScreenshot(){
 	var $marketListingRow = this;
 	var inspectLink = getInspectLink($marketListingRow);
@@ -42,7 +61,7 @@ function onGetScreenshot(){
 				$getScreenshotButton.text('Open Screenshot');
 
 				$getScreenshotButton.click(function(){
-					window.open(result.result.image_url);
+					showScreenshotPopup(result.result.image_url);
 				});
 				
 				$getScreenshotButton[0].click();
@@ -73,7 +92,6 @@ function init(){
 		$getFloatButton.after($getScreenshotButton);
 	});
 	
-	
 	//button to load all floats
 	if ($("#searchResultsRows").find(".market_listing_row").length > 0){
 		var $getAllFloatsButton = createSteamButton("Get All Floats");
@@ -84,6 +102,12 @@ function init(){
 		$container.empty();
 		$container.append($getAllFloatsButton)
 	}
+	
+	//remove overlay on escape
+	$(document).keyup(function(e) {
+		if (e.keyCode === 27)
+			removeOverlay();
+	});
 }
 
 $(document).ready(function(){

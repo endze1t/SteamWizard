@@ -1,0 +1,20 @@
+.screenOverlay{
+	position:fixed;
+	width:100%;
+	height:100%;
+	top:0px;
+	left:0px;
+	background:rgba(0, 0, 0, 0.5);
+	z-index:1000;
+	display:table-cell;
+    vertical-align:middle;
+}
+.screenOverlay img{
+	margin-top:5px;
+	max-width: 100%;
+	max-height: 100%;
+	display: block;
+    margin-left: auto;
+    margin-right: auto;
+	
+}

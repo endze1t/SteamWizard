@@ -27,10 +27,7 @@ var Screenshots = {
 	STATUS_QUEUE : 1,
 	STATUS_DONE : 2,
 	STATUS_FAIL : 3,
-	
 	inspectLinkCache : loadLocalStorage('inspectLinkCache'),
-	
-	
 	
 	saveInspectLink : function(inspectLink, resultObject){
 		Screenshots.inspectLinkCache[inspectLink] = resultObject;
@@ -43,7 +40,6 @@ var Screenshots = {
 	},
 	
 	requestScreenshot : function(inspectLink, callback){
-		
 		var cached = Screenshots.getCachedLink(inspectLink);
 		console.log(cached);
 		if (cached){
