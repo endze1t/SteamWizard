@@ -15,9 +15,9 @@ function getInspectLink($marketListingRow) {
 }
 
 function onGetFloat() {
-    var $marketListingRow = this;
+    var $marketListingRow = $(this.closest('.market_listing_row'));
     var inspectLink = getInspectLink($marketListingRow);
-    
+     
     var $getFloatButton = $marketListingRow.find(".steam_wizard_load_button_float").first();
     $getFloatButton.off();
     $getFloatButton.text('loading...').addClass('btn_grey_white_innerfade');
@@ -41,7 +41,6 @@ function onGetFloat() {
         }).always(function() {         
             
         });
-    console.log('getting float using inspect link: ' + inspectLink);
 }
 
 function onGetAllFloats() {
@@ -59,7 +58,7 @@ function showScreenshotPopup(image_url) {
 }
 
 function onGetScreenshot() {
-	var $marketListingRow = this;
+	var $marketListingRow = $(this.closest('.market_listing_row'));
 	var inspectLink = getInspectLink($marketListingRow);
 	
 	var $getScreenshotButton = $marketListingRow.find(".steam_wizard_load_button_screenshot").first();
@@ -94,13 +93,13 @@ function initButtons() {
 
         //button which gets float
         var $getFloatButton = createSteamButton("Get Float");
-        $getFloatButton.click(onGetFloat.bind($marketListingRow));
+        $getFloatButton.click(onGetFloat);
         $getFloatButton.addClass('steam_wizard_load_button_float');
         $marketListingRow.find(".market_listing_item_name").after($getFloatButton);
 
         //button which gets screenshot
         var $getScreenshotButton = createSteamButton("Get Screen");
-        $getScreenshotButton.click(onGetScreenshot.bind($marketListingRow));
+        $getScreenshotButton.click(onGetScreenshot);
         $getScreenshotButton.addClass('steam_wizard_load_button_screenshot');
         $getFloatButton.after($getScreenshotButton);
     });
