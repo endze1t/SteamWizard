@@ -154,6 +154,17 @@ function init(){
     });
 }
 
+function getTurnedOff(callback){
+	chrome.runtime.sendMessage({msg: "getTurnedOff"}, function(response) {
+		callback(response.turnedOff);
+	});
+}
+
 $(document).ready(function() {
+	
+	getTurnedOff(function(turnedOff){
+		console.log('turnedOff: ' + turnedOff);
+	});
+	
     init();
 });
