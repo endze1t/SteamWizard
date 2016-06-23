@@ -15,7 +15,11 @@ if (!String.prototype.format) {
 
 function loadLocalStorage(name){
 	try{
-		return JSON.parse(window.localStorage.getItem(name));
+		var output = window.localStorage.getItem(name);
+		if (output)
+			return output;
+		else
+			return {};
 	}catch(e){
 		return {}
 	}
