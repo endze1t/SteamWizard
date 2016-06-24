@@ -1,10 +1,13 @@
 var metjm = {
+	
+	API_URL : "https://metjm.net/shared/extension.php",
+	LOGIN_REQUEST : "cmd=get_token",
     token: '',
     
     login: function(callback) {
         return $.ajax({type: "POST", 
-                       url: "", 
-                       data: "",
+                       url: metjm.API_URL, 
+                       data: metjm.LOGIN_REQUEST,
                        xhrFields: {withCredentials: true}})
                 .done(function(data) {
                     if(data.success === true)

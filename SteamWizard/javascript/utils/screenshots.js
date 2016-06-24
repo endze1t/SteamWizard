@@ -1,5 +1,7 @@
 "using strict";
 
+window.localStorage.clear();
+
 /*http://stackoverflow.com/a/18405800*/
 if (!String.prototype.format) {
 	String.prototype.format = function() {
@@ -26,8 +28,8 @@ function loadLocalStorage(name){
 }
 
 var Screenshots = {
-	API_REQUEST_NEW : "http://metjm.net/shared/screenshots-v5.php?cmd=request_new_link&inspect_link={0}&user_uuid={1}&user_client=3",
-	API_REQUEST_STATUS : "http://metjm.net/shared/screenshots-v5.php?cmd=request_screenshot_status&id={0}",
+	API_REQUEST_NEW : "https://metjm.net/shared/screenshots-v5.php?cmd=request_new_link&inspect_link={0}&user_uuid={1}&user_client=3",
+	API_REQUEST_STATUS : "https://metjm.net/shared/screenshots-v5.php?cmd=request_screenshot_status&id={0}",
 	STATUS_QUEUE : 1,
 	STATUS_DONE : 2,
 	STATUS_FAIL : 3,
@@ -37,7 +39,7 @@ var Screenshots = {
 	},
 	
 	saveInspectLink : function(inspectLink, resultObject){
-		window.localStorage.setItem(Screenshots.getCacheName(inspectLink), JSON.stringify(resultObject));
+		//window.localStorage.setItem(Screenshots.getCacheName(inspectLink), JSON.stringify(resultObject));
 	},
 	
 	getCachedLink : function(inspectLink){
