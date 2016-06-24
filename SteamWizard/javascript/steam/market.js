@@ -22,25 +22,15 @@ function onGetFloat() {
     $getFloatButton.off();
     $getFloatButton.text('loading...').addClass('btn_grey_white_innerfade');
 
-    $.ajax({type: "POST", 
-            url: "https://www.csgozone.net/_service/plugin", 
-            data: "type=marketInspect&link="+ encodeURIComponent(inspectLink),
-            xhrFields: {withCredentials: true}})
-        .done(function(data) {
-            if(data.success === false) {
-               $getFloatButton.text('Failed').addClass('steam_wizard_load_button_failed');
-               $getFloatButton.on(onGetFloat);
-               return;
-            }
-            
-            $getFloatButton.text(data.wear.toFixed(15));
-            $getFloatButton.removeClass('btn_grey_white_innerfade').addClass('btn_blue_white_innerfade');
-        }).fail(function(jqXHR, textStatus, errorThrown) { 
-            $getFloatButton.text('Failed').addClass('steam_wizard_load_button_failed');
-            $getFloatButton.on(onGetFloat);
-        }).always(function() {         
-            
-        });
+    csgozone.market(inspectLink, function(data) {
+        if(data.success === true) {
+           $getFloatButton.text(data.wear.toFixed(15));
+           $getFloatButton.removeClass('btn_grey_white_innerfade').addClass('btn_blue_white_innerfade');
+        } else {
+           $getFloatButton.text('Failed').addClass('steam_wizard_load_button_failed');
+           $getFloatButton.on(onGetFloat);
+        }
+    });
 }
 
 function onGetAllFloats() {
