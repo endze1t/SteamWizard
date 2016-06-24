@@ -1,25 +1,21 @@
 var csgozone = {
-    
     PLUGIN_API_URL: 'https://www.csgozone.net/_service/plugin',
-    LOGIN_REQUEST: 'type=login',
-    MARKET_REQUEST: 'type=market&data={0}&token={1}',
+    LOGIN_REQUEST:  'type=login',
+    MARKET_REQUEST: 'type=marketInspect&link={0}&token={1}',
 
     token: '',
     
-    login: function(callback) {
-        $.ajax({type: "POST", 
-                url: csgozone.PLUGIN_API_URL, 
-                data: csgozone.LOGIN_REQUEST,
-                xhrFields: {withCredentials: true}})
-        .done(function(data) {
-            callback(data);
-            
-            if(data.success === true)
-               csgozone.setToken(data.token);
-
-        }).fail(function(jqXHR, textStatus, errorThrown) { 
-            callback({success: false, error: textStatus});
-        });
+    login: function() {
+        return $.ajax({type: "POST", 
+                       url: csgozone.PLUGIN_API_URL, 
+                       data: csgozone.LOGIN_REQUEST,
+                       xhrFields: {withCredentials: true}})
+                .done(function(data) {
+                    if(data.success === true)
+                       csgozone.setToken(data.token);
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    
+                });
     },
 
     market: function(inspectLink, callback) {

@@ -2,8 +2,10 @@
 
 var STEAM_WIZARD_CONFIG = {
     pagingInterval: null,
-    enabled: true
-}
+    enabled: true,
+    token: null,
+};
+
 function createSteamButton(text) {
     var $output = $("<div></div>");
     $output.addClass('btn_green_white_innerfade btn_small steam_wizard_load_button');
@@ -133,6 +135,22 @@ function removeButtons() {
 }
 
 function init() {
+    var port = chrome.runtime.connect();
+    
+    port.onMessage.addListener(function(request, port) {
+        switch(request.msg) {
+            case 'pluginStatus':
+                STEAM_WIZARD_CONFIG.enabled = request.status;
+                
+            if(STEAM_WIZARD_CONFIG.enabled)
+               initButtons();
+            else
+               removeButtons();
+        }
+    });
+    
+    port.postMessage({msg: 'getPluginStatus'});
+    
     /* build sceenshot overlay */
     var $overlay = $('<div>');
     $('<img>').appendTo($overlay);
@@ -152,22 +170,12 @@ function init() {
     });
 }
 
-
 $(document).ready(function() {
-    var port = chrome.runtime.connect();
+    /* TODO: check if token is valid and didn't exceed time limit */
+    STEAM_WIZARD_CONFIG.token = window.localStorage.getItem('steam_wizard_token');
     
-    port.onMessage.addListener(function(request, port) {
-        switch(request.msg) {
-            case 'pluginStatus':
-                STEAM_WIZARD_CONFIG.enabled = request.status;
-                
-            if(STEAM_WIZARD_CONFIG.enabled)
-               initButtons();
-            else
-               removeButtons();
-        }
-    });
-    
-    port.postMessage({msg: 'getPluginStatus'});
-    init();
+    if(STEAM_WIZARD_CONFIG.token == null) {
+        $.when(csgozone.login()).then(init);
+    } else
+        init();
 });
