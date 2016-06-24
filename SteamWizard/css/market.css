@@ -27,3 +27,49 @@
     vertical-align: middle;
     text-align: center;
 }
+
+.steam_wizard_login_overlay{
+	top:0px;
+    left:0px;
+    width:100%;
+    height:100%;
+    background:rgba(0, 0, 0, 0.5);
+    z-index:1000;
+    position:fixed;
+    vertical-align:middle;
+}
+
+.steam_wizard_login_popup{
+    position: fixed;
+	top: 50%; left: 50%;
+	transform: translate(-50%,-50%);
+	width: 250px;
+	height: 200px;
+	background-color:#24415e;
+}
+
+.steam_wizard_login_popup > p{
+	position:relative;
+	text-align:center;
+	width:100%;
+	color:white;
+}
+
+.steam_wizard_login_popup > a > div{
+	width:100%;
+	height:55px;
+	background-position:center;
+	background-repeat:no-repeat;
+	margin-bottom:20px;
+}
+
+.steam_wizard_login_popup > a > div:hover{
+	background-color:#294c70;
+}
+
+.steam_wizard_logo_csgozone{
+	background-image:url(images/logo_csgozone.png);
+}
+.steam_wizard_logo_metjm{
+	background-image:url(images/logo_metjm.png);
+}

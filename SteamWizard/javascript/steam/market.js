@@ -1,5 +1,7 @@
 "using strict";
 
+window.localStorage.clear();
+
 var STEAM_WIZARD_CONFIG = {
     pagingInterval: null,
     enabled: true,
@@ -47,6 +49,7 @@ function onGetAllFloats() {
 
 function removeOverlay() {
 	$(".steam_wizard_screen_overlay").hide();
+	$(".steam_wizard_login_overlay").hide();
 }
 
 function showScreenshotPopup(image_url) {
@@ -167,8 +170,24 @@ function init() {
     $overlayContainer.append($overlay);
     $overlayContainer.click(removeOverlay);
     $overlayContainer.hide();
+	
+	var $loginPopup = $("<div>");
+	$loginPopup.addClass('steam_wizard_login_popup');
+	$loginPopup.append($("<p>Login to use this feature</p>"));
+	$loginPopup.append($("<a target='_blank' href='https://metjm.net/csgo/'></a>").append($("<div></div>").css('background-image','url(' + chrome.extension.getURL("images/logo_csgozone.png") + ')')));
+	$loginPopup.append($("<a target='_blank' href='https://www.csgozone.net/'></a>").append($("<div></div>").css('background-image','url(' + chrome.extension.getURL("images/logo_metjm.png") + ')')));
+	$loginPopup.click(function(e){
+		e.stopPropagation();
+	});
+	
+	var $loginOverlayContainer = $("<div></div>");
+	$loginOverlayContainer.addClass('steam_wizard_login_overlay');
+	$loginOverlayContainer.append($loginPopup);
+	$loginOverlayContainer.click(removeOverlay);
+	$loginOverlayContainer.hide();
 
     $('body').append($overlayContainer);
+    $('body').append($loginOverlayContainer);
 
     //remove overlay on escape
     $(document).keyup(function(e) {
