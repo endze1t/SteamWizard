@@ -1,22 +1,46 @@
-var turnedOff = window.localStorage.getItem('steam_wizard_enabled');
+var background = {
+    pluginEnabled: window.localStorage.getItem('steam_wizard_enabled'),
+    connections: [],
+    
+    updateIcon: function(enabled) {
+        var icon = enabled ? "images/icon_128.png" : "images/icon_128_off.png";
+        chrome.browserAction.setIcon({path: icon});
+    },
 
-function updateIcon(){
-	if(!turnedOff){
-		chrome.browserAction.setIcon({path: "images/icon_128.png"});
-	} else{
-		chrome.browserAction.setIcon({path: "images/icon_128_off.png"});
-	}
+    handleMessage: function(request, port) {
+        switch(request.msg) {
+            case "getPluginStatus":
+                 port.postMessage({msg: 'pluginStatus', status : background.pluginEnabled});
+                 break;
+        }
+    },
+
+    handleConnect: function(port) {
+        background.connections.push(port);
+
+        port.onMessage.addListener(background.handleMessage);
+        port.onDisconnect.addListener(background.handleDisconnect);
+    },
+    
+    handleDisconnect: function(port) {
+        var index = background.connections.indexOf(port);
+        if(index > -1) {
+           background.connections.splice(index, 1);
+        }
+    },
+    
+    handleIconClick: function(tab) {
+        background.pluginEnabled = !background.pluginEnabled;
+        background.updateIcon(background.pluginEnabled);
+        window.localStorage.setItem('steam_wizard_enabled', background.pluginEnabled);
+        
+        for(var i=0; i < background.connections.length; i++)
+            background.connections[i].postMessage({msg: 'pluginStatus', status : background.pluginEnabled});
+        
+        console.log("message sent");
+    }
 }
 
-chrome.browserAction.onClicked.addListener(function(tab) {
-	turnedOff = !turnedOff;
-	window.localStorage.setItem('steam_wizard_enabled', turnedOff);
-	updateIcon();
-});
-
-updateIcon();
-
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-	if (request.msg == "getTurnedOff")
-		sendResponse({turnedOff:turnedOff});
-});
+background.updateIcon(background.pluginEnabled);
+chrome.browserAction.onClicked.addListener(background.handleIconClick);
+chrome.runtime.onConnect.addListener(background.handleConnect);

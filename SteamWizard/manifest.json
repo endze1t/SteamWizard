@@ -6,15 +6,15 @@
 	"version": "0.1",
 
 	"browser_action": {
-		"default_icon": "images/icon_128.png",
-		"default_popup": "html/popup.html"
+		"default_icon": "images/icon_128.png"
 	},
 	"permissions": [
 		"http://steamcommunity.com/*",
 		"https://steamcommunity.com/*"
 	],
 	"background": {
-		"scripts": ["javascript/jquery-3.0.0.min.js","javascript/background.js"]
+		"scripts": ["javascript/jquery-3.0.0.min.js","javascript/background.js"],
+                "presistant": false
 	},
 	"content_scripts": [
 		{
