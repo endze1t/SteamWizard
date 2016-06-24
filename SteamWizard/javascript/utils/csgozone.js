@@ -5,7 +5,7 @@ var csgozone = {
 
     token: '',
     
-    login: function() {
+    login: function(callback) {
         return $.ajax({type: "POST", 
                        url: csgozone.PLUGIN_API_URL, 
                        data: csgozone.LOGIN_REQUEST,
@@ -13,8 +13,10 @@ var csgozone = {
                 .done(function(data) {
                     if(data.success === true)
                        csgozone.setToken(data.token);
-                }).fail(function(jqXHR, textStatus, errorThrown) {
                     
+                    callback(data);
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    callback({success: false, error: errorThrown});
                 });
     },
 

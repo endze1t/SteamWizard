@@ -31,7 +31,6 @@ var Screenshots = {
 	STATUS_QUEUE : 1,
 	STATUS_DONE : 2,
 	STATUS_FAIL : 3,
-	inspectLinkCache : loadLocalStorage('inspectLinkCache'),
 	
 	getCacheName : function(inspectLink){
 		return "steam_wizard_inspect_cache" + inspectLink;

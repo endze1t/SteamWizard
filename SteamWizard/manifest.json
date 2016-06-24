@@ -20,7 +20,7 @@
 		{
 		  "matches": ["http://steamcommunity.com/market/listings/730/*", "https://steamcommunity.com/market/listings/730/*"],
 		  "run_at": "document_end",
-		  "js": ["javascript/jquery-3.0.0.min.js", "javascript/utils/screenshots.js", "javascript/utils/csgozone.js", "javascript/steam/market.js"],
+		  "js": ["javascript/jquery-3.0.0.min.js", "javascript/utils/screenshots.js", "javascript/utils/csgozone.js", "javascript/utils/metjm.js", "javascript/steam/market.js"],
 		  "css" : ["css/market.css"]
 		}
 	  ],

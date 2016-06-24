@@ -135,6 +135,13 @@ function removeButtons() {
 }
 
 function init() {
+    console.log("init");
+    /* make sure both services are enabled */
+    if(STEAM_WIZARD_CONFIG.token !== null) {
+       csgozone.setToken(STEAM_WIZARD_CONFIG.token);
+       metjm.setToken(STEAM_WIZARD_CONFIG.token);
+    }
+    
     var port = chrome.runtime.connect();
     
     port.onMessage.addListener(function(request, port) {
@@ -170,12 +177,41 @@ function init() {
     });
 }
 
-$(document).ready(function() {
-    /* TODO: check if token is valid and didn't exceed time limit */
-    STEAM_WIZARD_CONFIG.token = window.localStorage.getItem('steam_wizard_token');
+function validateToken(token) {
+    if(token == null)
+       return false;
+   
+    try {
+        var json = JSON.parse(atob(token));
+    } catch(e) {
+        return false;
+    }
     
-    if(STEAM_WIZARD_CONFIG.token == null) {
-        $.when(csgozone.login()).then(init);
+    if(json.timestamp == null || new Date().getTime() - json.timestamp > 2 * 24 * 60 * 60 * 1000)
+       return false;
+    
+    return true;
+}
+
+$(document).ready(function() {
+    var token = window.localStorage.getItem('steam_wizard_token');
+    
+    if(validateToken(token))
+       STEAM_WIZARD_CONFIG.token = token;
+    else
+       window.localStorage.removeItem('steam_wizard_token')
+
+    function loginCallback(response) {
+        console.log("login callback");
+        if(response.success === true) {
+           STEAM_WIZARD_CONFIG.token = response.token;
+           window.localStorage.setItem('steam_wizard_token', response.token);
+        }
+    }
+    
+    /* TODO: LOADING INDICATION */
+    if(STEAM_WIZARD_CONFIG.token === null) {
+       $.when(csgozone.login(loginCallback), metjm.login(loginCallback)).then(init);
     } else
         init();
 });
