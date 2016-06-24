@@ -72,7 +72,7 @@ var metjm = {
 		return this.inspectCache.hashMap[inspectLink];
 	},
 	
-	requestScreenshot : function(inspectLink, token, callback){
+	requestScreenshot : function(inspectLink, callback){
 		var cached = metjm.getCachedLink(inspectLink);
 		if (cached){
 			if (cached.success && cached.result.status == metjm.STATUS_QUEUE){
@@ -84,7 +84,7 @@ var metjm = {
 			}
 		}
 		
-		var requestUrl = metjm.API_REQUEST_NEW.format(inspectLink, "", token);
+		var requestUrl = metjm.API_REQUEST_NEW.format(inspectLink, "", metjm.token);
 		$.getJSON(requestUrl, function(result) {
 			if (result.success){
 				metjm.updateScreenshot(result.result.screen_id, callback, inspectLink);
