@@ -1,6 +1,6 @@
 "using strict";
 
-window.localStorage.clear();
+
 
 /*http://stackoverflow.com/a/18405800*/
 if (!String.prototype.format) {
@@ -15,17 +15,19 @@ if (!String.prototype.format) {
 	};
 }
 
-function loadLocalStorage(name){
+function loadLocalStorage(){
 	try{
-		var output = JSON.parse(window.localStorage.getItem(name));
+		var output = JSON.parse(window.localStorage.getItem('steam_wizard_inspect_cache_object'));
 		if (output)
 			return output;
-		else
-			return false;
 	}catch(e){
-		return false;
 	}
+	return {
+		orderList : [],
+		hashMap : {}
+	};
 }
+
 
 var Screenshots = {
 	API_REQUEST_NEW : "https://metjm.net/shared/screenshots-v5.php?cmd=request_new_link&inspect_link={0}&user_uuid={1}&user_client=3",
@@ -33,22 +35,28 @@ var Screenshots = {
 	STATUS_QUEUE : 1,
 	STATUS_DONE : 2,
 	STATUS_FAIL : 3,
-	
-	getCacheName : function(inspectLink){
-		return "steam_wizard_inspect_cache" + inspectLink;
-	},
+	inspectCache : loadLocalStorage(''),
 	
 	saveInspectLink : function(inspectLink, resultObject){
-		//window.localStorage.setItem(Screenshots.getCacheName(inspectLink), JSON.stringify(resultObject));
+		if (!this.inspectCache.hashMap[inspectLink])
+			this.inspectCache.orderList.push(inspectLink);
+		this.inspectCache.hashMap[inspectLink] = resultObject;
+		
+		if (this.inspectCache.orderList.length > 20){
+			delete this.inspectCache.hashMap[this.inspectCache.orderList[0]];
+			this.inspectCache.orderList.splice(0,1);
+		}
+		
+		window.localStorage.setItem('steam_wizard_inspect_cache_object', JSON.stringify(this.inspectCache));
+		console.log(this.inspectCache);
 	},
 	
 	getCachedLink : function(inspectLink){
-		return loadLocalStorage(Screenshots.getCacheName(inspectLink));
+		return this.inspectCache.hashMap[inspectLink];
 	},
 	
 	requestScreenshot : function(inspectLink, callback){
 		var cached = Screenshots.getCachedLink(inspectLink);
-		console.log(cached);
 		if (cached){
 			if (cached.success && cached.result.status == Screenshots.STATUS_QUEUE){
 				Screenshots.updateScreenshot(cached.result.screen_id, callback, inspectLink);
