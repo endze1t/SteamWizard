@@ -1,18 +1,5 @@
 "using strict";
 
-var STEAM_WIZARD_CONFIG = {
-    pagingInterval: null,
-    enabled: true,
-    token: null,
-};
-
-function createSteamButton(text) {
-    var $output = $("<div></div>");
-    $output.addClass('btn_green_white_innerfade btn_small steam_wizard_load_button');
-    $output.text(text);
-    return $output;
-}
-
 function getInspectLink($marketListingRow) {
     $marketListingRow.find(".market_actionmenu_button")[0].click();
     var inspectLink =  $('#market_action_popup_itemactions').find('a').attr("href");
@@ -21,89 +8,52 @@ function getInspectLink($marketListingRow) {
 }
 
 function onGetFloat() {
-    if(STEAM_WIZARD_CONFIG.token == null) {
-       $(".steam_wizard_login_overlay").show();
-       return;
-    }
-    
     var $marketListingRow = $(this.closest('.market_listing_row'));
     var inspectLink = getInspectLink($marketListingRow);
-     
+    
     var $getFloatButton = $marketListingRow.find(".steam_wizard_load_button_float").first();
     $getFloatButton.off();
     $getFloatButton.text('loading...').addClass('btn_grey_white_innerfade');
-
-    csgozone.market(inspectLink, function(data) {
-        if(data.success === true) {
-           $getFloatButton.text(data.wear.toFixed(15));
-           $getFloatButton.removeClass('btn_grey_white_innerfade').addClass('btn_blue_white_innerfade');
-        } else {
-           $getFloatButton.text('Failed').addClass('steam_wizard_load_button_failed');
-           $getFloatButton.click(onGetFloat);
-           
-           if(data.bad_token) {
-              STEAM_WIZARD_CONFIG.token = null;
-              window.localStorage.removeItem('steam_wizard_token');
-           }
-        }
-    });
+	
+	onGetFloatButtonClick(inspectLink, function(result){
+		if (result.status == EVENT_STATUS_DONE){
+			$getFloatButton.text(result.floatvalue);
+			$getFloatButton.removeClass('btn_grey_white_innerfade').addClass('btn_blue_white_innerfade');
+		}else if (result.status == EVENT_STATUS_FAIL){
+			$getFloatButton.text('Failed').addClass('steam_wizard_load_button_failed');
+			$getFloatButton.click(onGetFloat);
+		}
+	});
 }
 
 function onGetAllFloats() {
-    if(STEAM_WIZARD_CONFIG.token == null) {
-       $(".steam_wizard_login_overlay").show();
-       return;
-    }
+    if (checkNoToken())
+		return;
     
     $('.steam_wizard_load_button_float').each(function(index, value){
         value.click();
     });
 }
 
-function removeOverlay() {
-	$(".steam_wizard_screen_overlay").hide();
-	$(".steam_wizard_login_overlay").hide();
-}
-
-function showScreenshotPopup(image_url) {
-	$(".steam_wizard_screen_overlay").show().find('img').attr('src', image_url);
-}
-
 function onGetScreenshot() {
-        if(STEAM_WIZARD_CONFIG.token == null) {
-          $(".steam_wizard_login_overlay").show();
-           return;
-        }
-	
-        var $marketListingRow = $(this.closest('.market_listing_row'));
+    var $marketListingRow = $(this.closest('.market_listing_row'));
 	var inspectLink = getInspectLink($marketListingRow);
 	
 	var $getScreenshotButton = $marketListingRow.find(".steam_wizard_load_button_screenshot").first();
 	$getScreenshotButton.off();
 	$getScreenshotButton.text('loading...').addClass('btn_grey_white_innerfade');
-	metjm.requestScreenshot(inspectLink, function(result){
-		if (result.success) {
-			if(result.result.status == metjm.STATUS_QUEUE){
-				$getScreenshotButton.text('Queue: ' + result.result.place_in_queue).addClass('btn_grey_white_innerfade');
-			}else if (result.result.status == metjm.STATUS_DONE){
-				$getScreenshotButton.text('Open Screenshot');
-				$getScreenshotButton.removeClass('btn_grey_white_innerfade').addClass('btn_blue_white_innerfade');
-				$getScreenshotButton.click(function(){
-					showScreenshotPopup(result.result.image_url);
-				});
-				$getScreenshotButton[0].click();
-			}else{
-				$getScreenshotButton.text('Failed').addClass('steam_wizard_load_button_failed');
-				$getScreenshotButton.click(onGetScreenshot);
-			}
-		} else {
-			$getScreenshotButton.text('Failed').addClass('steam_wizard_load_button_failed');
+	
+	onGetScreenshotButtonClick(inspectLink, function(result){
+		if (result.status == EVENT_STATUS_PROGRESS){
+			$getScreenshotButton.text(result.msg).addClass('btn_grey_white_innerfade');
+		}else if (result.status == EVENT_STATUS_DONE){
+			$getScreenshotButton.text('Open Screenshot');
+			$getScreenshotButton.removeClass('btn_grey_white_innerfade').addClass('btn_blue_white_innerfade');
+			$getScreenshotButton.click(function(){showScreenshotPopup(result.image_url);});
+			$getScreenshotButton[0].click();
+		}else if (result.status == EVENT_STATUS_FAIL){
+			$getScreenshotButton.text(result.msg).addClass('steam_wizard_load_button_failed');
 			$getScreenshotButton.click(onGetScreenshot);
-
-			if(result.bad_token) {
-			   STEAM_WIZARD_CONFIG.token = null;
-			   window.localStorage.removeItem('steam_wizard_token');
-			}
 		}
 	});
 }
@@ -175,112 +125,16 @@ function removeButtons() {
     $('#searchResults_btn_prev').off('click', handlePaging);
 }
 
+
 function init() {
-    /* make sure both services are enabled */
-    if(STEAM_WIZARD_CONFIG.token !== null) {
-       csgozone.setToken(STEAM_WIZARD_CONFIG.token);
-       metjm.setToken(STEAM_WIZARD_CONFIG.token);
-    }
-    
-    var port = chrome.runtime.connect();
-    
-    port.onMessage.addListener(function(request, port) {
-        switch(request.msg) {
-            case 'pluginStatus':
-                STEAM_WIZARD_CONFIG.enabled = request.status;
-                
-            if(STEAM_WIZARD_CONFIG.enabled)
-               initButtons();
-            else
-               removeButtons();
-        }
-    });
-    
-    port.postMessage({msg: 'getPluginStatus'});
-    
-    /* build sceenshot overlay */
-    var $overlay = $('<div>');
-    $('<img>').appendTo($overlay);
-
-    var $overlayContainer = $('<div>');
-    $overlayContainer.addClass('steam_wizard_screen_overlay');
-    $overlayContainer.append($overlay);
-    $overlayContainer.click(removeOverlay);
-    $overlayContainer.hide();
-	
-        /* login overlay */
-        $overlay = $('<div>');
-	var $loginPopup = $('<div>');
-        $loginPopup.appendTo($overlay);
-	$loginPopup.addClass('steam_wizard_login_popup');
-	$loginPopup.append($('<p>').text('This plugin relies on services from CS:GO Zone and Metjm, please login to either'));
-	$loginPopup.append($("<a target='_blank' href='https://metjm.net/csgo/'></a>").append($('<div>').css('background-image','url(' + chrome.extension.getURL("images/logo_metjm.png") + ')')));
-	$loginPopup.append($("<a target='_blank' href='https://www.csgozone.net/'></a>").append($('<div>').css('background-image','url(' + chrome.extension.getURL("images/logo_csgozone.png") + ')')));
-        
-        var button = createSteamButton('Ok, I\'m logged in');
-        button.addClass('steam_wizard_login_button');
-        button.click(function(e) {
-            removeButtons();
-            removeOverlay();
-            /* TODO: LOADING INDICATION */
-            $.when(csgozone.login(loginCallback), metjm.login(loginCallback)).then(init);
-        });
-
-        $loginPopup.append(button);
-	$loginPopup.click(function(e){
-            e.stopPropagation();
+	STEAM_WIZARD_CONFIG.changeListeners.push(function(enabled){
+		if(enabled)
+		   initButtons();
+		else
+		   removeButtons();
 	});
-	
-	var $loginOverlayContainer = $('<div>');
-	$loginOverlayContainer.addClass('steam_wizard_login_overlay');
-	$loginOverlayContainer.append($overlay);
-	$loginOverlayContainer.click(removeOverlay);
-	$loginOverlayContainer.hide();
-
-    $('body').append($overlayContainer);
-    $('body').append($loginOverlayContainer);
-
-    //remove overlay on escape
-    $(document).keyup(function(e) {
-        if(e.keyCode === 27)
-           removeOverlay();
-    });
-}
-
-function validateToken(token) {
-    if(token == null)
-       return false;
-   
-    try {
-        var json = JSON.parse(atob(token));
-    } catch(e) {
-        return false;
-    }
-    
-    if(json.timestamp == null || new Date().getTime() - json.timestamp > 2 * 24 * 60 * 60 * 1000)
-       return false;
-    
-    return true;
-}
-
-function loginCallback(response) {
-    if(response.success === true) {
-       STEAM_WIZARD_CONFIG.token = response.token;
-       window.localStorage.setItem('steam_wizard_token', response.token);
-    }
 }
 
 $(document).ready(function() {
-    var token = window.localStorage.getItem('steam_wizard_token');
-    
-    if(validateToken(token))
-       STEAM_WIZARD_CONFIG.token = token;
-    else
-       window.localStorage.removeItem('steam_wizard_token');
-   
-    /* TODO: LOADING INDICATION */
-    if(STEAM_WIZARD_CONFIG.token === null) {
-       $.when(csgozone.login(loginCallback), metjm.login(loginCallback)).then(init);
-    } else
-        init();
+	init();
 });

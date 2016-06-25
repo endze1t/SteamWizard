@@ -24,13 +24,13 @@
 		{
 		  "matches": ["http://steamcommunity.com/market/listings/730/*", "https://steamcommunity.com/market/listings/730/*"],
 		  "run_at": "document_end",
-		  "js": ["javascript/jquery-3.0.0.min.js", "javascript/utils/csgozone.js", "javascript/utils/metjm.js", "javascript/steam/market.js"],
+		  "js": ["javascript/jquery-3.0.0.min.js", "javascript/utils/csgozone.js", "javascript/utils/metjm.js", "javascript/utils/events.js", "javascript/steam/market.js"],
 		  "css" : ["css/market.css"]
 		},{
 		  "matches": ["http://steamcommunity.com/profiles/*/inventory/*", "http://steamcommunity.com/id/*/inventory/*", "https://steamcommunity.com/profiles/*/inventory/*", "https://steamcommunity.com/id/*/inventory/*"],
 		  "run_at": "document_end",
-		  "js": ["javascript/jquery-3.0.0.min.js", "javascript/utils/csgozone.js", "javascript/utils/metjm.js", "javascript/steam/inventory.js"],
-		  "css" : ["css/inventory.css"]
+		  "js": ["javascript/jquery-3.0.0.min.js", "javascript/utils/csgozone.js", "javascript/utils/metjm.js", "javascript/utils/events.js", "javascript/steam/inventory.js"],
+		  "css" : ["css/market.css"]
 		}
 	  ],
 	 "web_accessible_resources": ["javascript/jquery-3.0.0.min.js", "images/logo_csgozone.png", "images/logo_metjm.png"]

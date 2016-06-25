@@ -11,9 +11,42 @@ var addImgChangeListener = function(selector, callback){
 
 function onGetFloat(){
 	//todo: fetch float
+	var $itemActions = $(this.closest('.item_actions'));
+	var inspectLink = $itemActions.find('a').first().attr('href');
+	
+	$getFloatButton = $itemActions.find(".steam_wizard_get_float_button").first();
+	$getFloatButton.off();
+    $getFloatButton.text('loading...');
+	
+	onGetFloatButtonClick(inspectLink, function(result){
+		if (result.status == EVENT_STATUS_DONE){
+			$getFloatButton.text(result.floatvalue);
+		}else if (result.status == EVENT_STATUS_FAIL){
+			$getFloatButton.text('Failed');
+			$getFloatButton.click(onGetFloat);
+		}
+	});
 }
 function onGetScreenshot(){
-	//todo: fetch screenshot
+	var $itemActions = $(this.closest('.item_actions'));
+	var inspectLink = $itemActions.find('a').first().attr('href');
+	
+	var $getScreenshotButton = $itemActions.find(".steam_wizard_get_screen_button").first();
+	$getScreenshotButton.off();
+	$getScreenshotButton.text('loading...');
+	
+	onGetScreenshotButtonClick(inspectLink, function(result){
+		if (result.status == EVENT_STATUS_PROGRESS){
+			$getScreenshotButton.text(result.msg);
+		}else if (result.status == EVENT_STATUS_DONE){
+			$getScreenshotButton.text('Open Screenshot');
+			$getScreenshotButton.click(function(){showScreenshotPopup(result.image_url);});
+			$getScreenshotButton[0].click();
+		}else if (result.status == EVENT_STATUS_FAIL){
+			$getScreenshotButton.text(result.msg);
+			$getScreenshotButton.click(onGetScreenshot);
+		}
+	});
 }
 
 function createButton(text){
@@ -27,11 +60,11 @@ function onIteminfoVisible($itemActions){
 	var inspectLink = $inspectButton.attr('href');
 	
 	if (inspectLink){
-		var $getFloatButton = createButton('Get Float');
-		var $getScreenButton = createButton('Get Screenshot');
+		var $getFloatButton = createButton('Get Float').addClass('steam_wizard_get_float_button');
+		var $getScreenButton = createButton('Get Screenshot').addClass('steam_wizard_get_screen_button');
 		
 		$getScreenButton.click(onGetScreenshot);
-		$getScreenButton.click(onGetFloat);
+		$getFloatButton.click(onGetFloat);
 		
 		$inspectButton.after($getFloatButton);
 		$inspectButton.after($getScreenButton);
