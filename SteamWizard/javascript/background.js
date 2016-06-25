@@ -1,5 +1,5 @@
 var background = {
-    pluginEnabled: window.localStorage.getItem('steam_wizard_enabled'),
+    pluginEnabled: window.localStorage.getItem('steam_wizard_enabled') === null ? true : window.localStorage.getItem('steam_wizard_enabled'),
     connections: [],
     
     updateIcon: function(enabled) {
