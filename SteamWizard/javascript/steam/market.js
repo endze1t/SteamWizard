@@ -40,6 +40,11 @@ function onGetFloat() {
         } else {
            $getFloatButton.text('Failed').addClass('steam_wizard_load_button_failed');
            $getFloatButton.click(onGetFloat);
+           
+           if(data.bad_token) {
+              STEAM_WIZARD_CONFIG.token = null;
+              window.localStorage.removeItem('steam_wizard_token');
+           }
         }
     });
 }
@@ -92,6 +97,11 @@ function onGetScreenshot() {
 			}
 		} else {
 			 $getScreenshotButton.text('Failed').addClass('steam_wizard_load_button_failed');
+
+                        if(result.bad_token) {
+                           STEAM_WIZARD_CONFIG.token = null;
+                           window.localStorage.removeItem('steam_wizard_token');
+                        }
 		}
 	});
 }
