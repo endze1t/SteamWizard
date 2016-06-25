@@ -152,6 +152,17 @@ function initButtons() {
     
     /* other pages too */
     $('#searchResults_links').find('.market_paging_pagelink').on('click', handlePaging);
+    
+    if(!$('#searchResults_btn_prev').hasClass('pagebtn disabled'))
+        $('#searchResults_btn_prev').on('click', handlePaging);
+    else
+        $('#searchResults_btn_prev').off('click', handlePaging);
+        
+    
+    if(!$('#searchResults_btn_next').hasClass('pagebtn disabled'))
+        $('#searchResults_btn_next').on('click', handlePaging);
+    else
+        $('#searchResults_btn_prev').off('click', handlePaging);
 }
 
 function removeButtons() {
@@ -160,6 +171,8 @@ function removeButtons() {
     $("#searchResultsRows").find('.steam_wizard_load_button_float_all').remove();
     
     $('#searchResults_links').find('.market_paging_pagelink').off('click', handlePaging);
+    $('#searchResults_btn_prev').off('click', handlePaging);
+    $('#searchResults_btn_prev').off('click', handlePaging);
 }
 
 function init() {
