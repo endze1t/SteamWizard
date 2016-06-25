@@ -84,7 +84,7 @@ var metjm = {
 			}
 		}
 		
-		var requestUrl = metjm.API_REQUEST_NEW.format(inspectLink, "", metjm.token);
+		var requestUrl = metjm.API_REQUEST_NEW.format(encodeURIComponent(inspectLink), "", encodeURIComponent(metjm.token));
 		$.getJSON(requestUrl, function(result) {
 			if (result.success){
 				metjm.updateScreenshot(result.result.screen_id, callback, inspectLink);
