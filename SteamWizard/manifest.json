@@ -2,8 +2,12 @@
 	"manifest_version": 2,
 
 	"name": "SteamWizard",
-	"description": "SteamWizard",
+	"description": "SteamWizard is a browser extension that helps loading additional information for CS:GO items on the steam community market.",
 	"version": "0.1",
+	
+	"icons": {	"16": "images/icon_16.png",
+				"48": "images/icon_48.png",
+				"128": "images/icon_128.png" },
 
 	"browser_action": {
 		"default_icon": "images/icon_128.png"
