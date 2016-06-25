@@ -65,7 +65,6 @@ var metjm = {
 		}
 		
 		window.localStorage.setItem('steam_wizard_inspect_cache_object', JSON.stringify(this.inspectCache));
-		console.log(this.inspectCache);
 	},
 	
 	getCachedLink : function(inspectLink){
