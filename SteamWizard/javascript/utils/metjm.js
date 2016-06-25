@@ -88,7 +88,7 @@ var metjm = {
 			if (result.success){
 				metjm.updateScreenshot(result.result.screen_id, callback, inspectLink);
 			}else{
-				callback({success:false});
+				callback(result);
 			}
 		});
 	},
