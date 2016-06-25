@@ -90,6 +90,8 @@ var metjm = {
 			}else{
 				callback(result);
 			}
+		}).fail(function() {
+			callback({success:false});
 		});
 	},
 	
@@ -111,6 +113,8 @@ var metjm = {
 			}else if (result.success == true && result.result.status == metjm.STATUS_DONE){
 				metjm.saveInspectLink(inspectLink, result);
 			}
+		}).fail(function() {
+			callback({success:false});
 		});
 	}
 }
