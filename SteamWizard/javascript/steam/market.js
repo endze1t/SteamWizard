@@ -1,7 +1,5 @@
 "using strict";
 
-window.localStorage.clear();
-
 var STEAM_WIZARD_CONFIG = {
     pagingInterval: null,
     enabled: true,
@@ -153,7 +151,6 @@ function removeButtons() {
 }
 
 function init() {
-    console.log("init");
     /* make sure both services are enabled */
     if(STEAM_WIZARD_CONFIG.token !== null) {
        csgozone.setToken(STEAM_WIZARD_CONFIG.token);
@@ -194,6 +191,17 @@ function init() {
 	$loginPopup.append($('<p>').text('This plugin relies on services from CS:GO Zone and Metjm, please login to either'));
 	$loginPopup.append($("<a target='_blank' href='https://metjm.net/csgo/'></a>").append($('<div>').css('background-image','url(' + chrome.extension.getURL("images/logo_metjm.png") + ')')));
 	$loginPopup.append($("<a target='_blank' href='https://www.csgozone.net/'></a>").append($('<div>').css('background-image','url(' + chrome.extension.getURL("images/logo_csgozone.png") + ')')));
+        
+        var button = createSteamButton('Ok, I\'m logged in');
+        button.addClass('steam_wizard_login_button');
+        button.click(function(e) {
+            removeButtons();
+            removeOverlay();
+            /* TODO: LOADING INDICATION */
+            $.when(csgozone.login(loginCallback), metjm.login(loginCallback)).then(init);
+        });
+
+        $loginPopup.append(button);
 	$loginPopup.click(function(e){
             e.stopPropagation();
 	});
@@ -230,22 +238,21 @@ function validateToken(token) {
     return true;
 }
 
+function loginCallback(response) {
+    if(response.success === true) {
+       STEAM_WIZARD_CONFIG.token = response.token;
+       window.localStorage.setItem('steam_wizard_token', response.token);
+    }
+}
+
 $(document).ready(function() {
     var token = window.localStorage.getItem('steam_wizard_token');
     
     if(validateToken(token))
        STEAM_WIZARD_CONFIG.token = token;
     else
-       window.localStorage.removeItem('steam_wizard_token')
-
-    function loginCallback(response) {
-        console.log("login callback");
-        if(response.success === true) {
-           STEAM_WIZARD_CONFIG.token = response.token;
-           window.localStorage.setItem('steam_wizard_token', response.token);
-        }
-    }
-    
+       window.localStorage.removeItem('steam_wizard_token');
+   
     /* TODO: LOADING INDICATION */
     if(STEAM_WIZARD_CONFIG.token === null) {
        $.when(csgozone.login(loginCallback), metjm.login(loginCallback)).then(init);

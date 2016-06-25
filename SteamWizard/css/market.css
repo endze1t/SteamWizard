@@ -49,7 +49,7 @@
     font-weight: bold;
 }
 
-.steam_wizard_login_popup div {
+.steam_wizard_login_popup a div {
     width:100%;
     height:55px;
     background-position:center;
@@ -57,7 +57,7 @@
     margin-bottom:20px;
 }
 
-.steam_wizard_login_popup div:hover{
+.steam_wizard_login_popup a div:hover{
 	background-color:#294c70;
 }
 
@@ -66,4 +66,9 @@
 }
 .steam_wizard_logo_metjm{
 	background-image:url(images/logo_metjm.png);
+}
+.steam_wizard_login_button {
+    font-size: 15px !important;
+    padding: 10px 20px !important;
+    border-radius: 5px;
 }
