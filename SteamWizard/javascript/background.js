@@ -10,7 +10,7 @@ var background = {
     handleMessage: function(request, port) {
         switch(request.msg) {
             case "getPluginStatus":
-                 port.postMessage({msg: 'pluginStatus', status : background.pluginEnabled});
+                 port.postMessage({msg: 'pluginStatus', status : true});
                  break;
         }
     },
@@ -30,13 +30,15 @@ var background = {
     },
     
     handleIconClick: function(tab) {
+		/*
         background.pluginEnabled = !background.pluginEnabled;
         background.updateIcon(background.pluginEnabled);
         window.localStorage.setItem('steam_wizard_enabled', background.pluginEnabled);
         
         for(var i=0; i < background.connections.length; i++)
             background.connections[i].postMessage({msg: 'pluginStatus', status : background.pluginEnabled});
-        
+        */
+		
         console.log("message sent");
     }
 }
