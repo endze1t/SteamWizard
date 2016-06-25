@@ -93,15 +93,17 @@ function onGetScreenshot() {
 				});
 				$getScreenshotButton[0].click();
 			}else{
-				 $getScreenshotButton.text('Failed').addClass('steam_wizard_load_button_failed');
+				$getScreenshotButton.text('Failed').addClass('steam_wizard_load_button_failed');
+				$getScreenshotButton.click(onGetScreenshot);
 			}
 		} else {
-			 $getScreenshotButton.text('Failed').addClass('steam_wizard_load_button_failed');
+			$getScreenshotButton.text('Failed').addClass('steam_wizard_load_button_failed');
+			$getScreenshotButton.click(onGetScreenshot);
 
-                        if(result.bad_token) {
-                           STEAM_WIZARD_CONFIG.token = null;
-                           window.localStorage.removeItem('steam_wizard_token');
-                        }
+			if(result.bad_token) {
+			   STEAM_WIZARD_CONFIG.token = null;
+			   window.localStorage.removeItem('steam_wizard_token');
+			}
 		}
 	});
 }
