@@ -23,6 +23,11 @@ function getInspectLink($marketListingRow) {
 }
 
 function onGetFloat() {
+    if(STEAM_WIZARD_CONFIG.token == null) {
+       $(".steam_wizard_login_overlay").show();
+       return;
+    }
+    
     var $marketListingRow = $(this.closest('.market_listing_row'));
     var inspectLink = getInspectLink($marketListingRow);
      
@@ -42,6 +47,11 @@ function onGetFloat() {
 }
 
 function onGetAllFloats() {
+    if(STEAM_WIZARD_CONFIG.token == null) {
+       $(".steam_wizard_login_overlay").show();
+       return;
+    }
+    
     $('.steam_wizard_load_button_float').each(function(index, value){
         value.click();
     });
@@ -57,7 +67,12 @@ function showScreenshotPopup(image_url) {
 }
 
 function onGetScreenshot() {
-	var $marketListingRow = $(this.closest('.market_listing_row'));
+        if(STEAM_WIZARD_CONFIG.token == null) {
+          $(".steam_wizard_login_overlay").show();
+           return;
+        }
+	
+        var $marketListingRow = $(this.closest('.market_listing_row'));
 	var inspectLink = getInspectLink($marketListingRow);
 	
 	var $getScreenshotButton = $marketListingRow.find(".steam_wizard_load_button_screenshot").first();
@@ -171,18 +186,21 @@ function init() {
     $overlayContainer.click(removeOverlay);
     $overlayContainer.hide();
 	
-	var $loginPopup = $("<div>");
+        /* login overlay */
+        $overlay = $('<div>');
+	var $loginPopup = $('<div>');
+        $loginPopup.appendTo($overlay);
 	$loginPopup.addClass('steam_wizard_login_popup');
-	$loginPopup.append($("<p>Login to use this feature</p>"));
-	$loginPopup.append($("<a target='_blank' href='https://metjm.net/csgo/'></a>").append($("<div></div>").css('background-image','url(' + chrome.extension.getURL("images/logo_csgozone.png") + ')')));
-	$loginPopup.append($("<a target='_blank' href='https://www.csgozone.net/'></a>").append($("<div></div>").css('background-image','url(' + chrome.extension.getURL("images/logo_metjm.png") + ')')));
+	$loginPopup.append($('<p>').text('This plugin relies on services from CS:GO Zone and Metjm, please login to either'));
+	$loginPopup.append($("<a target='_blank' href='https://metjm.net/csgo/'></a>").append($('<div>').css('background-image','url(' + chrome.extension.getURL("images/logo_metjm.png") + ')')));
+	$loginPopup.append($("<a target='_blank' href='https://www.csgozone.net/'></a>").append($('<div>').css('background-image','url(' + chrome.extension.getURL("images/logo_csgozone.png") + ')')));
 	$loginPopup.click(function(e){
-		e.stopPropagation();
+            e.stopPropagation();
 	});
 	
-	var $loginOverlayContainer = $("<div></div>");
+	var $loginOverlayContainer = $('<div>');
 	$loginOverlayContainer.addClass('steam_wizard_login_overlay');
-	$loginOverlayContainer.append($loginPopup);
+	$loginOverlayContainer.append($overlay);
 	$loginOverlayContainer.click(removeOverlay);
 	$loginOverlayContainer.hide();
 
