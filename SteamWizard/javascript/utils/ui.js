@@ -54,7 +54,7 @@ var ui = {
             $loginPopup.append($("<a target='_blank' href='https://metjm.net/csgo/'></a>").append($('<div>').css('background-image','url(' + chrome.extension.getURL("images/logo_metjm.png") + ')')));
             $loginPopup.append($("<a target='_blank' href='https://www.csgozone.net/'></a>").append($('<div>').css('background-image','url(' + chrome.extension.getURL("images/logo_csgozone.png") + ')')));
 
-            var button = ui.createSteamButton('Ok, I\'m logged in');
+            var button = ui.createGreenSteamButton('Ok, I\'m logged in');
             button.addClass('steam_wizard_login_button');
             button.click(on_login);
 
