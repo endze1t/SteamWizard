@@ -196,8 +196,8 @@ function eventsInit() {
     });
 }
 
-$(document).ready(function() {
-    var token = window.localStorage.getItem('steam_wizard_token');
+function eventsInit_(){
+	var token = window.localStorage.getItem('steam_wizard_token');
     
     if(validateToken(token))
        STEAM_WIZARD_CONFIG.token = token;
@@ -209,4 +209,4 @@ $(document).ready(function() {
        $.when(csgozone.login(loginCallback), metjm.login(loginCallback)).then(eventsInit);
     } else
         eventsInit();
-});
+}

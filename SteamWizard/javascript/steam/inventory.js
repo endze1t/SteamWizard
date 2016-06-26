@@ -83,5 +83,6 @@ function init(){
 }
 
 $(document).ready(function(){
+	eventsInit_();
 	init();
 });
