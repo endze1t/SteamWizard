@@ -68,7 +68,7 @@ function onGetScreenshot() {
 		}else if (result.status == steamwizard.EVENT_STATUS_DONE){
 			$getScreenshotButton.text('Open Screenshot');
 			$getScreenshotButton.removeClass('btn_grey_white_innerfade').addClass('btn_blue_white_innerfade');
-			$getScreenshotButton.click(function(){showScreenshotOverlay(result.image_url);});
+			$getScreenshotButton.click(function(){ui.showScreenshotOverlay(result.image_url);});
 			$getScreenshotButton[0].click();
 		}else if (result.status == steamwizard.EVENT_STATUS_FAIL){
 			$getScreenshotButton.text(result.msg).addClass('steam_wizard_load_button_failed');

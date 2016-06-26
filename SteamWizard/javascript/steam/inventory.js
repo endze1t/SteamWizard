@@ -85,6 +85,16 @@ function init(){
 	console.log('init');
 	addImgChangeListener("#iteminfo0_item_actions", onIteminfoVisible);
 	addImgChangeListener("#iteminfo1_item_actions", onIteminfoVisible);
+            
+        ui.buildScreenshotOverlay();
+        ui.buildLoginOverlay(function(e) {
+        ui.removeOverlay();
+        
+        /* TODO: LOADING INDICATION */
+        steamwizard.login(function() {
+        });
+    });
+
 }
 
 $(document).ready(function(){
