@@ -1,54 +1,50 @@
 "using strict";
 
-var addImgChangeListener = function(selector, callback){
-	var $target = $(selector);
-	var observer = new MutationObserver(function(mutations) {
-		if($target.find(".steam_wizard").length == 0)
-			callback($target);
-	});
-	observer.observe($target[0] , { childList : true});
-}
 
 function onGetFloat(){
-	if (checkNoToken())
-		return;
-	
+        if(!steamwizard.isLoggedIn()) {
+            ui.showLoginOverlay();
+            return;
+        }
+
 	var $itemActions = $(this.closest('.item_actions'));
 	var inspectLink = $itemActions.find('a').first().attr('href');
 	
 	$getFloatButton = $itemActions.find(".steam_wizard_get_float_button").first();
 	$getFloatButton.off();
-    $getFloatButton.text('loading...');
+        $getFloatButton.find('span').text('loading...');
 	
-	onGetFloatButtonClick(inspectLink, function(result){
-		if (result.status == EVENT_STATUS_DONE){
-			$getFloatButton.text(result.floatvalue);
-		}else if (result.status == EVENT_STATUS_FAIL){
-			$getFloatButton.text('Failed');
+	steamwizard.getFloatValue(inspectLink, function(result){
+		if (result.status == steamwizard.EVENT_STATUS_DONE){
+			$getFloatButton.find('span').text(result.floatvalue);
+		}else if (result.status == steamwizard.EVENT_STATUS_FAIL){
+			$getFloatButton.find('span').text('Failed');
 			$getFloatButton.click(onGetFloat);
 		}
 	});
 }
 function onGetScreenshot(){
-	if (checkNoToken())
-		return;
-	
+        if(!steamwizard.isLoggedIn()) {
+            ui.showLoginOverlay();
+            return;
+        }
+        
 	var $itemActions = $(this.closest('.item_actions'));
 	var inspectLink = $itemActions.find('a').first().attr('href');
 	
 	var $getScreenshotButton = $itemActions.find(".steam_wizard_get_screen_button").first();
 	$getScreenshotButton.off();
-	$getScreenshotButton.text('loading...');
+	$getScreenshotButton.find('span').text('loading...');
 	
-	onGetScreenshotButtonClick(inspectLink, function(result){
-		if (result.status == EVENT_STATUS_PROGRESS){
-			$getScreenshotButton.text(result.msg);
-		}else if (result.status == EVENT_STATUS_DONE){
-			$getScreenshotButton.text('Open Screenshot');
-			$getScreenshotButton.click(function(){showScreenshotOverlay(result.image_url);});
+	steamwizard.getScreenshot(inspectLink, function(result){
+		if (result.status == steamwizard.EVENT_STATUS_PROGRESS){
+			$getScreenshotButton.find('span').text(result.msg);
+		}else if (result.status == steamwizard.EVENT_STATUS_DONE){
+			$getScreenshotButton.find('span').text('Open Screenshot');
+			$getScreenshotButton.click(function(){ui.showScreenshotOverlay(result.image_url);});
 			$getScreenshotButton[0].click();
-		}else if (result.status == EVENT_STATUS_FAIL){
-			$getScreenshotButton.text(result.msg);
+		}else if (result.status == steamwizard.EVENT_STATUS_FAIL){
+			$getScreenshotButton.find('span').text(result.msg);
 			$getScreenshotButton.click(onGetScreenshot);
 		}
 	});
@@ -65,8 +61,8 @@ function onIteminfoVisible($itemActions){
 	var inspectLink = $inspectButton.attr('href');
 	
 	if (inspectLink){
-		var $getFloatButton = createButton('Get Float').addClass('steam_wizard_get_float_button');
-		var $getScreenButton = createButton('Get Screenshot').addClass('steam_wizard_get_screen_button');
+		var $getFloatButton = createButton('Get Float').addClass('steam_wizard_get_float_button steam_wizard');
+		var $getScreenButton = createButton('Get Screenshot').addClass('steam_wizard_get_screen_button steam_wizard');
 		
 		$getScreenButton.click(onGetScreenshot);
 		$getFloatButton.click(onGetFloat);
@@ -76,6 +72,15 @@ function onIteminfoVisible($itemActions){
 	}
 };
 
+var addImgChangeListener = function(selector, callback){
+	var $target = $(selector);
+	var observer = new MutationObserver(function(mutations) {
+		if($target.find(".steam_wizard").length == 0)
+			callback($target);
+	});
+	observer.observe($target[0] , { childList : true});
+}
+
 function init(){
 	console.log('init');
 	addImgChangeListener("#iteminfo0_item_actions", onIteminfoVisible);
@@ -83,6 +88,9 @@ function init(){
 }
 
 $(document).ready(function(){
-	eventsInit_();
-	init();
+        
+    /* TODO: LOADING INDICATION */
+    steamwizard.ready(function() {
+        init();
+    });
 });

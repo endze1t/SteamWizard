@@ -1,16 +1,3 @@
-/*http://stackoverflow.com/a/18405800*/
-if (!String.prototype.format) {
-	String.prototype.format = function() {
-		var args = arguments;
-		return this.replace(/{(\d+)}/g, function(match, number) {
-			return typeof args[number] != 'undefined'
-				? args[number]
-				: match
-			;
-		});
-	};
-}
-
 function metjm_loadLocalStorage(){
 	try{
 		var output = JSON.parse(window.localStorage.getItem('steam_wizard_inspect_cache_object'));
