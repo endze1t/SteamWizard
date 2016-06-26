@@ -40,7 +40,7 @@ function onGetScreenshot(){
 			$getScreenshotButton.text(result.msg);
 		}else if (result.status == EVENT_STATUS_DONE){
 			$getScreenshotButton.text('Open Screenshot');
-			$getScreenshotButton.click(function(){showScreenshotPopup(result.image_url);});
+			$getScreenshotButton.click(function(){showScreenshotOverlay(result.image_url);});
 			$getScreenshotButton[0].click();
 		}else if (result.status == EVENT_STATUS_FAIL){
 			$getScreenshotButton.text(result.msg);

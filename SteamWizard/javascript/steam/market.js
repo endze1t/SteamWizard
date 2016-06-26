@@ -1,5 +1,8 @@
 "using strict";
 
+/**************************************
+*************** UTIL ******************
+**************************************/
 function getInspectLink($marketListingRow) {
     $marketListingRow.find(".market_actionmenu_button")[0].click();
     var inspectLink =  $('#market_action_popup_itemactions').find('a').attr("href");
@@ -7,13 +10,15 @@ function getInspectLink($marketListingRow) {
     return inspectLink;
 }
 
+/**************************************
+************** FLOATS *****************
+**************************************/
 function onGetFloat() {
     var $marketListingRow = $(this.closest('.market_listing_row'));
     var inspectLink = getInspectLink($marketListingRow);
     
     var $getFloatButton = $marketListingRow.find(".steam_wizard_load_button_float").first();
-    $getFloatButton.off();
-    $getFloatButton.text('loading...').addClass('btn_grey_white_innerfade');
+    $getFloatButton.off().text('loading...').addClass('btn_grey_white_innerfade');
 	
 	onGetFloatButtonClick(inspectLink, function(result){
 		if (result.status == EVENT_STATUS_DONE){
@@ -35,13 +40,16 @@ function onGetAllFloats() {
     });
 }
 
+/**************************************
+*********** SCREENSHOTS ***************
+**************************************/
+
 function onGetScreenshot() {
     var $marketListingRow = $(this.closest('.market_listing_row'));
 	var inspectLink = getInspectLink($marketListingRow);
 	
 	var $getScreenshotButton = $marketListingRow.find(".steam_wizard_load_button_screenshot").first();
-	$getScreenshotButton.off();
-	$getScreenshotButton.text('loading...').addClass('btn_grey_white_innerfade');
+	$getScreenshotButton.off().text('loading...').addClass('btn_grey_white_innerfade');
 	
 	onGetScreenshotButtonClick(inspectLink, function(result){
 		if (result.status == EVENT_STATUS_PROGRESS){
@@ -49,7 +57,7 @@ function onGetScreenshot() {
 		}else if (result.status == EVENT_STATUS_DONE){
 			$getScreenshotButton.text('Open Screenshot');
 			$getScreenshotButton.removeClass('btn_grey_white_innerfade').addClass('btn_blue_white_innerfade');
-			$getScreenshotButton.click(function(){showScreenshotPopup(result.image_url);});
+			$getScreenshotButton.click(function(){showScreenshotOverlay(result.image_url);});
 			$getScreenshotButton[0].click();
 		}else if (result.status == EVENT_STATUS_FAIL){
 			$getScreenshotButton.text(result.msg).addClass('steam_wizard_load_button_failed');
@@ -58,6 +66,9 @@ function onGetScreenshot() {
 	});
 }
 
+/**************************************
+********** BUTTONS & UI ***************
+**************************************/
 function handlePaging() {
     var searchResults_start = $('#searchResults_start').text();
     var counter = 0;
@@ -126,6 +137,9 @@ function removeButtons() {
 }
 
 
+/**************************************
+*************** INIT ******************
+**************************************/
 function init() {
 	STEAM_WIZARD_CONFIG.changeListeners.push(function(enabled){
 		if(enabled)

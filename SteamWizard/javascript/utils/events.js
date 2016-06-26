@@ -11,77 +11,19 @@ EVENT_STATUS_PROGRESS = 1;
 EVENT_STATUS_DONE = 2;
 EVENT_STATUS_FAIL = 3;
 
+/**************************************
+************* OVERLAY *****************
+**************************************/
 function removeOverlay() {
 	$(".steam_wizard_screen_overlay").hide();
 	$(".steam_wizard_login_overlay").hide();
 }
 
-function createSteamButton(text) {
-    var $output = $("<div></div>");
-    $output.addClass('btn_green_white_innerfade btn_small steam_wizard_load_button');
-    $output.text(text);
-    return $output;
-}
-
-function deleteFaultyToken(data){
-	if(data.bad_token) {
-	  STEAM_WIZARD_CONFIG.token = null;
-	  window.localStorage.removeItem('steam_wizard_token');
-   }
-}
-function checkNoToken(){
-	if(STEAM_WIZARD_CONFIG.token == null) {
-       $(".steam_wizard_login_overlay").show();
-       return true;
-    }
-	return false;
-}
-
-function onGetFloatButtonClick(inspectLink, callback) {
-    if (checkNoToken())
-		return;
-    	
-    csgozone.market(inspectLink, function(data) {
-        if(data.success === true) {
-			callback({status:EVENT_STATUS_DONE , floatvalue:data.wear.toFixed(15)});
-        } else {
-           callback({status:EVENT_STATUS_FAIL , msg:'Failed'});
-           deleteFaultyToken(data);
-        }
-    });
-}
-
-function onGetScreenshotButtonClick(inspectLink, callback){
-	if (checkNoToken())
-		return;
-	
-	metjm.requestScreenshot(inspectLink, function(result){
-		if (result.success) {
-			if(result.result.status == metjm.STATUS_QUEUE){
-				callback({status:EVENT_STATUS_PROGRESS , msg: 'Queue: ' + result.result.place_in_queue});
-			}else if (result.result.status == metjm.STATUS_DONE){
-				callback({status:EVENT_STATUS_DONE , image_url: result.result.image_url});
-			}else{
-				callback({status:EVENT_STATUS_FAIL , msg:'Failed'});
-			}
-		} else {
-			callback({status:EVENT_STATUS_FAIL , msg:'Failed'});
-			deleteFaultyToken(result);
-		}
-	});
-}
-
-function removeOverlay() {
-	$(".steam_wizard_screen_overlay").hide();
-	$(".steam_wizard_login_overlay").hide();
-}
-
-function showScreenshotPopup(image_url) {
+function showScreenshotOverlay(image_url) {
 	$(".steam_wizard_screen_overlay").show().find('img').attr('src', image_url);
 }
 
 function buildScreenshotOverlay(){
-	/* build sceenshot overlay */
     var $overlay = $('<div>');
     $('<img>').appendTo($overlay);
 
@@ -94,30 +36,7 @@ function buildScreenshotOverlay(){
     $('body').append($overlayContainer);
 }
 
-
-function eventsInit() {
-    /* make sure both services are enabled */
-    if(STEAM_WIZARD_CONFIG.token !== null) {
-       csgozone.setToken(STEAM_WIZARD_CONFIG.token);
-       metjm.setToken(STEAM_WIZARD_CONFIG.token);
-    }
-	
-	buildScreenshotOverlay();
-    
-    var port = chrome.runtime.connect();
-    port.onMessage.addListener(function(request, port) {
-        switch(request.msg) {
-            case 'pluginStatus':
-                STEAM_WIZARD_CONFIG.enabled = request.status;
-
-			for(var i = 0;i<STEAM_WIZARD_CONFIG.changeListeners.length;i++){
-				STEAM_WIZARD_CONFIG.changeListeners[i](STEAM_WIZARD_CONFIG.enabled)
-			}
-        }
-    });
-    port.postMessage({msg: 'getPluginStatus'});
-  
-    /* login overlay */
+function buildLoginOverlay(){
     var $overlay = $('<div>');
 	var $loginPopup = $('<div>');
 		$loginPopup.appendTo($overlay);
@@ -147,12 +66,32 @@ function eventsInit() {
 	$loginOverlayContainer.hide();
 
     $('body').append($loginOverlayContainer);
+}
+/**************************************
+*************** UTIL ******************
+**************************************/
+function createSteamButton(text) {
+    var $output = $("<div></div>");
+    $output.addClass('btn_green_white_innerfade btn_small steam_wizard_load_button');
+    $output.text(text);
+    return $output;
+}
 
-    //remove overlay on escape
-    $(document).keyup(function(e) {
-        if(e.keyCode === 27)
-           removeOverlay();
-    });
+/**************************************
+************** TOKEN ******************
+**************************************/
+function deleteFaultyToken(data){
+	if(data.bad_token) {
+		STEAM_WIZARD_CONFIG.token = null;
+		window.localStorage.removeItem('steam_wizard_token');
+   }
+}
+function checkNoToken(){
+	if(STEAM_WIZARD_CONFIG.token == null) {
+       $(".steam_wizard_login_overlay").show();
+       return true;
+    }
+	return false;
 }
 
 function validateToken(token) {
@@ -171,15 +110,84 @@ function validateToken(token) {
     return true;
 }
 
-function showScreenshotPopup(image_url) {
-	$(".steam_wizard_screen_overlay").show().find('img').attr('src', image_url);
-}
-
 function loginCallback(response) {
     if(response.success === true) {
        STEAM_WIZARD_CONFIG.token = response.token;
        window.localStorage.setItem('steam_wizard_token', response.token);
     }
+}
+
+/**************************************
+************** FLOATS *****************
+**************************************/
+function onGetFloatButtonClick(inspectLink, callback) {
+    if (checkNoToken())
+		return;
+    	
+    csgozone.market(inspectLink, function(data) {
+        if(data.success === true) {
+			callback({status:EVENT_STATUS_DONE , floatvalue:data.wear.toFixed(15)});
+        } else {
+           callback({status:EVENT_STATUS_FAIL , msg:'Failed'});
+           deleteFaultyToken(data);
+        }
+    });
+}
+
+/**************************************
+************ SCREENSHOTS **************
+**************************************/
+function onGetScreenshotButtonClick(inspectLink, callback){
+	if (checkNoToken())
+		return;
+	
+	metjm.requestScreenshot(inspectLink, function(result){
+		if (result.success) {
+			if(result.result.status == metjm.STATUS_QUEUE){
+				callback({status:EVENT_STATUS_PROGRESS , msg: 'Queue: ' + result.result.place_in_queue});
+			}else if (result.result.status == metjm.STATUS_DONE){
+				callback({status:EVENT_STATUS_DONE , image_url: result.result.image_url});
+			}else{
+				callback({status:EVENT_STATUS_FAIL , msg:'Failed'});
+			}
+		} else {
+			callback({status:EVENT_STATUS_FAIL , msg:'Failed'});
+			deleteFaultyToken(result);
+		}
+	});
+}
+
+/**************************************
+*************** INIT ******************
+**************************************/
+function eventsInit() {
+    /* make sure both services are enabled */
+    if(STEAM_WIZARD_CONFIG.token !== null) {
+       csgozone.setToken(STEAM_WIZARD_CONFIG.token);
+       metjm.setToken(STEAM_WIZARD_CONFIG.token);
+    }
+	
+	buildScreenshotOverlay();
+	buildLoginOverlay();
+    
+    var port = chrome.runtime.connect();
+    port.onMessage.addListener(function(request, port) {
+        switch(request.msg) {
+            case 'pluginStatus':
+                STEAM_WIZARD_CONFIG.enabled = request.status;
+				for(var i = 0;i<STEAM_WIZARD_CONFIG.changeListeners.length;i++){
+					STEAM_WIZARD_CONFIG.changeListeners[i](STEAM_WIZARD_CONFIG.enabled)
+				}
+				break;
+        }
+    });
+    port.postMessage({msg: 'getPluginStatus'});
+  
+    //remove overlay on escape
+    $(document).keyup(function(e) {
+        if(e.keyCode === 27)
+           removeOverlay();
+    });
 }
 
 $(document).ready(function() {
