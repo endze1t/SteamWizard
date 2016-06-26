@@ -51,7 +51,10 @@ function buildLoginOverlay(){
 		removeButtons();
 		removeOverlay();
 		/* TODO: LOADING INDICATION */
-		$.when(csgozone.login(loginCallback), metjm.login(loginCallback)).then(init);
+		$.when(csgozone.login(loginCallback), metjm.login(loginCallback)).then(function(){
+			spreadToken();
+			alertChangeListeners();
+		});
 	});
 
 	$loginPopup.append(button);
@@ -117,13 +120,18 @@ function loginCallback(response) {
     }
 }
 
+function spreadToken(){
+	/* make sure both services are enabled */
+    if(STEAM_WIZARD_CONFIG.token !== null) {
+       csgozone.setToken(STEAM_WIZARD_CONFIG.token);
+       metjm.setToken(STEAM_WIZARD_CONFIG.token);
+    }
+}
+
 /**************************************
 ************** FLOATS *****************
 **************************************/
 function onGetFloatButtonClick(inspectLink, callback) {
-    if (checkNoToken())
-		return;
-    	
     csgozone.market(inspectLink, function(data) {
         if(data.success === true) {
 			callback({status:EVENT_STATUS_DONE , floatvalue:data.wear.toFixed(15)});
@@ -138,9 +146,6 @@ function onGetFloatButtonClick(inspectLink, callback) {
 ************ SCREENSHOTS **************
 **************************************/
 function onGetScreenshotButtonClick(inspectLink, callback){
-	if (checkNoToken())
-		return;
-	
 	metjm.requestScreenshot(inspectLink, function(result){
 		if (result.success) {
 			if(result.result.status == metjm.STATUS_QUEUE){
@@ -160,12 +165,15 @@ function onGetScreenshotButtonClick(inspectLink, callback){
 /**************************************
 *************** INIT ******************
 **************************************/
+function alertChangeListeners(){
+	for(var i = 0;i<STEAM_WIZARD_CONFIG.changeListeners.length;i++){
+		STEAM_WIZARD_CONFIG.changeListeners[i](STEAM_WIZARD_CONFIG.enabled)
+	}
+}
+
 function eventsInit() {
     /* make sure both services are enabled */
-    if(STEAM_WIZARD_CONFIG.token !== null) {
-       csgozone.setToken(STEAM_WIZARD_CONFIG.token);
-       metjm.setToken(STEAM_WIZARD_CONFIG.token);
-    }
+    spreadToken();
 	
 	buildScreenshotOverlay();
 	buildLoginOverlay();
@@ -175,9 +183,7 @@ function eventsInit() {
         switch(request.msg) {
             case 'pluginStatus':
                 STEAM_WIZARD_CONFIG.enabled = request.status;
-				for(var i = 0;i<STEAM_WIZARD_CONFIG.changeListeners.length;i++){
-					STEAM_WIZARD_CONFIG.changeListeners[i](STEAM_WIZARD_CONFIG.enabled)
-				}
+				alertChangeListeners();
 				break;
         }
     });

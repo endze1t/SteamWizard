@@ -10,7 +10,9 @@ var addImgChangeListener = function(selector, callback){
 }
 
 function onGetFloat(){
-	//todo: fetch float
+	if (checkNoToken())
+		return;
+	
 	var $itemActions = $(this.closest('.item_actions'));
 	var inspectLink = $itemActions.find('a').first().attr('href');
 	
@@ -28,6 +30,9 @@ function onGetFloat(){
 	});
 }
 function onGetScreenshot(){
+	if (checkNoToken())
+		return;
+	
 	var $itemActions = $(this.closest('.item_actions'));
 	var inspectLink = $itemActions.find('a').first().attr('href');
 	

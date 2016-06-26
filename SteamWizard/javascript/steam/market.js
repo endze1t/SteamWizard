@@ -14,6 +14,9 @@ function getInspectLink($marketListingRow) {
 ************** FLOATS *****************
 **************************************/
 function onGetFloat() {
+	if (checkNoToken())
+		return;
+	
     var $marketListingRow = $(this.closest('.market_listing_row'));
     var inspectLink = getInspectLink($marketListingRow);
     
@@ -45,6 +48,9 @@ function onGetAllFloats() {
 **************************************/
 
 function onGetScreenshot() {
+	if (checkNoToken())
+		return;
+	
     var $marketListingRow = $(this.closest('.market_listing_row'));
 	var inspectLink = getInspectLink($marketListingRow);
 	
