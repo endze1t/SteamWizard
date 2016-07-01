@@ -23,18 +23,33 @@ var metjm = {
 	inspectCache : metjm_loadLocalStorage(''),
     
     login: function(callback) {
-        return $.ajax({type: "POST", 
-                       url: metjm.API_URL, 
-                       data: metjm.LOGIN_REQUEST,
-                       xhrFields: {withCredentials: true}})
-                .done(function(data) {
+                var deferred = jQuery.Deferred();
+                
+        var port = chrome.runtime.connect();
+        var localListener = function(request, port) {
+            switch(request.msg) {
+                case 'loginDone':
+                    var data = request.data;              
                     if(data.success === true)
                        metjm.setToken(data.token);
                     
                     callback(data);
-                }).fail(function(jqXHR, textStatus, errorThrown) {
-                    callback({success: false, error: errorThrown});
-                });
+                    deferred.resolve();
+                    break;
+                 case 'loginFailed':
+                    deferred.resolve();                     
+                    callback({success: false, error: request.errorThrown});
+            }
+
+            port.onMessage.removeListener(localListener);
+            port.disconnect();
+        };
+        
+        port.onMessage.addListener(localListener);
+        port.postMessage({msg: 'login', 
+                          PLUGIN_API_URL: metjm.PLUGIN_API_URL, 
+                          LOGIN_REQUEST: metjm.LOGIN_REQUEST});
+        return deferred;
     },
     
     setToken: function(token) {
