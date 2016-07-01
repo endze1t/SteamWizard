@@ -23,7 +23,7 @@ var metjm = {
 	inspectCache : metjm_loadLocalStorage(''),
     
     login: function(callback) {
-                var deferred = jQuery.Deferred();
+        var deferred = jQuery.Deferred();
                 
         var port = chrome.runtime.connect();
         var localListener = function(request, port) {
@@ -47,7 +47,7 @@ var metjm = {
         
         port.onMessage.addListener(localListener);
         port.postMessage({msg: 'login', 
-                          PLUGIN_API_URL: metjm.PLUGIN_API_URL, 
+                          PLUGIN_API_URL: metjm.API_URL, 
                           LOGIN_REQUEST: metjm.LOGIN_REQUEST});
         return deferred;
     },
