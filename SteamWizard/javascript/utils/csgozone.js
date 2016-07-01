@@ -6,18 +6,33 @@ var csgozone = {
     token: '',
     
     login: function(callback) {
-        return $.ajax({type: "POST", 
-                       url: csgozone.PLUGIN_API_URL, 
-                       data: csgozone.LOGIN_REQUEST,
-                       xhrFields: {withCredentials: true}})
-                .done(function(data) {
+        var deferred = jQuery.Deferred();
+                
+        var port = chrome.runtime.connect();
+        var localListener = function(request, port) {
+            switch(request.msg) {
+                case 'loginDone':
+                    var data = request.data;              
                     if(data.success === true)
                        csgozone.setToken(data.token);
                     
                     callback(data);
-                }).fail(function(jqXHR, textStatus, errorThrown) {
-                    callback({success: false, error: errorThrown});
-                });
+                    deferred.resolve();
+                    break;
+                 case 'loginFailed':
+                    deferred.resolve();                     
+                    callback({success: false, error: request.errorThrown});
+            }
+
+            port.onMessage.removeListener(localListener);
+            port.disconnect();
+        };
+        
+        port.onMessage.addListener(localListener);
+        port.postMessage({msg: 'login', 
+                          PLUGIN_API_URL: csgozone.PLUGIN_API_URL, 
+                          LOGIN_REQUEST: csgozone.LOGIN_REQUEST});
+        return deferred;
     },
 
     market: function(inspectLink, callback) {

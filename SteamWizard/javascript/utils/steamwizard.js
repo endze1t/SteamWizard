@@ -92,7 +92,7 @@ var steamwizard = (function() {
             window.localStorage.removeItem('steam_wizard_token');
         }
         
-        /* first check if the port is enabled or not */
+        /* first check if the plugin is enabled or not */
         var port = chrome.runtime.connect();
         var localListener = function(request, port) {
             switch(request.msg) {

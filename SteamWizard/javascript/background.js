@@ -12,6 +12,16 @@ var background = {
             case "getPluginStatus":
                  port.postMessage({msg: 'pluginStatus', status : background.pluginEnabled});
                  break;
+             case "login":
+                 return $.ajax({type: "POST", 
+                       url: request.PLUGIN_API_URL, 
+                       data: request.LOGIN_REQUEST,
+                       xhrFields: {withCredentials: true}})
+                .done(function(data) {
+                    port.postMessage({msg: 'loginDone', data: data})
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    port.postMessage({msg: 'loginFailed', textStatus: textStatus, errorThrown: errorThrown});
+                });
         }
     },
 
