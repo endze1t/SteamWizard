@@ -111,16 +111,16 @@ function initButtons() {
         $getFloatButton.after($getScreenshotButton);
     });
 
-    //button to load all floats
     if ($("#searchResultsRows").find(".market_listing_row").length > 0) {
+		//button to load all floats
         var $getAllFloatsButton = ui.createGreenSteamButton("Load All Floats");
         $getAllFloatsButton.addClass('steam_wizard_load_button_float_all');
         $getAllFloatsButton.click(onGetAllFloats);
-        $getAllFloatsButton.on('remove', function() {alert('removed');});
 
         var $container = $(".market_listing_header_namespacer").parent();
         $container.append($getAllFloatsButton);
 		
+		//button to sort by floatvalue
 		var $sortByFloatsButton = ui.createGreenSteamButton("Sort by Float");
         $sortByFloatsButton.addClass('steam_wizard_sort_by_float_button');
 		$sortByFloatsButton.click(onSortByFloats);
