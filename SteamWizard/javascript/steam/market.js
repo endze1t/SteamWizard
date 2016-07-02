@@ -27,8 +27,8 @@ function onGetFloat() {
 	
 	steamwizard.getFloatValue(inspectLink, function(result){
 		if (result.status == steamwizard.EVENT_STATUS_DONE){
-			$getFloatButton.text(result.floatvalue);
-			$getFloatButton.removeClass('btn_grey_white_innerfade').addClass('btn_blue_white_innerfade');
+			$getFloatButton.empty().append(ui.createWearValueSpan(result.floatvalue));
+			//$getFloatButton.removeClass('btn_grey_white_innerfade').addClass('btn_blue_white_innerfade');
 		}else if (result.status == steamwizard.EVENT_STATUS_FAIL){
 			$getFloatButton.text('Failed').addClass('steam_wizard_load_button_failed');
 			$getFloatButton.click(onGetFloat);

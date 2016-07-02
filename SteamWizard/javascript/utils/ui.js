@@ -16,6 +16,29 @@ var ui = {
         return $output;
     },
         
+    createWearValueSpan: function(floatvalue){
+	var $output = $("<span>").text(floatvalue);
+        
+        var ranges = [[1.00, 0.45],
+                      [0.45, 0.38],
+                      [0.38, 0.15],
+                      [0.15, 0.07],
+                      [0.07, 0.00]];
+
+        var range;
+        for(var i in ranges)
+            if(floatvalue >= ranges[i][1]) {
+               range = ranges[i];
+               break;
+           }
+        
+        var r = (range[0] - floatvalue) / (range[0] - range[1]);
+        var rgbValue = parseInt(r * 150);
+        var backgroundValue = "rgb(" + rgbValue + "," + rgbValue + "," + rgbValue +")";
+        console.log(floatvalue, backgroundValue);
+        $output.css({"background": backgroundValue});
+        return $output;
+    },
     /**************************************
     ************* OVERLAY *****************
     **************************************/
