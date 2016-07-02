@@ -47,7 +47,7 @@ function onGetAllFloats() {
     });
 }
 
-function sortByFloats(){
+function onSortByFloats(){
 	$(".market_recent_listing_row").sort(function(a,b){
 		var floatA = parseFloat($(a).find(".steam_wizard_load_button_float").text());
 		var floatB = parseFloat($(b).find(".steam_wizard_load_button_float").text());
@@ -122,17 +122,17 @@ function initButtons() {
         $container.append($getAllFloatsButton);
 		
 		var $sortByFloatsButton = ui.createGreenSteamButton("Sort by Float");
-		$sortByFloatsButton.click(sortByFloats);
+        $sortByFloatsButton.addClass('steam_wizard_sort_by_float_button');
+		$sortByFloatsButton.click(onSortByFloats);
 		$container.append($sortByFloatsButton);
     }
-	
-	
 }
 
 function removeButtons() {
     $("#searchResultsRows").find('.steam_wizard_load_button_float').remove();
     $("#searchResultsRows").find('.steam_wizard_load_button_screenshot').remove();
     $("#searchResultsRows").find('.steam_wizard_load_button_float_all').remove();
+    $("#searchResultsRows").find('.steam_wizard_sort_by_float_button').remove();
 }
 
 function start() {
