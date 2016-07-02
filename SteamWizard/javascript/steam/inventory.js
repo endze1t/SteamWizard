@@ -57,7 +57,7 @@ function createButton(text){
 }
 
 function onIteminfoVisible($itemActions){
-	$inspectButton = $itemActions.find("a");
+	$inspectButton = $itemActions.find("a[href^='steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20']");
 	var inspectLink = $inspectButton.attr('href');
 	
 	if (inspectLink){
