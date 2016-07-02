@@ -47,6 +47,23 @@ function onGetAllFloats() {
     });
 }
 
+function sortByFloats(){
+	$(".market_recent_listing_row").sort(function(a,b){
+		var floatA = parseFloat($(a).find(".steam_wizard_load_button_float").text());
+		var floatB = parseFloat($(b).find(".steam_wizard_load_button_float").text());
+		if (floatA > floatB)
+			return 1;
+		else if (floatB > floatA)
+			return -1;
+		else
+			return 0;
+	}).each(function(index, value) {
+		$value = $(value);
+		$value.detach();
+		$("#searchResultsRows").append($value);
+	});
+}
+
 /**************************************
 *********** SCREENSHOTS ***************
 **************************************/
@@ -103,7 +120,13 @@ function initButtons() {
 
         var $container = $(".market_listing_header_namespacer").parent();
         $container.append($getAllFloatsButton);
+		
+		var $sortByFloatsButton = ui.createGreenSteamButton("Sort by Float");
+		$sortByFloatsButton.click(sortByFloats);
+		$container.append($sortByFloatsButton);
     }
+	
+	
 }
 
 function removeButtons() {
