@@ -52,9 +52,11 @@ function onSortByFloats(){
 		var floatA = parseFloat($(a).find(".steam_wizard_load_button_float").text());
 		var floatB = parseFloat($(b).find(".steam_wizard_load_button_float").text());
 		
-		if (isNaN(floatA))
+		if(isNaN(floatA) && isNaN(floatB))
+			return 0;
+		else if (isNaN(floatA))
 			return 1;
-		if (isNaN(floatB))
+		else if (isNaN(floatB))
 			return -1;
 		
 		if (floatA > floatB)
