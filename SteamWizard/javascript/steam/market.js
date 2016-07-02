@@ -51,6 +51,12 @@ function onSortByFloats(){
 	$(".market_recent_listing_row").sort(function(a,b){
 		var floatA = parseFloat($(a).find(".steam_wizard_load_button_float").text());
 		var floatB = parseFloat($(b).find(".steam_wizard_load_button_float").text());
+		
+		if (isNaN(floatA))
+			return 1;
+		if (isNaN(floatB))
+			return -1;
+		
 		if (floatA > floatB)
 			return 1;
 		else if (floatB > floatA)
