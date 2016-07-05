@@ -15,6 +15,36 @@ var ui = {
         $output.text(text);
         return $output;
     },
+	
+	createMultipleChoicePanel : function(numChoices, onClickCallback){
+		var $output = $("<span></span>");
+		$output[0].setButtonChecked = function(enabledButton){
+			$output.find('.steam_wizard_multiple_choice_button').each(function(index, value){
+				if (index != enabledButton){
+					$(value).removeClass('btn_green_white_innerfade');
+					$(value).addClass('btn_grey_white_innerfade');
+				}else{
+					$(value).removeClass('btn_grey_white_innerfade');
+					$(value).addClass('btn_green_white_innerfade');
+				}
+			});
+		};
+		$output[0].iterateButtons = function(callback){
+			$output.find(".steam_wizard_multiple_choice_button").each(function(index, value){
+				callback(index, $(value));
+			});
+		};
+		for (var i = 0;i<numChoices;i++){
+			var $newButton = ui.createGreenSteamButton("abc");
+			$newButton.addClass('steam_wizard_multiple_choice_button');
+			$newButton.click(function(){
+				$output[0].setButtonChecked(this);
+				onClickCallback(this);
+			}.bind(i));
+			$output.append($newButton);
+		}
+		return $output;
+	},
         
     createWearValueSpan: function(floatvalue){
 	var $output = $("<span>").text(floatvalue);

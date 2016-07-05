@@ -133,8 +133,43 @@ function initButtons() {
         $sortByFloatsButton.addClass('steam_wizard_sort_by_float_button');
 		$sortByFloatsButton.click(onSortByFloats);
 		$container.append($sortByFloatsButton);
+		
+		//panel to show more than 10 items
+		var $multipleChoicePanel = ui.createMultipleChoicePanel(numMarketItemsChoices.length, function(buttonIndex){
+			setNumMarketItems(buttonIndex);
+			showNumMarketItems(numMarketItemsChoices[buttonIndex]);
+		});
+		$multipleChoicePanel[0].iterateButtons(function(index, $button){
+			$button.text(numMarketItemsChoices[index]);
+		});
+		$multipleChoicePanel[0].setButtonChecked(getNumMarketItemsIndex());
+		$container.append($multipleChoicePanel);
+		console.log($multipleChoicePanel);
     }
 }
+/**************************************
+******* MARKET CUSTOMIZATIONS *********
+**************************************/
+var numMarketItemsChoices = [10, 25, 50, 100];
+function getNumMarketItemsIndex(){
+	var index = window.localStorage.getItem("steam_wizard_num_market_items");
+	return (index===null || index < 0 || index > numMarketItemsChoices.length) ? 0 : index;
+}
+function setNumMarketItems(index){
+	window.localStorage.setItem("steam_wizard_num_market_items", index);
+}
+
+function showNumMarketItems(num){
+	var actualCode = '(function() {g_oSearchResults.m_cPageSize = ' + num + ';g_oSearchResults.GoToPage(0, true);} )();';
+	var script = document.createElement('script');
+	script.textContent = actualCode;
+	(document.head||document.documentElement).appendChild(script);
+	script.remove();
+}
+
+/**************************************
+**************** MISC *****************
+**************************************/
 
 function removeButtons() {
     $("#searchResultsRows").find('.steam_wizard_load_button_float').remove();
@@ -150,7 +185,9 @@ function start() {
         removeButtons();
 }
 
-function init() {
+function init() {	
+	//showNumMarketItems();
+	
     ui.buildScreenshotOverlay();
     ui.buildLoginOverlay(function(e) {
         ui.removeOverlay();
@@ -166,14 +203,14 @@ function init() {
     var observer = new MutationObserver(function(mutation) {
         start();
     });
-    observer.observe($('#searchResults_start')[0], {characterData: true, subtree: true});
+    observer.observe($('#searchResults_end')[0], {characterData: true, subtree: true});
 
     //remove overlay on escape
     $(document).keyup(function(e) {
         if(e.keyCode === 27)
            ui.removeOverlay();
     });
-
+	
     steamwizard.onChange(start);
 }
 
