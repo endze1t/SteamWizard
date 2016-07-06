@@ -45,6 +45,27 @@ var ui = {
 		}
 		return $output;
 	},
+	
+	createToggleButton : function(text, onClickCallback){
+		var $output = ui.createGreenSteamButton(text);
+		$output[0].sw_enabled = true;
+		$output[0].setEnabled = function(enabled){
+			if (enabled){
+				$output.removeClass('btn_grey_white_innerfade');
+				$output.addClass('btn_green_white_innerfade');
+			}else{
+				$output.removeClass('btn_green_white_innerfade');
+				$output.addClass('btn_grey_white_innerfade');
+			}
+			$output[0].sw_enabled = enabled;
+			onClickCallback(enabled);
+		};
+		$output.click(function(){
+			$output[0].sw_enabled = !$output[0].sw_enabled;
+			$output[0].setEnabled($output[0].sw_enabled);
+		});
+		return $output;
+	},
         
     createWearValueSpan: function(floatvalue){
 	var $output = $("<span>").text(floatvalue);
@@ -79,10 +100,20 @@ var ui = {
     showLoginOverlay: function() {
        $(".steam_wizard_login_overlay").show();            
     },
+	
+	showGeneralOverlay : function(title, message, buttontext, onButtonCallback){
+		$(".steam_wizard_general_overlay").show();  
+		console.log( $(".steam_wizard_general_overlay"));
+		$(".steam_wizard_general_overlay_button").off();
+		$(".steam_wizard_general_overlay_button").click(onButtonCallback);
+		$(".steam_wizard_general_overlay_button").text(buttontext);
+		$("#steam_wizard_general_overlay_title").text(title);
+	},
     
     removeOverlay: function () {
         $(".steam_wizard_screen_overlay").hide();
         $(".steam_wizard_login_overlay").hide();
+        $(".steam_wizard_general_overlay").hide();
     },
     
     buildScreenshotOverlay: function () {
@@ -118,6 +149,30 @@ var ui = {
 
             var $loginOverlayContainer = $('<div>');
             $loginOverlayContainer.addClass('steam_wizard_login_overlay');
+            $loginOverlayContainer.append($overlay);
+            $loginOverlayContainer.click(ui.removeOverlay);
+            $loginOverlayContainer.hide();
+
+        $('body').append($loginOverlayContainer);
+    },
+	
+	buildGeneralOverlay: function() {
+            var $overlay = $('<div>');
+            var $loginPopup = $('<div>');
+            $loginPopup.appendTo($overlay);
+            $loginPopup.addClass('steam_wizard_login_popup');
+            $loginPopup.append($('<p id="steam_wizard_general_overlay_title">').text(''));
+            
+            var button = ui.createGreenSteamButton('Ok');
+            button.addClass('steam_wizard_general_overlay_button');
+
+            $loginPopup.append(button);
+            $loginPopup.click(function(e){
+                e.stopPropagation();
+            });
+
+            var $loginOverlayContainer = $('<div>');
+            $loginOverlayContainer.addClass('steam_wizard_general_overlay');
             $loginOverlayContainer.append($overlay);
             $loginOverlayContainer.click(ui.removeOverlay);
             $loginOverlayContainer.hide();

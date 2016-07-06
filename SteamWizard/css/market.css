@@ -3,18 +3,13 @@
     margin-left: 15px !important;
     font-size: 85.7%  !important;
 }
-.steam_wizard_load_button_float_all {
+.steam_wizard_load_button_float_all, .steam_wizard_sort_by_float_button, .steam_wizard_show_100_button {
     padding: 0px 20px !important;
     font-size: 12px !important;
     margin-left: 30px !important;
     line-height: 22px !important;
 }
-.steam_wizard_sort_by_float_button {
-    padding: 0px 20px !important;
-    font-size: 12px !important;
-    margin-left: 30px !important;
-    line-height: 22px !important;
-}
+
 .steam_wizard_multiple_choice_button{
 	padding: 0px 20px !important;
     font-size: 12px !important;
@@ -22,7 +17,7 @@
     line-height: 22px !important;
 }
 
-.steam_wizard_screen_overlay, .steam_wizard_login_overlay {
+.steam_wizard_screen_overlay, .steam_wizard_login_overlay, .steam_wizard_general_overlay {
     top:0px;
     left:0px;
     width:100%;
@@ -34,7 +29,7 @@
     background:rgba(0, 0, 0, 0.5);
 }
 
-.steam_wizard_screen_overlay > div, .steam_wizard_login_overlay > div {
+.steam_wizard_screen_overlay > div, .steam_wizard_login_overlay > div, .steam_wizard_general_overlay > div {
     display: table-cell;
     vertical-align: middle;
     text-align: center;

@@ -1,4 +1,5 @@
 "using strict";
+var numDisplayedItems = 10;
 
 /**************************************
 *************** UTIL ******************
@@ -134,31 +135,49 @@ function initButtons() {
 		$sortByFloatsButton.click(onSortByFloats);
 		$container.append($sortByFloatsButton);
 		
-		//panel to show more than 10 items
-		var $multipleChoicePanel = ui.createMultipleChoicePanel(numMarketItemsChoices.length, function(buttonIndex){
-			setNumMarketItems(buttonIndex);
-			showNumMarketItems(numMarketItemsChoices[buttonIndex]);
+		//button to show more than 10 items
+		var $show100ToggleButton = ui.createToggleButton("display 100", function(enabled){
+			var newNumItems = enabled ? 100 : 10;
+			showWarningOrDisplayNumItems(newNumItems);
 		});
-		$multipleChoicePanel[0].iterateButtons(function(index, $button){
-			$button.text(numMarketItemsChoices[index]);
-		});
-		$multipleChoicePanel[0].setButtonChecked(getNumMarketItemsIndex());
-		$container.append($multipleChoicePanel);
-		console.log($multipleChoicePanel);
+		$show100ToggleButton.addClass('steam_wizard_show_100_button');
+		
+		var loadedItemsNum = getNumMarketItems();
+		$show100ToggleButton[0].setEnabled(loadedItemsNum == 100);
+		$container.append($show100ToggleButton);
     }
 }
 /**************************************
 ******* MARKET CUSTOMIZATIONS *********
 **************************************/
-var numMarketItemsChoices = [10, 25, 50, 100];
-function getNumMarketItemsIndex(){
-	var index = window.localStorage.getItem("steam_wizard_num_market_items");
-	return (index===null || index < 0 || index > numMarketItemsChoices.length) ? 0 : index;
+function getNumMarketItems(){
+	var loadedVal = window.localStorage.getItem("steam_wizard_num_market_items");
+	return (loadedVal===null) ? 10 : loadedVal;
 }
-function setNumMarketItems(index){
+function saveNumMarket(index){
 	window.localStorage.setItem("steam_wizard_num_market_items", index);
 }
 
+function showWarningOrDisplayNumItems(numItems){
+	var quotaWarningDisplayed = window.localStorage.getItem("steam_wizard_quota_warning_displayed");
+	if (numItems != numDisplayedItems){
+		if (numItems > 10 && !quotaWarningDisplayed){
+			console.log(numItems);
+			ui.showGeneralOverlay("This will deplete your daily float request quota faster", "", "Ok", function(){
+				ui.removeOverlay();
+				showNumMarketItems(numItems)
+				saveNumMarket(numItems);
+				numDisplayedItems = numItems;
+				window.localStorage.setItem("steam_wizard_quota_warning_displayed", true);
+			});
+		}else{
+			numDisplayedItems = numItems;
+			showNumMarketItems(numItems)
+			saveNumMarket(numItems);
+		}
+	}
+}
+ 
 function showNumMarketItems(num){
 	var actualCode = '(function() {g_oSearchResults.m_cPageSize = ' + num + ';g_oSearchResults.GoToPage(0, true);} )();';
 	var script = document.createElement('script');
@@ -189,6 +208,7 @@ function init() {
 	//showNumMarketItems();
 	
     ui.buildScreenshotOverlay();
+	ui.buildGeneralOverlay();
     ui.buildLoginOverlay(function(e) {
         ui.removeOverlay();
         removeButtons();
