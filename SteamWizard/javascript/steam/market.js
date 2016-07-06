@@ -5,7 +5,10 @@ var numDisplayedItems = 10;
 *************** UTIL ******************
 **************************************/
 function getInspectLink($marketListingRow) {
-    $marketListingRow.find(".market_actionmenu_button")[0].click();
+	var element =   $marketListingRow.find(".market_actionmenu_button")[0];
+	if (!element)
+		return null;
+    element.click();
     var inspectLink =  $('#market_action_popup_itemactions').find('a').attr("href");
     $("#market_action_popup").css('display','none');
     return inspectLink;
@@ -104,48 +107,50 @@ function onGetScreenshot() {
 }
 
 function initButtons() {
-    $("#searchResultsRows").find(".market_listing_row").each(function(index, marketListingRow) {
-        var $marketListingRow = $(marketListingRow);
+	if (getInspectLink($("#searchResultsRows .market_recent_listing_row").first())){
+		$("#searchResultsRows").find(".market_listing_row").each(function(index, marketListingRow) {
+			var $marketListingRow = $(marketListingRow);
 
-        //button which gets float
-        var $getFloatButton = ui.createGreenSteamButton("Get Float");
-        $getFloatButton.click(onGetFloat);
-        $getFloatButton.addClass('steam_wizard_load_button_float');
-        $marketListingRow.find(".market_listing_item_name").after($getFloatButton);
+			//button which gets float
+			var $getFloatButton = ui.createGreenSteamButton("Get Float");
+			$getFloatButton.click(onGetFloat);
+			$getFloatButton.addClass('steam_wizard_load_button_float');
+			$marketListingRow.find(".market_listing_item_name").after($getFloatButton);
 
-        //button which gets screenshot
-        var $getScreenshotButton = ui.createGreenSteamButton("Get Screen");
-        $getScreenshotButton.click(onGetScreenshot);
-        $getScreenshotButton.addClass('steam_wizard_load_button_screenshot');
-        $getFloatButton.after($getScreenshotButton);
-    });
-
-    if ($("#searchResultsRows").find(".market_listing_row").length > 0) {
-		//button to load all floats
-        var $getAllFloatsButton = ui.createGreenSteamButton("Load All Floats");
-        $getAllFloatsButton.addClass('steam_wizard_load_button_float_all');
-        $getAllFloatsButton.click(onGetAllFloats);
-
-        var $container = $(".market_listing_header_namespacer").parent();
-        $container.append($getAllFloatsButton);
-		
-		//button to sort by floatvalue
-		var $sortByFloatsButton = ui.createGreenSteamButton("Sort by Float");
-        $sortByFloatsButton.addClass('steam_wizard_sort_by_float_button');
-		$sortByFloatsButton.click(onSortByFloats);
-		$container.append($sortByFloatsButton);
-		
-		//button to show more than 10 items
-		var $show100ToggleButton = ui.createToggleButton("display 100", function(enabled){
-			var newNumItems = enabled ? 100 : 10;
-			showWarningOrDisplayNumItems(newNumItems);
+			//button which gets screenshot
+			var $getScreenshotButton = ui.createGreenSteamButton("Get Screen");
+			$getScreenshotButton.click(onGetScreenshot);
+			$getScreenshotButton.addClass('steam_wizard_load_button_screenshot');
+			$getFloatButton.after($getScreenshotButton);
 		});
-		$show100ToggleButton.addClass('steam_wizard_show_100_button');
-		
-		var loadedItemsNum = getNumMarketItems();
-		$show100ToggleButton[0].setEnabled(loadedItemsNum == 100);
-		$container.append($show100ToggleButton);
-    }
+
+		if ($("#searchResultsRows").find(".market_listing_row").length > 0) {
+			//button to load all floats
+			var $getAllFloatsButton = ui.createGreenSteamButton("Load All Floats");
+			$getAllFloatsButton.addClass('steam_wizard_load_button_float_all');
+			$getAllFloatsButton.click(onGetAllFloats);
+
+			var $container = $(".market_listing_header_namespacer").parent();
+			$container.append($getAllFloatsButton);
+			
+			//button to sort by floatvalue
+			var $sortByFloatsButton = ui.createGreenSteamButton("Sort by Float");
+			$sortByFloatsButton.addClass('steam_wizard_sort_by_float_button');
+			$sortByFloatsButton.click(onSortByFloats);
+			$container.append($sortByFloatsButton);
+			
+			//button to show more than 10 items
+			var $show100ToggleButton = ui.createToggleButton("display 100", function(enabled){
+				var newNumItems = enabled ? 100 : 10;
+				showWarningOrDisplayNumItems(newNumItems);
+			});
+			$show100ToggleButton.addClass('steam_wizard_show_100_button');
+			
+			var loadedItemsNum = getNumMarketItems();
+			$show100ToggleButton[0].setEnabled(loadedItemsNum == 100);
+			$container.append($show100ToggleButton);
+		}
+	}
 }
 /**************************************
 ******* MARKET CUSTOMIZATIONS *********
