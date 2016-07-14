@@ -1,3 +1,11 @@
+.steam_wizard_market_cell {
+    margin-top: 21px;
+    line-height: 16px;
+    padding-left: 7px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
 .steam_wizard_load_button {
     padding: 2px 10px !important;
     margin-left: 15px !important;

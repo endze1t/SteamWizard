@@ -86,7 +86,6 @@ var ui = {
         var r = (range[0] - floatvalue) / (range[0] - range[1]);
         var rgbValue = parseInt(r * 150);
         var backgroundValue = "rgb(" + rgbValue + "," + rgbValue + "," + rgbValue +")";
-        console.log(floatvalue, backgroundValue);
         $output.css({"background": backgroundValue});
         return $output;
     },

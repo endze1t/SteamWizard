@@ -31,6 +31,13 @@ var steamwizard = (function() {
     /* api token */
     var token = null;
     
+    /* our local storage */
+    var storage = {};
+    
+    /* name must not include "_" */
+    var NAMESPACE_SCREENSHOT     = "screenshot";
+    var NAMESPACE_MARKET_INSPECT = "marketinspect";
+
     function validateToken(token) {
         if(token == null)
            return false;
@@ -71,6 +78,12 @@ var steamwizard = (function() {
                  for(var i = 0; i < onChangeList.length; i++)
                      onChangeList[i](isEnabled);                     
                  break;
+            
+            /* TODO 
+             * case 'newItem':
+             * 
+             * 
+             * */
         }
     }
     
@@ -92,25 +105,41 @@ var steamwizard = (function() {
             window.localStorage.removeItem('steam_wizard_token');
         }
         
-        /* first check if the plugin is enabled or not */
-        var port = chrome.runtime.connect();
+        /* ask backend for initialization stuff */
+        var port = chrome.runtime.connect();        
         var localListener = function(request, port) {
             switch(request.msg) {
                 case 'pluginStatus':
                      isEnabled = request.status;                   
                      break;
+                case 'storageResponse':
+                     storage[request.namespace] = request.value || {};
+                     break;
             }
             
-            if(token === null) {
-               $.when(csgozone.login(loginCallback), metjm.login(loginCallback)).then(ready);
-            } else
-                ready();
+            /* each id maps to a deferred */
+            deferredList[request.requestid].resolve();
+        };
+        
+        var deferredList = [$.Deferred(), $.Deferred(), $.Deferred()];
+        
+        port.onMessage.addListener(localListener);
+        port.postMessage({msg: 'getPluginStatus', requestid: 0});
+        port.postMessage({msg: 'getStorage', namespace: NAMESPACE_SCREENSHOT, requestid: 1});
+        port.postMessage({msg: 'getStorage', namespace: NAMESPACE_MARKET_INSPECT, requestid: 2});
 
+        if(token === null) {
+           deferredList.push(csgozone.login(loginCallback));
+           deferredList.push(metjm.login(loginCallback));
+        }
+        
+        $.when.apply(null, deferredList).then(function() {
             port.onMessage.removeListener(localListener);
             port.onMessage.addListener(onMessage);
-        };
-        port.onMessage.addListener(localListener);
-        port.postMessage({msg: 'getPluginStatus'});
+            console.log("shit works");
+            console.log(storage);
+            ready();
+        });
     }
 
     init();
@@ -186,6 +215,14 @@ var steamwizard = (function() {
                       steamwizard.revokeToken();
                 }
             });
+        },
+        
+        getFloatValueCache: function() {
+            return storage[NAMESPACE_MARKET_INSPECT];
+        },
+        
+        getScreenshotCache: function() {
+            return storage[NAMESPACE_SCREENSHOT];
         }
     };
 })();

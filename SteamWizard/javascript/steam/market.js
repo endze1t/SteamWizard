@@ -49,7 +49,7 @@ function onGetAllFloats() {
     $('.steam_wizard_load_button_float').each(function(index, value){
 		setTimeout(function(){
 			value.click();
-		}, (index/10) * 500);
+		}, index * 50);
     });
 }
 
