@@ -33,7 +33,7 @@ var steamwizard = (function() {
     
     /* our local storage */
     var storage = {};
-    
+	    
     /* name must not include "_" */
     var NAMESPACE_SCREENSHOT     = "screenshot";
     var NAMESPACE_MARKET_INSPECT = "marketinspect";
@@ -106,7 +106,7 @@ var steamwizard = (function() {
         }
         
         /* ask backend for initialization stuff */
-        var port = chrome.runtime.connect();        
+		var port = chrome.runtime.connect();        
         var localListener = function(request, port) {
             switch(request.msg) {
                 case 'pluginStatus':
@@ -136,10 +136,13 @@ var steamwizard = (function() {
         $.when.apply(null, deferredList).then(function() {
             port.onMessage.removeListener(localListener);
             port.onMessage.addListener(onMessage);
-            console.log("shit works");
             console.log(storage);
             ready();
         });
+		
+		setTimeout(function(){
+			steamwizard.port = port;
+		},0);
     }
 
     init();
@@ -186,36 +189,59 @@ var steamwizard = (function() {
         },
             
         getScreenshot: function(inspectLink, callback) {
-            metjm.requestScreenshot(inspectLink, function(result){
-                    if (result.success) {
-                            if(result.result.status == metjm.STATUS_QUEUE){
-                                    callback({status: steamwizard.EVENT_STATUS_PROGRESS , msg: 'Queue: ' + result.result.place_in_queue});
-                            }else if (result.result.status == metjm.STATUS_DONE){
-                                    callback({status: steamwizard.EVENT_STATUS_DONE , image_url: result.result.image_url});
-                            }else{
-                                    callback({status: steamwizard.EVENT_STATUS_FAIL , msg:'Failed'});
-                            }
-                    } else {
-                            callback({status: steamwizard.EVENT_STATUS_FAIL , msg:'Failed'});
+			var shortLink = steamwizard.getShortInspectLink(inspectLink);
+			var cache = steamwizard.getScreenshotCache();
+			if (shortLink != null && cache[shortLink]){
+				callback({status: steamwizard.EVENT_STATUS_DONE , image_url: cache[shortLink]});
+			}else{
+				metjm.requestScreenshot(inspectLink, function(result){
+						if (result.success) {
+								if(result.result.status == metjm.STATUS_QUEUE){
+										callback({status: steamwizard.EVENT_STATUS_PROGRESS , msg: 'Queue: ' + result.result.place_in_queue});
+								}else if (result.result.status == metjm.STATUS_DONE){
+										steamwizard.port.postMessage({msg: 'storeItem', namespace: NAMESPACE_SCREENSHOT, key: shortLink, value: result.result.image_url});
+										callback({status: steamwizard.EVENT_STATUS_DONE , image_url: result.result.image_url});
+								}else{
+										callback({status: steamwizard.EVENT_STATUS_FAIL , msg:'Failed'});
+								}
+						} else {
+								callback({status: steamwizard.EVENT_STATUS_FAIL , msg:'Failed'});
 
-                            if(result.bad_token)
-                               steamwizard.revokeToken();
-                    }
-            });
+								if(result.bad_token)
+								   steamwizard.revokeToken();
+						}
+				});
+			}
         },
         
         getFloatValue: function(inspectLink, callback) {
-            csgozone.market(inspectLink, function(data) {
-                if(data.success === true) {
-                   callback({status: steamwizard.EVENT_STATUS_DONE , floatvalue:data.wear.toFixed(15)});
-                } else {
-                   callback({status: steamwizard.EVENT_STATUS_FAIL , msg:'Failed'});
-                    
-                   if(data.bad_token)
-                      steamwizard.revokeToken();
-                }
-            });
+			var shortLink = steamwizard.getShortInspectLink(inspectLink);
+			var cache = steamwizard.getFloatValueCache();
+			if (shortLink != null && cache[shortLink]){
+				callback({status: steamwizard.EVENT_STATUS_DONE , floatvalue: cache[shortLink]});
+			}else{
+				csgozone.market(inspectLink, function(data) {
+					if(data.success === true) {
+						steamwizard.port.postMessage({msg: 'storeItem', namespace: NAMESPACE_MARKET_INSPECT, key: shortLink, value: data.wear.toFixed(15)});
+					   callback({status: steamwizard.EVENT_STATUS_DONE , floatvalue:data.wear.toFixed(15)});
+					} else {
+					   callback({status: steamwizard.EVENT_STATUS_FAIL , msg:'Failed'});
+						
+					   if(data.bad_token)
+						  steamwizard.revokeToken();
+					}
+				});
+			}
         },
+		
+		getShortInspectLink : function(inspectLink){
+			var reg = /steam:\/\/rungame\/730\/76561202255233023\/\+csgo_econ_action_preview...[M|S].*A(.*)D.*/g;
+			var match = reg.exec(inspectLink);
+			if (match)
+				return (match[1]);
+			else
+				return null;
+		},
         
         getFloatValueCache: function() {
             return storage[NAMESPACE_MARKET_INSPECT];

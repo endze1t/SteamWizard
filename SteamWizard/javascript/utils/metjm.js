@@ -1,15 +1,3 @@
-function metjm_loadLocalStorage(){
-	try{
-		var output = JSON.parse(window.localStorage.getItem('steam_wizard_inspect_cache_object'));
-		if (output)
-			return output;
-	}catch(e){
-	}
-	return {
-		orderList : [],
-		hashMap : {}
-	};
-}
 
 var metjm = {
 	API_URL : "https://metjm.net/shared/extension.php",
@@ -20,7 +8,6 @@ var metjm = {
 	STATUS_QUEUE : 1,
 	STATUS_DONE : 2,
 	STATUS_FAIL : 3,
-	inspectCache : metjm_loadLocalStorage(''),
     
     login: function(callback) {
         var deferred = jQuery.Deferred();
@@ -56,35 +43,7 @@ var metjm = {
         this.token = token;
     },
 	
-	saveInspectLink : function(inspectLink, resultObject){
-		if (!this.inspectCache.hashMap[inspectLink])
-			this.inspectCache.orderList.push(inspectLink);
-		this.inspectCache.hashMap[inspectLink] = resultObject;
-		
-		if (this.inspectCache.orderList.length > 20){
-			delete this.inspectCache.hashMap[this.inspectCache.orderList[0]];
-			this.inspectCache.orderList.splice(0,1);
-		}
-		
-		window.localStorage.setItem('steam_wizard_inspect_cache_object', JSON.stringify(this.inspectCache));
-	},
-	
-	getCachedLink : function(inspectLink){
-		return this.inspectCache.hashMap[inspectLink];
-	},
-	
 	requestScreenshot : function(inspectLink, callback){
-		var cached = metjm.getCachedLink(inspectLink);
-		if (cached){
-			if (cached.success && cached.result.status == metjm.STATUS_QUEUE){
-				metjm.updateScreenshot(cached.result.screen_id, callback, inspectLink);
-				return;
-			}else{
-				callback(cached);
-				return;
-			}
-		}
-		
 		var requestUrl = metjm.API_REQUEST_NEW.format(encodeURIComponent(inspectLink), "", encodeURIComponent(metjm.token));
 		$.getJSON(requestUrl, function(result) {
 			if (result.success){
@@ -108,12 +67,11 @@ var metjm = {
 			
 			//keep updating if still in queue
 			if(result.success == true && result.result.status == metjm.STATUS_QUEUE){
-				metjm.saveInspectLink(inspectLink, result);
 				setTimeout(function(){
 					metjm.updateScreenshot(screen_id, callback, inspectLink);
 				},updateInterval);
 			}else if (result.success == true && result.result.status == metjm.STATUS_DONE){
-				metjm.saveInspectLink(inspectLink, result);
+				
 			}
 		}).fail(function() {
 			callback({success:false});

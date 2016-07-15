@@ -11,7 +11,6 @@ var background = (function() {
 
         handleMessage: function(request, port) {
             var response;
-            
             switch(request.msg) {
                 case "getPluginStatus":
                     response = {msg: 'pluginStatus', status : background.pluginEnabled};
@@ -28,17 +27,21 @@ var background = (function() {
                     response = {msg: "storageResponse", namespace: request.namespace, value: background.storage[request.namespace]};
                     break;
                 case "storeItem":
-                    storage[request.namespace][request.key] = request.value;
+					
+					if (!background.storage[request.namespace])
+						background.storage[request.namespace] = {};
+                    background.storage[request.namespace][request.key] = request.value;
                     try {
                         var value = request.value;
                         if(typeof value === 'object')
                            value = JSON.stringify(value);
+			
                         
                         var lskey = request.namespace + '_' + request.key;
                         localStorage.setItem(lskey, value);
                         
                         /* notify all listening threads that a new item was added */
-                        background.broadcaseMessage({msg: "newItem", namespace: request.namespace, key: request.key, value: request.value}, port);
+                        background.broadcastMessage({msg: "newItem", namespace: request.namespace, key: request.key, value: request.value}, port);
                     } catch (e) {
                         console.log(e);
                     }
