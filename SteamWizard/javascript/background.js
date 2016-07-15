@@ -1,6 +1,94 @@
 var background = (function() {
+    var storage = (function() {
+        var sizes = {};
+        var store = {};
+        var limit = {};
+        
+        limit[constant.NAMESPACE_SCREENSHOT] = 100;
+        limit[constant.NAMESPACE_MARKET_INSPECT] = 1000;
+        
+        function lsKey(name, key) {
+            return name + '$' + key;
+        }
+        function lsKeyReverse(lskey) {
+            var split = lskey.split('$');
+            return split.length < 2 ? null : {namespace: split[0], key: split[1]};
+        }
+        
+        return {        
+            /* reads localStorage and sorts items in order of their namespace */
+            init: function() {
+                for(var i=0; i < localStorage.length; i++) {
+                    var lskey = localStorage.key(i);
+
+                    /* do not allow invalid namespaced items */
+                    var temp = lsKeyReverse(lskey);
+                    if(temp === null)
+                       localStorage.removeItem(lskey);
+
+                    var namespace = temp.namespace;
+                    var key = temp.key;
+                    
+                    var value = localStorage.getItem(lskey);
+
+                    if(value.startsWith('{'))
+                       try {
+                           value = JSON.parse(value);
+                       } catch (e) {}
+
+                    if(store[namespace] === undefined)
+                       store[namespace] = {};
+
+                    store[namespace][key] = value;
+                }
+
+                for(var i in store)
+                    sizes[i] = Object.keys(store[i]).length;
+            },
+            add: function(namespace, key, value) {            
+                if(store[namespace] === undefined) {
+                   sizes[namespace] = 0;
+                   store[namespace] = {};
+                }
+
+                if(!store[namespace][key]) {
+                    sizes[namespace]++;
+                    store[namespace][key] = value;
+                }
+                
+                try {
+                    if(typeof value === 'object')
+                       value = JSON.stringify(value);
+
+                    var lskey = lsKey(namespace, key);
+                    localStorage.setItem(lskey, value);
+                } catch (e) {
+                    console.log(e);
+                }
+
+                if(sizes[namespace] >= limit[namespace] * 2)
+                   this.cleanup(namespace, sizes[namespace] - limit[namespace]);
+            },
+            get: function(namespace, key) {
+                return key ? store[namespace][key] : store[namespace];
+            },
+            cleanup: function(namespace, deleteCount) {
+                console.log(sizes[namespace], Object.keys(store[namespace]).length, namespace, deleteCount);
+                for(var i in store[namespace]) {
+                    var lskey = lsKey(namespace, i);
+                    localStorage.removeItem(lskey);
+                    delete store[namespace][i];
+                    
+                    if(--deleteCount <= 0)
+                       break;
+                }
+
+                sizes[namespace] = Object.keys(store[namespace]).length;
+            }
+        };
+    })();
+    
     var obj = {
-        storage: {},
         connections: [],
         pluginEnabled: null,
 
@@ -24,27 +112,12 @@ var background = (function() {
                     });
                     break;
                 case "getStorage":
-                    response = {msg: "storageResponse", namespace: request.namespace, value: background.storage[request.namespace]};
+                    response = {msg: "storageResponse", namespace: request.namespace, value: storage.get(request.namespace)};
                     break;
                 case "storeItem":
-					
-					if (!background.storage[request.namespace])
-						background.storage[request.namespace] = {};
-                    background.storage[request.namespace][request.key] = request.value;
-                    try {
-                        var value = request.value;
-                        if(typeof value === 'object')
-                           value = JSON.stringify(value);
-			
-                        
-                        var lskey = request.namespace + '_' + request.key;
-                        localStorage.setItem(lskey, value);
-                        
-                        /* notify all listening threads that a new item was added */
-                        background.broadcastMessage({msg: "newItem", namespace: request.namespace, key: request.key, value: request.value}, port);
-                    } catch (e) {
-                        console.log(e);
-                    }
+                    storage.add(request.namespace, request.key, request.value);
+                    /* notify all listening threads that a new item was added */
+                    background.broadcastMessage({msg: "newItem", namespace: request.namespace, key: request.key, value: request.value}, port);
                     break;
             }
             
@@ -88,37 +161,12 @@ var background = (function() {
 
         },
 
-        /* reads localStorage and sorts items in order of their namespace */
-        initStorage: function() {
-            for(var i=0; i < localStorage.length; i++) {
-                var lskey = localStorage.key(i);
-
-                /* do not allow non namespaced items */
-                if(!/^.+?_.+/.test(lskey))
-                    localStorage.removeItem(lskey);
-
-                var namespace = lskey.substr(0, key.indexOf('_'));
-
-                var key = lskey.substr(namespace.length + 1);
-                var value = localStorage.getItem(key);
-
-                if(value.startsWith('{'))
-                   try {
-                       value = JSON.parse(value);
-                   } catch (e) {}
-               
-                if(this.storage[namespace] == null)
-                   this.storage[namespace] = {};
-
-               this.storage[namespace][key] = value;
-            }
-        },
-
         init: function() {
             this.pluginEnabled = window.localStorage.getItem('steam_wizard_enabled') === null ? true : window.localStorage.getItem('steam_wizard_enabled')
             this.updateIcon(this.pluginEnabled);
             chrome.browserAction.onClicked.addListener(this.handleIconClick);
             chrome.runtime.onConnect.addListener(this.handleConnect);
+            storage.init();
         }
     };
     
