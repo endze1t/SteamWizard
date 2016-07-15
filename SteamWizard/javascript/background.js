@@ -23,8 +23,10 @@ var background = (function() {
 
                     /* do not allow invalid namespaced items */
                     var temp = lsKeyReverse(lskey);
-                    if(temp === null)
-                       localStorage.removeItem(lskey);
+                    if(temp === null){
+                        localStorage.removeItem(lskey);
+						continue;
+					}
 
                     var namespace = temp.namespace;
                     var key = temp.key;

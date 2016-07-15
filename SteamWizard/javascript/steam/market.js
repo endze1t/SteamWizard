@@ -17,6 +17,7 @@ function getInspectLink($marketListingRow) {
 /**************************************
 ************** FLOATS *****************
 **************************************/
+
 function onGetFloat() {
     if(!steamwizard.isLoggedIn()) {
         ui.showLoginOverlay();
@@ -112,7 +113,7 @@ function initButtons() {
 	if (getInspectLink($("#searchResultsRows .market_recent_listing_row").first())){
 		$("#searchResultsRows").find(".market_listing_row").each(function(index, marketListingRow) {
 			var $marketListingRow = $(marketListingRow);
-
+			
 			//button which gets float
 			var $getFloatButton = ui.createGreenSteamButton("Get Float");
 			$getFloatButton.click(onGetFloat);
@@ -124,6 +125,26 @@ function initButtons() {
 			$getScreenshotButton.click(onGetScreenshot);
 			$getScreenshotButton.addClass('steam_wizard_load_button_screenshot');
 			$getFloatButton.after($getScreenshotButton);
+			
+			
+			setTimeout(function(){
+				//load cached floats
+				var inspectLink = getInspectLink($(marketListingRow));
+				var cachedFloatValue = steamwizard.getFloatValueCached(inspectLink);
+				if (cachedFloatValue !== null){
+					$getFloatButton.off().addClass('btn_grey_white_innerfade');
+					$getFloatButton.empty().append(ui.createWearValueSpan(cachedFloatValue));
+				}
+				
+				//load cached screenshot
+				var cachedScreenshot = steamwizard.getScreenshotCached(inspectLink);
+				if (cachedScreenshot !== null){
+					$getScreenshotButton.off();
+					$getScreenshotButton.text('Open Screenshot');
+					$getScreenshotButton.removeClass('btn_grey_white_innerfade').addClass('btn_blue_white_innerfade');
+					$getScreenshotButton.click(function(){ui.showScreenshotOverlay(cachedScreenshot);});
+				}
+			}, index * 50);
 		});
 
 		if ($("#searchResultsRows").find(".market_listing_row").length > 0) {
