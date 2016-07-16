@@ -25,7 +25,11 @@ function onGetFloat() {
     }
 
     var $marketListingRow = $(this.closest('.market_listing_row'));
-    var inspectLink = getInspectLink($marketListingRow);
+    var inspectLink;
+	if ($marketListingRow[0].inspectLink)//inspectlink might've been loaded when the page was loaded
+		inspectLink = $marketListingRow[0].inspectLink;
+	else
+		inspectLink = getInspectLink($marketListingRow);
     
     var $getFloatButton = $marketListingRow.find(".steam_wizard_load_button_float").first();
     $getFloatButton.off().text('loading...').addClass('btn_grey_white_innerfade');
@@ -134,7 +138,9 @@ function initButtons() {
 			
 			setTimeout(function(){
 				//load cached floats
-				var inspectLink = getInspectLink($(marketListingRow));
+				var inspectLink = getInspectLink($marketListingRow);
+				$marketListingRow[0].inspectLink = inspectLink;
+				
 				var cachedFloatValue = steamwizard.getFloatValueCached(inspectLink);
 				if (cachedFloatValue != null){
                                     $getFloatButton.off().addClass('btn_grey_white_innerfade');
