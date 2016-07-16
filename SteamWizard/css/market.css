@@ -1,6 +1,6 @@
 .steam_wizard_market_cell {
     margin-top: 21px;
-    line-height: 16px;
+    line-height: 16px !important;
     padding-left: 7px;
     overflow: hidden;
     white-space: nowrap;

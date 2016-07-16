@@ -30,15 +30,15 @@ function onGetFloat() {
     var $getFloatButton = $marketListingRow.find(".steam_wizard_load_button_float").first();
     $getFloatButton.off().text('loading...').addClass('btn_grey_white_innerfade');
 	
-	steamwizard.getFloatValue(inspectLink, function(result){
-		if (result.status == steamwizard.EVENT_STATUS_DONE){
-			$getFloatButton.empty().append(ui.createWearValueSpan(result.floatvalue));
-			//$getFloatButton.removeClass('btn_grey_white_innerfade').addClass('btn_blue_white_innerfade');
-		}else if (result.status == steamwizard.EVENT_STATUS_FAIL){
-			$getFloatButton.text('Failed').addClass('steam_wizard_load_button_failed');
-			$getFloatButton.click(onGetFloat);
-		}
-	});
+    steamwizard.getFloatValue(inspectLink, function(result){
+            if (result.status == steamwizard.EVENT_STATUS_DONE){
+                    $getFloatButton.empty().append(ui.createWearValueSpan(result.data.wear.toFixed(15)));
+                    //$getFloatButton.removeClass('btn_grey_white_innerfade').addClass('btn_blue_white_innerfade');
+            }else if (result.status == steamwizard.EVENT_STATUS_FAIL){
+                    $getFloatButton.text('Failed').addClass('steam_wizard_load_button_failed');
+                    $getFloatButton.click(onGetFloat);
+            }
+    });
 }
 
 function onGetAllFloats() {
@@ -114,39 +114,45 @@ function initButtons() {
 		$("#searchResultsRows").find(".market_listing_row").each(function(index, marketListingRow) {
 			var $marketListingRow = $(marketListingRow);
 			
+                        var container = $("<div>").insertBefore($marketListingRow.find(".market_listing_item_name_block"));
+                        container.addClass('market_listing_right_cell steam_wizard_market_cell');
+                        
 			//button which gets float
 			var $getFloatButton = ui.createGreenSteamButton("Get Float");
 			$getFloatButton.click(onGetFloat);
 			$getFloatButton.addClass('steam_wizard_load_button_float');
-			$marketListingRow.find(".market_listing_item_name").after($getFloatButton);
+                        $getFloatButton.appendTo(container);
+			//$marketListingRow.find(".market_listing_item_name").after($getFloatButton);
 
 			//button which gets screenshot
 			var $getScreenshotButton = ui.createGreenSteamButton("Get Screen");
 			$getScreenshotButton.click(onGetScreenshot);
 			$getScreenshotButton.addClass('steam_wizard_load_button_screenshot');
-			$getFloatButton.after($getScreenshotButton);
+			//$getFloatButton.after($getScreenshotButton);
+                        $getScreenshotButton.appendTo(container);
 			
 			
 			setTimeout(function(){
 				//load cached floats
 				var inspectLink = getInspectLink($(marketListingRow));
 				var cachedFloatValue = steamwizard.getFloatValueCached(inspectLink);
-				if (cachedFloatValue !== null){
-					$getFloatButton.off().addClass('btn_grey_white_innerfade');
-					$getFloatButton.empty().append(ui.createWearValueSpan(cachedFloatValue));
+				if (cachedFloatValue != null){
+                                    $getFloatButton.off().addClass('btn_grey_white_innerfade');
+                                    $getFloatButton.empty().append(ui.createWearValueSpan(cachedFloatValue.wear.toFixed(15)));
 				}
 				
 				//load cached screenshot
 				var cachedScreenshot = steamwizard.getScreenshotCached(inspectLink);
-				if (cachedScreenshot !== null){
+				if (cachedScreenshot != null){
 					$getScreenshotButton.off();
 					$getScreenshotButton.text('Open Screenshot');
 					$getScreenshotButton.removeClass('btn_grey_white_innerfade').addClass('btn_blue_white_innerfade');
 					$getScreenshotButton.click(function(){ui.showScreenshotOverlay(cachedScreenshot);});
 				}
-			}, index * 50);
+			}, index * 20);
 		});
 
+                /* other buttons */
 		if ($("#searchResultsRows").find(".market_listing_row").length > 0) {
 			//button to load all floats
 			var $getAllFloatsButton = ui.createGreenSteamButton("Load All Floats");

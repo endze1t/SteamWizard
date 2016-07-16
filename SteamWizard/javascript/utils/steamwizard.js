@@ -194,73 +194,46 @@ var steamwizard = (function() {
         },
             
         getScreenshot: function(inspectLink, callback) {
-			var cachedValue = steamwizard.getScreenshotCached(inspectLink);
-			if (cachedValue !== null){
-				callback({status: steamwizard.EVENT_STATUS_DONE , image_url: cachedValue});
-			}else{
-				metjm.requestScreenshot(inspectLink, function(result){
-						if (result.success) {
-								if(result.result.status == metjm.STATUS_QUEUE){
-										callback({status: steamwizard.EVENT_STATUS_PROGRESS , msg: 'Queue: ' + result.result.place_in_queue});
-								}else if (result.result.status == metjm.STATUS_DONE){
-										port.postMessage({msg: 'storeItem', namespace: NAMESPACE_SCREENSHOT, key: getAssetID(inspectLink), value: result.result.image_url});
-										callback({status: steamwizard.EVENT_STATUS_DONE , image_url: result.result.image_url});
-								}else{
-										callback({status: steamwizard.EVENT_STATUS_FAIL , msg:'Failed'});
-								}
-						} else {
-								callback({status: steamwizard.EVENT_STATUS_FAIL , msg:'Failed'});
+            metjm.requestScreenshot(inspectLink, function(result){
+                if (result.success) {
+                    if(result.result.status == metjm.STATUS_QUEUE){
+                        callback({status: steamwizard.EVENT_STATUS_PROGRESS , msg: 'Queue: ' + result.result.place_in_queue});
+                    }else if (result.result.status == metjm.STATUS_DONE){
+                        port.postMessage({msg: 'storeItem', namespace: NAMESPACE_SCREENSHOT, key: getAssetID(inspectLink), value: result.result.image_url});
+                        callback({status: steamwizard.EVENT_STATUS_DONE , image_url: result.result.image_url});
+                    }else{
+                        callback({status: steamwizard.EVENT_STATUS_FAIL , msg:'Failed'});
+                    }
+                } else {
+                    callback({status: steamwizard.EVENT_STATUS_FAIL , msg:'Failed'});
 
-								if(result.bad_token)
-								   steamwizard.revokeToken();
-						}
-				});
-			}
+                    if(result.bad_token)
+                       steamwizard.revokeToken();
+                }
+            });
         },
 		
         getFloatValue: function(inspectLink, callback) {
-			var cachedFloatValue = steamwizard.getFloatValueCached(inspectLink);
-			if (cachedFloatValue !== null){
-				callback({status: steamwizard.EVENT_STATUS_DONE , floatvalue: cachedFloatValue});
-			}else{
-				csgozone.market(inspectLink, function(data) {
-					if(data.success === true) {
-					   port.postMessage({msg: 'storeItem', namespace: NAMESPACE_MARKET_INSPECT, key: getAssetID(inspectLink), value: data});
-					   callback({status: steamwizard.EVENT_STATUS_DONE , floatvalue:data.wear.toFixed(15)});
-					} else {
-					   callback({status: steamwizard.EVENT_STATUS_FAIL , msg:'Failed'});
-					   if(data.bad_token)
-						  steamwizard.revokeToken();
-					}
-				});
-			}
+            csgozone.market(inspectLink, function(data) {
+                    if(data.success === true) {
+                       port.postMessage({msg: 'storeItem', namespace: NAMESPACE_MARKET_INSPECT, key: getAssetID(inspectLink), value: data});
+                       callback({status: steamwizard.EVENT_STATUS_DONE , data: data});
+                    } else {
+                       callback({status: steamwizard.EVENT_STATUS_FAIL , msg:'Failed'});
+                       if(data.bad_token)
+                              steamwizard.revokeToken();
+                    }
+            });
         },
 		
-		getFloatValueCached : function(inspectLink){
-			var assetid = getAssetID(inspectLink);
-			var cache = steamwizard.getFloatValueCache();
-			if (cache[assetid]){
-				return cache[assetid].wear.toFixed(15);
-			}else{
-				return null;
-			}
-		},
-		
-		getScreenshotCached : function(inspectLink){
-			var assetid = getAssetID(inspectLink);
-			var cache = steamwizard.getScreenshotCache();
-			if (cache[assetid])
-				return cache[assetid];
-			else
-				return null;
-		},
-        
-        getFloatValueCache: function() {
-            return storage[NAMESPACE_MARKET_INSPECT];
+        getFloatValueCached : function(inspectLink){
+            var assetid = getAssetID(inspectLink);
+            return storage[NAMESPACE_MARKET_INSPECT][assetid];
         },
-        
-        getScreenshotCache: function() {
-            return storage[NAMESPACE_SCREENSHOT];
-        }
+
+        getScreenshotCached : function(inspectLink){
+            var assetid = getAssetID(inspectLink);
+            return storage[NAMESPACE_SCREENSHOT][assetid];
+        },
     };
 })();
