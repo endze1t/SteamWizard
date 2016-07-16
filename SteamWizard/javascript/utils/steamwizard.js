@@ -69,8 +69,11 @@ var steamwizard = (function() {
         if(token !== null) {
            csgozone.setToken(token);
            metjm.setToken(token);
+           csgozone.status(function(response) {
+                port.postMessage({msg: "inspectStatus", data: response.data});
+           });
         }
-            
+        
         isLoggedIn = token !== null;
     }
     
@@ -78,15 +81,18 @@ var steamwizard = (function() {
         switch(request.msg) {
             case 'pluginStatus':
                  isEnabled = request.status;
-                 for(var i = 0; i < eventListeners.length; i++)
-                     eventListeners[i]({msg: 'pluginStatus', status: isEnabled});
+                 broadcaseEvent({msg: 'pluginStatus', status: isEnabled});
                  break;
             case 'newItem':
                 steamwizard.storeItem(request.namespace, request.key, request.value);
-                 for(var i = 0; i < eventListeners.length; i++)
-                     eventListeners[i]({msg: 'newItem', namespace: request.namespace, key: request.key, value: request.value});
+                 broadcaseEvent({msg: 'newItem', namespace: request.namespace, key: request.key, value: request.value});
                 break;
         }
+    }
+    
+    function broadcaseEvent(msg) {
+        for(var i = 0; i < eventListeners.length; i++)
+            eventListeners[i](msg);
     }
     
     function ready() {
@@ -224,14 +230,14 @@ var steamwizard = (function() {
                 } else {
                    callback({status: steamwizard.EVENT_STATUS_FAIL , msg:'Failed'});
                    if(data.bad_token)
-                          steamwizard.revokeToken();
+                      steamwizard.revokeToken();
                 }
             });
         },
 		
-		getFloatValueCachedFromAssetid : function(assetid){
-			return storage[NAMESPACE_MARKET_INSPECT][assetid];
-		},
+        getFloatValueCachedFromAssetid : function(assetid){
+                return storage[NAMESPACE_MARKET_INSPECT][assetid];
+        },
 		
         getFloatValueCached : function(inspectLink){
             var assetid = util.getAssetID(inspectLink);

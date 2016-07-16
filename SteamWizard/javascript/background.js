@@ -15,6 +15,16 @@ var background = (function() {
             return split.length < 2 ? null : {namespace: split[0], key: split[1]};
         }
         
+        var timeout;
+        
+        function updateStatus(data) {
+            clearTimeout(timeout);
+            timeout = setTimeout(function() {
+                /* TODO .. HOW ? */
+            }, data.reset);
+        }
+        
+        
         return {        
             /* reads localStorage and sorts items in order of their namespace */
             init: function() {
@@ -120,6 +130,13 @@ var background = (function() {
                     storage.add(request.namespace, request.key, request.value);
                     /* notify all listening threads that a new item was added */
                     background.broadcastMessage({msg: "newItem", namespace: request.namespace, key: request.key, value: request.value}, port);
+                    break;
+                case "inspectStatus":
+                    updateStatus(request.data);
+                    background.broadcastMessage({msg: "inspectStatus", data: request.data});
+                    break;
+                case "inspectLimit":
+                    background.broadcastMessage({msg: "inspectStatus", data: request.data});
                     break;
             }
             
