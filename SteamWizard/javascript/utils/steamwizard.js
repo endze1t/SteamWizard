@@ -82,11 +82,11 @@ var steamwizard = (function() {
                      onChangeList[i](isEnabled);                     
                  break;
             
-            /* TODO 
-             * case 'newItem':
-             * 
-             * 
-             * */
+			case 'newItem':
+				if (!storage[request.namespace])
+					storage[request.namespace] = {};
+				storage[request.namespace][request.key] = request.value;
+				break;
         }
     }
     
@@ -192,6 +192,13 @@ var steamwizard = (function() {
                 callback();
             });
         },
+		
+		storeItem(namespace, key, value){
+			if (!storage[namespace])
+				storage[namespace] = {};
+			storage[namespace][key] = value;
+			port.postMessage({msg: 'storeItem', namespace: namespace, key: key, value: value});
+		},
             
         getScreenshot: function(inspectLink, callback) {
             metjm.requestScreenshot(inspectLink, function(result){
@@ -199,7 +206,7 @@ var steamwizard = (function() {
                     if(result.result.status == metjm.STATUS_QUEUE){
                         callback({status: steamwizard.EVENT_STATUS_PROGRESS , msg: 'Queue: ' + result.result.place_in_queue});
                     }else if (result.result.status == metjm.STATUS_DONE){
-                        port.postMessage({msg: 'storeItem', namespace: NAMESPACE_SCREENSHOT, key: getAssetID(inspectLink), value: result.result.image_url});
+						steamwizard.storeItem(NAMESPACE_SCREENSHOT, getAssetID(inspectLink), result.result.image_url);
                         callback({status: steamwizard.EVENT_STATUS_DONE , image_url: result.result.image_url});
                     }else{
                         callback({status: steamwizard.EVENT_STATUS_FAIL , msg:'Failed'});
@@ -216,8 +223,8 @@ var steamwizard = (function() {
         getFloatValue: function(inspectLink, callback) {
             csgozone.market(inspectLink, function(data) {
                     if(data.success === true) {
-                       port.postMessage({msg: 'storeItem', namespace: NAMESPACE_MARKET_INSPECT, key: getAssetID(inspectLink), value: data});
-                       callback({status: steamwizard.EVENT_STATUS_DONE , data: data});
+						steamwizard.storeItem(NAMESPACE_MARKET_INSPECT, getAssetID(inspectLink), data);
+						callback({status: steamwizard.EVENT_STATUS_DONE , data: data});
                     } else {
                        callback({status: steamwizard.EVENT_STATUS_FAIL , msg:'Failed'});
                        if(data.bad_token)
