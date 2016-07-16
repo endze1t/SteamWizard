@@ -16,8 +16,8 @@ var steamwizard = (function() {
     /* list of functions to be called after we finish initializing */
     var onReadyList = [];
     
-    /* list of functions to be called if the plugin was switched on or off */
-    var onChangeList = [];
+    /* list of functions to be called on events */
+    var eventListeners = [];
     
     /* is the plugin enabled or disabled */
     var isEnabled = false;
@@ -33,7 +33,7 @@ var steamwizard = (function() {
     
     /* our local storage */
     var storage = {};
-	    
+    
     /* name must not include "_" */
     var NAMESPACE_SCREENSHOT     = constant.NAMESPACE_SCREENSHOT;
     var NAMESPACE_MARKET_INSPECT = constant.NAMESPACE_MARKET_INSPECT;
@@ -78,15 +78,14 @@ var steamwizard = (function() {
         switch(request.msg) {
             case 'pluginStatus':
                  isEnabled = request.status;
-                 for(var i = 0; i < onChangeList.length; i++)
-                     onChangeList[i](isEnabled);                     
+                 for(var i = 0; i < eventListeners.length; i++)
+                     eventListeners[i]({msg: 'pluginStatus', status: isEnabled});
                  break;
-            
-			case 'newItem':
-				if (!storage[request.namespace])
-					storage[request.namespace] = {};
-				storage[request.namespace][request.key] = request.value;
-				break;
+            case 'newItem':
+                steamwizard.storeItem(request.namespace, request.key, request.value);
+                 for(var i = 0; i < eventListeners.length; i++)
+                     eventListeners[i]({msg: 'newItem', namespace: request.namespace, key: request.key, value: request.value});
+                break;
         }
     }
     
@@ -165,11 +164,11 @@ var steamwizard = (function() {
                onReadyList.push(callback);
         },
         
-        onChange: function(callback) {
-            if(onChangeList.indexOf(callback) > -1)
+        addEventListener: function(callback) {
+            if(eventListeners.indexOf(callback) > -1)
                return;
             
-            onChangeList.push(callback);
+            eventListeners.push(callback);
         },
         
         isEnabled: function() {
@@ -193,12 +192,15 @@ var steamwizard = (function() {
             });
         },
 		
-		storeItem(namespace, key, value){
-			if (!storage[namespace])
-				storage[namespace] = {};
-			storage[namespace][key] = value;
-			port.postMessage({msg: 'storeItem', namespace: namespace, key: key, value: value});
-		},
+        storeItem: function(namespace, key, value, notifyBackground) {
+            if (!storage[namespace])
+                 storage[namespace] = {};
+             
+            storage[namespace][key] = value;
+            
+            if(notifyBackground)
+               port.postMessage({msg: 'storeItem', namespace: namespace, key: key, value: value});
+        },
             
         getScreenshot: function(inspectLink, callback) {
             metjm.requestScreenshot(inspectLink, function(result){
@@ -206,7 +208,7 @@ var steamwizard = (function() {
                     if(result.result.status == metjm.STATUS_QUEUE){
                         callback({status: steamwizard.EVENT_STATUS_PROGRESS , msg: 'Queue: ' + result.result.place_in_queue});
                     }else if (result.result.status == metjm.STATUS_DONE){
-						steamwizard.storeItem(NAMESPACE_SCREENSHOT, getAssetID(inspectLink), result.result.image_url);
+			steamwizard.storeItem(NAMESPACE_SCREENSHOT, getAssetID(inspectLink), result.result.image_url, true);
                         callback({status: steamwizard.EVENT_STATUS_DONE , image_url: result.result.image_url});
                     }else{
                         callback({status: steamwizard.EVENT_STATUS_FAIL , msg:'Failed'});
@@ -222,14 +224,14 @@ var steamwizard = (function() {
 		
         getFloatValue: function(inspectLink, callback) {
             csgozone.market(inspectLink, function(data) {
-                    if(data.success === true) {
-						steamwizard.storeItem(NAMESPACE_MARKET_INSPECT, getAssetID(inspectLink), data);
-						callback({status: steamwizard.EVENT_STATUS_DONE , data: data});
-                    } else {
-                       callback({status: steamwizard.EVENT_STATUS_FAIL , msg:'Failed'});
-                       if(data.bad_token)
-                              steamwizard.revokeToken();
-                    }
+                if(data.success === true) {
+                    steamwizard.storeItem(NAMESPACE_MARKET_INSPECT, getAssetID(inspectLink), data, true);
+                    callback({status: steamwizard.EVENT_STATUS_DONE , data: data});
+                } else {
+                   callback({status: steamwizard.EVENT_STATUS_FAIL , msg:'Failed'});
+                   if(data.bad_token)
+                          steamwizard.revokeToken();
+                }
             });
         },
 		

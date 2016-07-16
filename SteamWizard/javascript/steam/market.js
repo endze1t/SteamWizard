@@ -5,12 +5,18 @@ var numDisplayedItems = 10;
 *************** UTIL ******************
 **************************************/
 function getInspectLink($marketListingRow) {
-	var element =   $marketListingRow.find(".market_actionmenu_button")[0];
-	if (!element)
-		return null;
+    if($marketListingRow[0].inspectLink)
+       return $marketListingRow[0].inspectLink;
+   
+    var element = $marketListingRow.find(".market_actionmenu_button")[0];
+    if (!element)
+         return null;
+         
     element.click();
     var inspectLink =  $('#market_action_popup_itemactions').find('a').attr("href");
     $("#market_action_popup").css('display','none');
+    
+    $marketListingRow[0].inspectLink = inspectLink;
     return inspectLink;
 }
 
@@ -25,11 +31,7 @@ function onGetFloat() {
     }
 
     var $marketListingRow = $(this.closest('.market_listing_row'));
-    var inspectLink;
-	if ($marketListingRow[0].inspectLink)//inspectlink might've been loaded when the page was loaded
-		inspectLink = $marketListingRow[0].inspectLink;
-	else
-		inspectLink = getInspectLink($marketListingRow);
+    var inspectLink = getInspectLink($marketListingRow);
     
     var $getFloatButton = $marketListingRow.find(".steam_wizard_load_button_float").first();
     $getFloatButton.off().text('loading...').addClass('btn_grey_white_innerfade');
@@ -126,20 +128,17 @@ function initButtons() {
 			$getFloatButton.click(onGetFloat);
 			$getFloatButton.addClass('steam_wizard_load_button_float');
                         $getFloatButton.appendTo(container);
-			//$marketListingRow.find(".market_listing_item_name").after($getFloatButton);
 
 			//button which gets screenshot
 			var $getScreenshotButton = ui.createGreenSteamButton("Get Screen");
 			$getScreenshotButton.click(onGetScreenshot);
 			$getScreenshotButton.addClass('steam_wizard_load_button_screenshot');
-			//$getFloatButton.after($getScreenshotButton);
                         $getScreenshotButton.appendTo(container);
 			
 			
 			setTimeout(function(){
 				//load cached floats
 				var inspectLink = getInspectLink($marketListingRow);
-				$marketListingRow[0].inspectLink = inspectLink;
 				
 				var cachedFloatValue = steamwizard.getFloatValueCached(inspectLink);
 				if (cachedFloatValue != null){
@@ -237,6 +236,14 @@ function removeButtons() {
     $("#searchResultsRows").find('.steam_wizard_sort_by_float_button').remove();
 }
 
+function steamWizardEventListener(request) {    
+    switch(request.msg) {
+        case 'pluginStatus':
+            start();
+            break;
+    }
+}
+
 function start() {
     if(steamwizard.isEnabled())
         initButtons();
@@ -271,7 +278,7 @@ function init() {
            ui.removeOverlay();
     });
 	
-    steamwizard.onChange(start);
+    steamwizard.addEventListener(steamWizardEventListener);
 }
 
 /**************************************
