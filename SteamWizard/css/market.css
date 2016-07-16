@@ -116,3 +116,12 @@
 	margin:0px;
 	padding:0px;
 }
+
+.steam_wizard_rotating{
+	display: inline-block;
+	animation: wizard_rot 2s infinite;
+}
+@keyframes wizard_rot{
+    from {-webkit-transform: rotate(0deg)}
+    to {-webkit-transform: rotate(360deg)}
+}
