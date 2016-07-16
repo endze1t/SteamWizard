@@ -144,12 +144,6 @@ var steamwizard = (function() {
     }
 
     init();
-        
-    function getAssetID(inspectLink){
-        var reg = /.*A(\d+).*/;
-        var match = reg.exec(inspectLink);
-        return match ? match[1] : null;
-    }
     
     return {
         EVENT_STATUS_PROGRESS: 1,
@@ -208,7 +202,7 @@ var steamwizard = (function() {
                     if(result.result.status == metjm.STATUS_QUEUE){
                         callback({status: steamwizard.EVENT_STATUS_PROGRESS , msg: 'Queue: ' + result.result.place_in_queue});
                     }else if (result.result.status == metjm.STATUS_DONE){
-			steamwizard.storeItem(NAMESPACE_SCREENSHOT, getAssetID(inspectLink), result.result.image_url, true);
+			steamwizard.storeItem(NAMESPACE_SCREENSHOT, util.getAssetID(inspectLink), result.result.image_url, true);
                         callback({status: steamwizard.EVENT_STATUS_DONE , image_url: result.result.image_url});
                     }else{
                         callback({status: steamwizard.EVENT_STATUS_FAIL , msg:'Failed'});
@@ -225,7 +219,7 @@ var steamwizard = (function() {
         getFloatValue: function(inspectLink, callback) {
             csgozone.market(inspectLink, function(data) {
                 if(data.success === true) {
-                    steamwizard.storeItem(NAMESPACE_MARKET_INSPECT, getAssetID(inspectLink), data, true);
+                    steamwizard.storeItem(NAMESPACE_MARKET_INSPECT, util.getAssetID(inspectLink), data, true);
                     callback({status: steamwizard.EVENT_STATUS_DONE , data: data});
                 } else {
                    callback({status: steamwizard.EVENT_STATUS_FAIL , msg:'Failed'});
@@ -235,13 +229,21 @@ var steamwizard = (function() {
             });
         },
 		
+		getFloatValueCachedFromAssetid : function(assetid){
+			return storage[NAMESPACE_MARKET_INSPECT][assetid];
+		},
+		
         getFloatValueCached : function(inspectLink){
-            var assetid = getAssetID(inspectLink);
+            var assetid = util.getAssetID(inspectLink);
             return storage[NAMESPACE_MARKET_INSPECT][assetid];
         },
-
+		
+		getScreenshotCachedFromAssetid : function(assetid){
+			return storage[NAMESPACE_SCREENSHOT][assetid];
+		},
+		
         getScreenshotCached : function(inspectLink){
-            var assetid = getAssetID(inspectLink);
+            var assetid = util.getAssetID(inspectLink);
             return storage[NAMESPACE_SCREENSHOT][assetid];
         },
     };

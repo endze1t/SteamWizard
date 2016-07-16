@@ -1,5 +1,6 @@
 "using strict";
 var numDisplayedItems = 10;
+var visibleAssets = {};
 
 /**************************************
 *************** UTIL ******************
@@ -38,8 +39,7 @@ function onGetFloat() {
 	
     steamwizard.getFloatValue(inspectLink, function(result){
             if (result.status == steamwizard.EVENT_STATUS_DONE){
-                    $getFloatButton.empty().append(ui.createWearValueSpan(result.data.wear.toFixed(15)));
-                    //$getFloatButton.removeClass('btn_grey_white_innerfade').addClass('btn_blue_white_innerfade');
+				finishFloatButton($getFloatButton, result.data);
             }else if (result.status == steamwizard.EVENT_STATUS_FAIL){
                     $getFloatButton.text('Failed').addClass('steam_wizard_load_button_failed');
                     $getFloatButton.click(onGetFloat);
@@ -104,10 +104,7 @@ function onGetScreenshot() {
 		if (result.status == steamwizard.EVENT_STATUS_PROGRESS){
 			$getScreenshotButton.text(result.msg).addClass('btn_grey_white_innerfade');
 		}else if (result.status == steamwizard.EVENT_STATUS_DONE){
-			$getScreenshotButton.text('Open Screenshot');
-			$getScreenshotButton.removeClass('btn_grey_white_innerfade').addClass('btn_blue_white_innerfade');
-			$getScreenshotButton.click(function(){ui.showScreenshotOverlay(result.image_url);});
-			$getScreenshotButton[0].click();
+			finishScreenshotButton($getScreenshotButton, result.image_url);
 		}else if (result.status == steamwizard.EVENT_STATUS_FAIL){
 			$getScreenshotButton.text(result.msg).addClass('steam_wizard_load_button_failed');
 			$getScreenshotButton.click(onGetScreenshot);
@@ -115,7 +112,23 @@ function onGetScreenshot() {
 	});
 }
 
+function finishFloatButton($getFloatButton, floatvalue){
+	if (floatvalue != null){
+		$getFloatButton.off().addClass('btn_grey_white_innerfade');
+		$getFloatButton.empty().append(ui.createWearValueSpan(floatvalue.wear.toFixed(15)));
+	}
+}
+function finishScreenshotButton($getScreenshotButton, screenshotlink){
+	if (screenshotlink){
+		$getScreenshotButton.off();
+		$getScreenshotButton.text('Open Screenshot');
+		$getScreenshotButton.removeClass('btn_grey_white_innerfade').addClass('btn_blue_white_innerfade');
+		$getScreenshotButton.click(function(){ui.showScreenshotOverlay(screenshotlink);});
+	}
+}
+
 function initButtons() {
+	visibleAssets = {};
 	if (getInspectLink($("#searchResultsRows .market_recent_listing_row").first())){
 		$("#searchResultsRows").find(".market_listing_row").each(function(index, marketListingRow) {
 			var $marketListingRow = $(marketListingRow);
@@ -139,21 +152,15 @@ function initButtons() {
 			setTimeout(function(){
 				//load cached floats
 				var inspectLink = getInspectLink($marketListingRow);
+				visibleAssets[util.getAssetID(inspectLink)] = $marketListingRow;
 				
 				var cachedFloatValue = steamwizard.getFloatValueCached(inspectLink);
-				if (cachedFloatValue != null){
-                                    $getFloatButton.off().addClass('btn_grey_white_innerfade');
-                                    $getFloatButton.empty().append(ui.createWearValueSpan(cachedFloatValue.wear.toFixed(15)));
-				}
+				finishFloatButton($getFloatButton, cachedFloatValue);
+				
 				
 				//load cached screenshot
 				var cachedScreenshot = steamwizard.getScreenshotCached(inspectLink);
-				if (cachedScreenshot != null){
-					$getScreenshotButton.off();
-					$getScreenshotButton.text('Open Screenshot');
-					$getScreenshotButton.removeClass('btn_grey_white_innerfade').addClass('btn_blue_white_innerfade');
-					$getScreenshotButton.click(function(){ui.showScreenshotOverlay(cachedScreenshot);});
-				}
+				finishScreenshotButton($getScreenshotButton, cachedScreenshot);
 			}, index * 20);
 		});
 
@@ -241,6 +248,21 @@ function steamWizardEventListener(request) {
         case 'pluginStatus':
             start();
             break;
+		case 'newItem':
+			if (request.namespace == constant.NAMESPACE_MARKET_INSPECT && visibleAssets[request.key]){
+				console.log('received float');
+				var cachedFloatValue = steamwizard.getFloatValueCachedFromAssetid(request.key);
+				var $getFloatButton = $(visibleAssets[request.key]).find(".steam_wizard_load_button_float");
+				finishFloatButton($getFloatButton, cachedFloatValue);
+			} else if (request.namespace == constant.NAMESPACE_SCREENSHOT && visibleAssets[request.key]) {
+				var cachedScreenshot = steamwizard.getScreenshotCachedFromAssetid(request.key);
+				var $getScreenshotButton = $(visibleAssets[request.key]).find(".steam_wizard_load_button_screenshot");
+				if (cachedScreenshot != null){
+					finishScreenshotButton($getScreenshotButton, result.image_url);
+				}
+			}
+			console.log(request);
+			break;
     }
 }
 

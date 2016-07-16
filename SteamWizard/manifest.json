@@ -20,6 +20,7 @@
 	"background": {
 		"scripts": ["javascript/jquery-3.0.0.min.js",
                             "javascript/utils/constant.js",
+                            "javascript/utils/util.js",
                             "javascript/background.js"],
                 "presistant": false
 	},
@@ -29,6 +30,7 @@
 		  "run_at": "document_end",
 		  "js": ["javascript/jquery-3.0.0.min.js",
                          "javascript/utils/constant.js",
+                         "javascript/utils/util.js",
                          "javascript/utils/csgozone.js", 
                          "javascript/utils/metjm.js", 
                          "javascript/utils/steamwizard.js", 
@@ -40,6 +42,7 @@
 		  "run_at": "document_end",
 		  "js": ["javascript/jquery-3.0.0.min.js", 
                          "javascript/utils/constant.js",
+                         "javascript/utils/util.js",
                          "javascript/utils/csgozone.js", 
                          "javascript/utils/metjm.js", 
                          "javascript/utils/steamwizard.js", 
