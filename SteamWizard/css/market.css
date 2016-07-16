@@ -14,8 +14,10 @@
 .steam_wizard_load_button_float_all, .steam_wizard_sort_by_float_button, .steam_wizard_show_100_button {
     padding: 0px 20px !important;
     font-size: 12px !important;
-    margin-left: 30px !important;
     line-height: 22px !important;
+}
+.steam_wizard_load_button_float_all{
+	margin-left:0px !important;
 }
 
 .steam_wizard_multiple_choice_button{
@@ -86,4 +88,31 @@
     font-size: 15px !important;
     padding: 10px 20px !important;
     border-radius: 5px;
+}
+
+/*STATUS PANEL*/
+.steam_wizard_status_panel{
+	margin: 15px 0px;
+	position:relative;
+}
+.steam_wizard_status_panel_content > p {
+	padding:0px;
+	margin:10px 0px 10px 0px;
+}
+.steam_wizard_status_panel_content{
+	position: relative;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 15px;
+}
+.steam_wizard_status_panel_button_container{
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+.steam_wizard_why_limited{
+	position:absolute;
+	bottom: 15px;
+	right:50px;
+	margin:0px;
+	padding:0px;
 }

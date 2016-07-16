@@ -177,5 +177,28 @@ var ui = {
             $loginOverlayContainer.hide();
 
         $('body').append($loginOverlayContainer);
-    }
+    },
+	
+	buildSteamWizardStatusPanel: function(){
+		var $panel = $("<div>");
+		var $content = $("<div>");
+		var $buttonsContainer = $("<div>");
+		var $inspectsLeftToday = $("<p>Float requests left today:<span id='steam_wizard_inspects_left_today' class='market_commodity_orders_header_promote'>?</span></p>");
+		var $screenshotPremiumQeue = $("<p>Screenshots priority queue:<span id='steam_wizard_screenshots_premium_queue' class='market_commodity_orders_header_promote'>?</span></p>");
+		var $whyLimited = $("<p class='steam_wizard_why_limited'><a href=''>Why the limits?</a></p>");
+		
+		$panel.addClass('steam_wizard_status_panel');
+		$content.addClass('steam_wizard_status_panel_content');
+		$buttonsContainer.addClass('steam_wizard_status_panel_button_container');
+		
+		$panel.append($content);
+		$content.append($("<p>SteamWizard</p>").css({'font-size':'18px'}).addClass('market_commodity_orders_header_promote'));
+		$content.append($inspectsLeftToday);
+		$content.append($screenshotPremiumQeue);
+		$content.append($buttonsContainer);
+		$content.append($whyLimited);
+		
+		$(".market_listing_filter").after($panel);
+		
+	}
 }
