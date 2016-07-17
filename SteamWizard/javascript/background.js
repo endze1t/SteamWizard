@@ -140,7 +140,7 @@ var background = (function() {
                     break;
                 case "inspectUsage":
                     inspectStatus.usage -= request.amount;
-                    if(inspectStatus.limit !== undefined)
+                    if(inspectStatus.limit)
                        background.broadcastMessage({msg: "inspectLimit", data: inspectStatus.limit - inspectStatus.usage});
                     break;
             }

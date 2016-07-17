@@ -235,6 +235,12 @@ function steamWizardEventListener(request) {
 			}
 			console.log(request);
 			break;
+		case 'inspectStatus':
+			break;
+		case 'inspectLimit':
+			$("#steam_wizard_inspects_left_today").text(request.data);
+			$("#steam_wizard_inspects_left_today").removeClass('steam_wizard_rotating');
+			break;
     }
 }
 
