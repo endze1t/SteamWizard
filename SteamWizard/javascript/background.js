@@ -92,7 +92,7 @@ var background = (function() {
     
     var inspectStatus = {
         usage: 0
-    }
+    };
     var timeout;
 
     function updateStatus(data) {
@@ -102,7 +102,6 @@ var background = (function() {
             /* TODO .. HOW ? */
         }, data.reset);
     }
-
 
     var obj = {
         connections: [],
