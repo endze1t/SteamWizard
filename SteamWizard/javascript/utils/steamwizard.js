@@ -69,8 +69,15 @@ var steamwizard = (function() {
         if(token !== null) {
            csgozone.setToken(token);
            metjm.setToken(token);
+           
            csgozone.status(function(response) {
-                port.postMessage({msg: "inspectStatus", data: response.data});
+                if(response.success)
+                   port.postMessage({msg: "inspectStatus", data: response});
+           });
+                      
+            metjm.status(function(response) {
+//                if(response.success)
+//                   port.postMessage({msg: "inspectStatus", data: response});
            });
         }
         
@@ -80,13 +87,19 @@ var steamwizard = (function() {
     function onMessage(request, port) {
         switch(request.msg) {
             case 'pluginStatus':
-                 isEnabled = request.status;
-                 broadcaseEvent({msg: 'pluginStatus', status: isEnabled});
-                 break;
+                  isEnabled = request.status;
+                  broadcaseEvent({msg: 'pluginStatus', status: isEnabled});
+                  break;
             case 'newItem':
-                steamwizard.storeItem(request.namespace, request.key, request.value);
-                 broadcaseEvent({msg: 'newItem', namespace: request.namespace, key: request.key, value: request.value});
-                break;
+                  steamwizard.storeItem(request.namespace, request.key, request.value);
+                  broadcaseEvent(request);
+                  break;
+            case 'inspectLimit':
+                   broadcaseEvent(request);
+                   break;
+            case 'inspectStatus':
+                   broadcaseEvent(request);
+                   break;
         }
     }
     
@@ -227,6 +240,7 @@ var steamwizard = (function() {
                 if(data.success === true) {
                     steamwizard.storeItem(NAMESPACE_MARKET_INSPECT, util.getAssetID(inspectLink), data, true);
                     callback({status: steamwizard.EVENT_STATUS_DONE , data: data});
+                    port.postMessage({msg: 'inspectUsage', amount: 1});
                 } else {
                    callback({status: steamwizard.EVENT_STATUS_FAIL , msg:'Failed'});
                    if(data.bad_token)

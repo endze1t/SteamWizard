@@ -61,4 +61,4 @@ var csgozone = {
     setToken: function(token) {
         this.token = token;
     }
-}
+};

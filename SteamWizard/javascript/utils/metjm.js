@@ -76,5 +76,9 @@ var metjm = {
 		}).fail(function() {
 			callback({success:false});
 		});
-	}
+	},
+        
+        status: function(callback) {
+            
+        }
 }

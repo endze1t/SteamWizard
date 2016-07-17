@@ -15,16 +15,6 @@ var background = (function() {
             return split.length < 2 ? null : {namespace: split[0], key: split[1]};
         }
         
-        var timeout;
-        
-        function updateStatus(data) {
-            clearTimeout(timeout);
-            timeout = setTimeout(function() {
-                /* TODO .. HOW ? */
-            }, data.reset);
-        }
-        
-        
         return {        
             /* reads localStorage and sorts items in order of their namespace */
             init: function() {
@@ -100,6 +90,20 @@ var background = (function() {
         };
     })();
     
+    var inspectStatus = {
+        usage: 0
+    }
+    var timeout;
+
+    function updateStatus(data) {
+        inspectStatus = data;
+        clearTimeout(timeout);
+        timeout = setTimeout(function() {
+            /* TODO .. HOW ? */
+        }, data.reset);
+    }
+
+
     var obj = {
         connections: [],
         pluginEnabled: null,
@@ -135,8 +139,10 @@ var background = (function() {
                     updateStatus(request.data);
                     background.broadcastMessage({msg: "inspectStatus", data: request.data});
                     break;
-                case "inspectLimit":
-                    background.broadcastMessage({msg: "inspectStatus", data: request.data});
+                case "inspectUsage":
+                    inspectStatus.usage -= request.amount;
+                    if(inspectStatus.limit !== undefined)
+                       background.broadcastMessage({msg: "inspectLimit", data: inspectStatus.limit - inspectStatus.usage});
                     break;
             }
             
