@@ -132,11 +132,12 @@ var background = (function() {
                     background.broadcastMessage({msg: "newItem", namespace: request.namespace, key: request.key, value: request.value}, port);
                     break;
                 case "inspectStatus":
-                    updateStatus(request.data);
+                    //updateStatus(request.data);
                     background.broadcastMessage({msg: "inspectStatus", data: request.data});
                     break;
                 case "inspectLimit":
-                    background.broadcastMessage({msg: "inspectStatus", data: request.data});
+					limit[constant.NAMESPACE_MARKET_INSPECT] = request.data;
+                    background.broadcastMessage({msg: "inspectLimit", data: request.data});
                     break;
             }
             
