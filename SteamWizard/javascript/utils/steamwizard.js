@@ -70,7 +70,7 @@ var steamwizard = (function() {
            csgozone.setToken(token);
            metjm.setToken(token);
            csgozone.status(function(response) {
-                port.postMessage({msg: "inspectStatus", data: response.data});
+                port.postMessage({msg: "inspectStatus", data: response});
            });
         }
         
@@ -231,11 +231,7 @@ var steamwizard = (function() {
         getFloatValue: function(inspectLink, callback) {
             csgozone.market(inspectLink, function(data) {
                 if(data.success === true) {
-					/*console.log("REMOVE DEBUG DATA");
-					data.inspectLimit = Math.floor((Math.random() * 100) + 1);
-					console.log("REMOVE DEBUG DATA");
-					port.postMessage({msg: 'inspectLimit', data:data.inspectLimit});
-					*/
+					port.postMessage({msg: 'inspectLimit'});
 					
                     steamwizard.storeItem(NAMESPACE_MARKET_INSPECT, util.getAssetID(inspectLink), data, true);
                     callback({status: steamwizard.EVENT_STATUS_DONE , data: data});

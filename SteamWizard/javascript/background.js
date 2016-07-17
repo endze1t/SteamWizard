@@ -3,6 +3,8 @@ var background = (function() {
         var sizes = {};
         var store = {};
         var limit = {};
+		var csgozoneRemaining = 0;
+		var csgozonePremium = false;
         
         limit[constant.NAMESPACE_SCREENSHOT] = 100;
         limit[constant.NAMESPACE_MARKET_INSPECT] = 1000;
@@ -17,7 +19,7 @@ var background = (function() {
         
         var timeout;
         
-        function updateStatus(data) {
+        var updateStatus = function(data) {
             clearTimeout(timeout);
             timeout = setTimeout(function() {
                 /* TODO .. HOW ? */
@@ -133,11 +135,16 @@ var background = (function() {
                     break;
                 case "inspectStatus":
                     //updateStatus(request.data);
-                    background.broadcastMessage({msg: "inspectStatus", data: request.data});
+					if (request.data.success){
+						csgozoneRemaining = request.data.limit;
+						csgozonePremium = request.data.premium;
+						background.broadcastMessage({msg: "inspectLimit", data: csgozoneRemaining});
+						background.broadcastMessage({msg: "inspectStatus", data: csgozonePremium});
+					}
                     break;
                 case "inspectLimit":
-					limit[constant.NAMESPACE_MARKET_INSPECT] = request.data;
-                    background.broadcastMessage({msg: "inspectLimit", data: request.data});
+					csgozoneRemaining -= 1;
+                    background.broadcastMessage({msg: "inspectLimit", data: csgozoneRemaining});
                     break;
             }
             
