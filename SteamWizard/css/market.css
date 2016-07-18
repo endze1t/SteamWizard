@@ -134,6 +134,8 @@ form input[type='radio'] {
 	color:#A4D007 !important;
 }
 .steam_wizard_prem_inactive{
-	color:#E33 !important;
+	color: white;
+    text-decoration: underline;
+    cursor: pointer;
 }
 

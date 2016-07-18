@@ -239,10 +239,19 @@ function steamWizardEventListener(request) {
 		case 'inspectStatus':
 			$("#steam_wizard_inspects_left_today").text(request.data.limit - request.data.usage + " / " + request.data.limit);
 			$("#steam_wizard_inspects_left_today").removeClass('steam_wizard_rotating');
-			if (request.premium == true)
+			if (request.premium == true){
+				$("#steam_wizard_csgozone_prem_active").text("premium active");
 				$("#steam_wizard_csgozone_prem_active").addClass('steam_wizard_prem_active');
-			else
+			}else{
+				$("#steam_wizard_csgozone_prem_active").text("increase quota");
 				$("#steam_wizard_csgozone_prem_active").addClass('steam_wizard_prem_inactive');
+				$("#steam_wizard_csgozone_prem_active").click(function(){
+					ui.showGeneralOverlay("", "", "Ok", function(){
+						ui.removeOverlay();
+					});
+					$("#steam_wizard_general_overlay_title").html("You can increase the daily limit by activating the \"market lister\" on <a style='text-decoration: underline;' target='_blank' href='http://csgozone.net'>csgozone</a>");
+				});
+			}
 			break;
 		case 'inspectLimit':
 			$("#steam_wizard_inspects_left_today").text(request.data);
@@ -255,7 +264,14 @@ function steamWizardEventListener(request) {
 				$("#steam_wizard_metjm_prem_active").addClass('steam_wizard_prem_active');
 				$("#steam_wizard_screenshots_premium_queue").text('true');
 			}else{
+				$("#steam_wizard_metjm_prem_active").text('activate');
 				$("#steam_wizard_metjm_prem_active").addClass('steam_wizard_prem_inactive');
+				$("#steam_wizard_metjm_prem_active").click(function(){
+					ui.showGeneralOverlay("", "", "Ok", function(){
+						ui.removeOverlay();
+					});
+					$("#steam_wizard_general_overlay_title").html("You can activate priority queue by purchasing premium on <a style='text-decoration: underline;' target='_blank' href='http://metjm.net'>metjm.net</a>");
+				});
 				$("#steam_wizard_screenshots_premium_queue").text('false');
 			}
 			break;

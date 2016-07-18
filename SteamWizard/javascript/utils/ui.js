@@ -191,7 +191,7 @@ var ui = {
             $loginPopup.appendTo($overlay);
             $loginPopup.addClass('steam_wizard_login_popup');
             $loginPopup.append($('<p id="steam_wizard_general_overlay_title">').text(''));
-            
+			
             var button = ui.createGreenSteamButton('Ok');
             button.addClass('steam_wizard_general_overlay_button');
 
@@ -213,9 +213,8 @@ var ui = {
 		var $panel = $("<div>");
 		var $content = $("<div>");
 		var $buttonsContainer = $("<div>");
-		var $prem = $("<p>Premium status: <span id='steam_wizard_csgozone_prem_active'  class='market_commodity_orders_header_promote'>csgozone.net</span> <span id='steam_wizard_metjm_prem_active' class='market_commodity_orders_header_promote'>metjm.net</span></p>");
-		var $inspectsLeftToday = $("<p>Float requests left today: <span id='steam_wizard_inspects_left_today' class='market_commodity_orders_header_promote steam_wizard_rotating'>?</span></p>");
-		var $screenshotPremiumQeue = $("<p>Screenshots priority queue: <span id='steam_wizard_screenshots_premium_queue' class='market_commodity_orders_header_promote steam_wizard_rotating'>?</span></p>");
+		var $inspectsLeftToday = $("<p>Float requests left today: <span id='steam_wizard_inspects_left_today' class='market_commodity_orders_header_promote steam_wizard_rotating'> </span> <span id='steam_wizard_csgozone_prem_active'  class='market_commodity_orders_header_promote'></span></p>");
+		var $screenshotPremiumQeue = $("<p>Screenshots priority queue: <span id='steam_wizard_screenshots_premium_queue' class='market_commodity_orders_header_promote steam_wizard_rotating'>?</span> <span id='steam_wizard_metjm_prem_active' class='market_commodity_orders_header_promote'></span></p>");
 		
 		$panel.addClass('steam_wizard_status_panel');
 		$content.addClass('steam_wizard_status_panel_content');
@@ -223,7 +222,6 @@ var ui = {
 		
 		$panel.append($content);
 		$content.append($("<p>SteamWizard</p>").css({'font-size':'18px'}).addClass('market_commodity_orders_header_promote'));
-		$content.append($prem);
 		$content.append($inspectsLeftToday);
 		$content.append($screenshotPremiumQeue);
 		$content.append($buttonsContainer);
