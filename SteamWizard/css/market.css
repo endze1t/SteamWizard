@@ -11,6 +11,10 @@
     margin-left: 15px !important;
     font-size: 85.7%  !important;
 }
+
+form input[type='radio'] {
+  display: inline-block;    
+}
 .steam_wizard_load_button_float_all, .steam_wizard_sort_by_float_button, .steam_wizard_show_100_button {
     padding: 0px 20px !important;
     font-size: 12px !important;
@@ -132,3 +136,4 @@
 .steam_wizard_prem_inactive{
 	color:#E33 !important;
 }
+

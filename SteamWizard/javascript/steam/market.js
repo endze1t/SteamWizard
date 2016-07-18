@@ -301,15 +301,13 @@ function init() {
 			$container.append($sortByFloatsButton);
 			
 			//button to show more than 10 items
-			var $show100ToggleButton = ui.createToggleButton("display 100", function(enabled){
-				var newNumItems = enabled ? 100 : 10;
+			var $radioPanel = ui.createRadioPanel([10,25,50,75,100], function(newNumItems){
 				showWarningOrDisplayNumItems(newNumItems);
 			});
-			$show100ToggleButton.addClass('steam_wizard_show_100_button');
 			
 			var loadedItemsNum = getNumMarketItems();
-			$show100ToggleButton[0].setEnabled(loadedItemsNum == 100);
-			$container.append($show100ToggleButton);
+			$radioPanel[0].setChecked(loadedItemsNum);
+			$container.after($radioPanel);
 		}
 
     /* for paging */

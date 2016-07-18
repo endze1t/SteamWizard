@@ -10,8 +10,7 @@
 				"128": "images/icon_128.png" },
 
 	"browser_action": {
-		"default_icon": "images/icon_128.png",
-		"default_popup": "html/popup.html"
+		"default_icon": "images/icon_128.png"
 	},
 	"permissions": [
 		"http://steamcommunity.com/*",

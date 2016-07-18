@@ -66,6 +66,35 @@ var ui = {
 		});
 		return $output;
 	},
+	
+	createRadioPanel : function (choiceArray, onChangeCallback){
+		var hash = {};
+		var $output = $("<p>");
+		$output.append("<span>Display more items:</span>");
+		for (var i = 0;i<choiceArray.length;i++){
+			var $newRadio = $("<input type=\"radio\" id=\"mc\" name=\"" + choiceArray[i] + "\" value=\"Mastercard\">");
+			hash[choiceArray[i]] = $newRadio;
+			$newRadio[0].choiceValue = choiceArray[i];
+			var newRadioClick = function(){
+				var $radio = this;
+				if ($radio.prop('checked') == true){
+					$output.find("input:radio").prop("checked", false);
+					$radio.prop("checked", true);
+					onChangeCallback($radio[0].choiceValue);
+				}
+			}.bind($newRadio);
+			$newRadio.change(newRadioClick);
+			$output.append($newRadio);
+			$output.append($("<span>" + choiceArray[i] + "</span>"));
+		}
+		$output[0].setChecked = function(choice){
+			if (hash[choice]){
+				hash[choice].prop("checked",true);
+				hash[choice].change();
+			}
+		}
+		return $output;
+	},
         
     createWearValueSpan: function(floatvalue){
 	var $output = $("<span>").text(floatvalue);
