@@ -236,7 +236,7 @@ function steamWizardEventListener(request) {
 			console.log(request);
 			break;
 		case 'inspectStatus':
-			$("#steam_wizard_inspects_left_today").text(request.data.limit - request.data.usage);
+			$("#steam_wizard_inspects_left_today").text(request.data.limit - request.data.usage + " / " + request.data.limit);
 			$("#steam_wizard_inspects_left_today").removeClass('steam_wizard_rotating');
 			if (request.premium == true)
 				$("#steam_wizard_csgozone_prem_active").addClass('steam_wizard_prem_active');

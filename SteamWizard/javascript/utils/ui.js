@@ -183,7 +183,7 @@ var ui = {
 		var $panel = $("<div>");
 		var $content = $("<div>");
 		var $buttonsContainer = $("<div>");
-		var $prem = $("<p>premium status: <span id='steam_wizard_csgozone_prem_active'  class='market_commodity_orders_header_promote'>csgozone.net</span> <span id='steam_wizard_metjm_prem_active' class='market_commodity_orders_header_promote'>metjm.net</span></p>");
+		var $prem = $("<p>Premium status: <span id='steam_wizard_csgozone_prem_active'  class='market_commodity_orders_header_promote'>csgozone.net</span> <span id='steam_wizard_metjm_prem_active' class='market_commodity_orders_header_promote'>metjm.net</span></p>");
 		var $inspectsLeftToday = $("<p>Float requests left today: <span id='steam_wizard_inspects_left_today' class='market_commodity_orders_header_promote steam_wizard_rotating'>?</span></p>");
 		var $screenshotPremiumQeue = $("<p>Screenshots priority queue: <span id='steam_wizard_screenshots_premium_queue' class='market_commodity_orders_header_promote steam_wizard_rotating'>?</span></p>");
 		
