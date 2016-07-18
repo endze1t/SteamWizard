@@ -82,6 +82,7 @@ var ui = {
 					$radio.prop("checked", true);
 					onChangeCallback($radio[0].choiceValue);
 				}
+				$output.find("input:radio").attr("disabled", true);
 			}.bind($newRadio);
 			$newRadio.change(newRadioClick);
 			$output.append($newRadio);

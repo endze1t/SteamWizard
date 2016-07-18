@@ -128,6 +128,7 @@ function finishScreenshotButton($getScreenshotButton, screenshotlink){
 }
 
 function initButtons() {
+	$(".steam_wizard_radio_panel_numitems").find("input:radio").attr("disabled", false);
 	visibleAssets = {};
 	if (getInspectLink($("#searchResultsRows .market_recent_listing_row").first())){
 		$("#searchResultsRows").find(".market_listing_row").each(function(index, marketListingRow) {
@@ -304,10 +305,11 @@ function init() {
 			var $radioPanel = ui.createRadioPanel([10,25,50,75,100], function(newNumItems){
 				showWarningOrDisplayNumItems(newNumItems);
 			});
+			$radioPanel.addClass("steam_wizard_radio_panel_numitems");
 			
 			var loadedItemsNum = getNumMarketItems();
 			$radioPanel[0].setChecked(loadedItemsNum);
-			$container.after($radioPanel);
+			$container.before($radioPanel);
 		}
 
     /* for paging */
