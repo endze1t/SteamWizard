@@ -125,3 +125,10 @@
     from {-webkit-transform: rotate(0deg)}
     to {-webkit-transform: rotate(360deg)}
 }
+
+.steam_wizard_prem_active{
+	color:#A4D007 !important;
+}
+.steam_wizard_prem_inactive{
+	color:#E33 !important;
+}

@@ -76,8 +76,8 @@ var steamwizard = (function() {
            });
                       
             metjm.status(function(response) {
-//                if(response.success)
-//                   port.postMessage({msg: "inspectStatus", data: response});
+                if(response.success)
+					port.postMessage({msg: "screenshotStatus", data: response});
            });
         }
         
@@ -98,6 +98,9 @@ var steamwizard = (function() {
                    broadcaseEvent(request);
                    break;
             case 'inspectStatus':
+                   broadcaseEvent(request);
+                   break;
+		    case 'screenshotStatus':
                    broadcaseEvent(request);
                    break;
         }

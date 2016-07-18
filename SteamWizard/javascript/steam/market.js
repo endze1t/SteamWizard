@@ -236,10 +236,27 @@ function steamWizardEventListener(request) {
 			console.log(request);
 			break;
 		case 'inspectStatus':
+			$("#steam_wizard_inspects_left_today").text(request.data.limit - request.data.usage);
+			$("#steam_wizard_inspects_left_today").removeClass('steam_wizard_rotating');
+			if (request.premium == true)
+				$("#steam_wizard_csgozone_prem_active").addClass('steam_wizard_prem_active');
+			else
+				$("#steam_wizard_csgozone_prem_active").addClass('steam_wizard_prem_inactive');
 			break;
 		case 'inspectLimit':
 			$("#steam_wizard_inspects_left_today").text(request.data);
 			$("#steam_wizard_inspects_left_today").removeClass('steam_wizard_rotating');
+			break;
+		case 'screenshotStatus':
+			console.log(request);
+			$("#steam_wizard_screenshots_premium_queue").removeClass('steam_wizard_rotating');
+			if (request.data.user_has_premium){
+				$("#steam_wizard_metjm_prem_active").addClass('steam_wizard_prem_active');
+				$("#steam_wizard_screenshots_premium_queue").text('true');
+			}else{
+				$("#steam_wizard_metjm_prem_active").addClass('steam_wizard_prem_inactive');
+				$("#steam_wizard_screenshots_premium_queue").text('false');
+			}
 			break;
     }
 }

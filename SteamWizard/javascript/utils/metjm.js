@@ -4,6 +4,7 @@ var metjm = {
 	API_REQUEST_NEW : "https://metjm.net/shared/screenshots-v5.php?cmd=request_new_link&inspect_link={0}&user_uuid={1}&user_client=3&token={2}",
 	API_REQUEST_STATUS : "https://metjm.net/shared/screenshots-v5.php?cmd=request_screenshot_status&id={0}",
 	LOGIN_REQUEST : "cmd=get_token",
+	PREM_STATUS_REQUEST : "cmd=premium_status&token={0}",
     token: '',
 	STATUS_QUEUE : 1,
 	STATUS_DONE : 2,
@@ -78,7 +79,14 @@ var metjm = {
 		});
 	},
         
-        status: function(callback) {
-            
-        }
+	status: function(callback) {
+		$.ajax({type: "POST", 
+                url: metjm.API_URL, 
+                data: metjm.PREM_STATUS_REQUEST.format(encodeURIComponent(metjm.token))})
+        .done(function(data) {
+            callback(data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            callback({success: false, error: textStatus});
+        });
+	}
 }

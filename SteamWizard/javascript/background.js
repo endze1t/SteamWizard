@@ -102,6 +102,13 @@ var background = (function() {
             /* TODO .. HOW ? */
         }, data.reset);
     }
+	
+	var screenshotStatus = {
+		user_has_premium : 0
+	};
+	function updateScreenshotStatus(data){
+		screenshotStatus = data;
+	}
 
     var obj = {
         connections: [],
@@ -138,8 +145,12 @@ var background = (function() {
                     updateStatus(request.data);
                     background.broadcastMessage({msg: "inspectStatus", data: request.data});
                     break;
+				case "screenshotStatus":
+                    updateScreenshotStatus(request.data);
+                    background.broadcastMessage({msg: "screenshotStatus", data: request.data});
+                    break;
                 case "inspectUsage":
-                    inspectStatus.usage -= request.amount;
+                    inspectStatus.usage += request.amount;
                     if(inspectStatus.limit)
                        background.broadcastMessage({msg: "inspectLimit", data: inspectStatus.limit - inspectStatus.usage});
                     break;
