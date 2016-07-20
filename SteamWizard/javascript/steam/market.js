@@ -297,6 +297,7 @@ function updateDisplayedUsername(){
 	$refreshButton.click(function(){
 		$("#steam_wizard_loggedin_as").text("not logged in.");
 		steamwizard.refreshToken(function(){
+			
 		});
 	});
 }

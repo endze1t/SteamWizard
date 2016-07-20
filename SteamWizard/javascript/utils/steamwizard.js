@@ -108,8 +108,8 @@ var steamwizard = (function() {
                    break;
 			case 'token':
 				var jsonToken = parseToken(request.data);
-				if(jsonToken && jsonToken.username)
-					broadcaseEvent({msg:'username',data:jsonToken.username});
+				if(jsonToken && jsonToken.name)
+					broadcaseEvent({msg:'username',data:jsonToken.name});
 				break;
         }
     }
@@ -206,8 +206,8 @@ var steamwizard = (function() {
         
 		getUsername : function(){
 			var jsonToken = parseToken(token);
-			if(jsonToken && jsonToken.username)
-				return jsonToken.username;
+			if(jsonToken && jsonToken.name)
+				return jsonToken.name;
 			else
 				return null;
 		},
