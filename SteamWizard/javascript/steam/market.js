@@ -182,7 +182,6 @@ function showWarningOrDisplayNumItems(numItems){
 	var quotaWarningDisplayed = window.localStorage.getItem("steam_wizard_quota_warning_displayed");
 	if (numItems != numDisplayedItems){
 		if (numItems > 10 && !quotaWarningDisplayed){
-			console.log(numItems);
 			ui.showGeneralOverlay("This will deplete your daily float request quota faster", "", "Ok", function(){
 				ui.removeOverlay();
 				showNumMarketItems(numItems)
@@ -217,14 +216,12 @@ function removeButtons() {
 }
 
 function steamWizardEventListener(request) {    
-	console.log(request);
     switch(request.msg) {
         case 'pluginStatus':
             start();
             break;
 		case 'newItem':
 			if (request.namespace == constant.NAMESPACE_MARKET_INSPECT && visibleAssets[request.key]){
-				console.log('received float');
 				var cachedFloatValue = steamwizard.getFloatValueCachedFromAssetid(request.key);
 				var $getFloatButton = $(visibleAssets[request.key]).find(".steam_wizard_load_button_float");
 				finishFloatButton($getFloatButton, cachedFloatValue);
@@ -235,10 +232,8 @@ function steamWizardEventListener(request) {
 					finishScreenshotButton($getScreenshotButton, result.image_url);
 				}
 			}
-			console.log(request);
 			break;
 		case 'inspectStatus':
-                    console.log(request);
 			$("#steam_wizard_inspects_left_today").text(request.data.limit - request.data.usage + " / " + request.data.limit);
 			$("#steam_wizard_inspects_left_today").removeClass('steam_wizard_rotating');
 			if (request.premium == true){
@@ -260,7 +255,6 @@ function steamWizardEventListener(request) {
 			$("#steam_wizard_inspects_left_today").removeClass('steam_wizard_rotating');
 			break;
 		case 'screenshotStatus':
-			console.log(request);
 			$("#steam_wizard_screenshots_premium_queue").removeClass('steam_wizard_rotating');
 			if (request.data.user_has_premium){
 				$("#steam_wizard_metjm_prem_active").addClass('steam_wizard_prem_active');
@@ -298,8 +292,6 @@ function updateDisplayedUsername(){
 	$refreshButton.off();
 	if(!username || username == "")
 		username = "not logged in.";
-	console.log("WAT");
-	console.log(username);
 	$paragraph.show();
 	$("#steam_wizard_loggedin_as").text(username);
 	$refreshButton.click(function(){
