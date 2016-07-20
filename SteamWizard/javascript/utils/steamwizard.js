@@ -63,7 +63,7 @@ var steamwizard = (function() {
     function loginCallback(response) {
         if(response.success === true) {
            token = response.token;
-           port.postMessage({msg: "setToken", token: response.token});
+           port.postMessage({msg: msg.BACKGROUND_SET_TOKEN, token: response.token});
         }
     }
 
@@ -75,12 +75,12 @@ var steamwizard = (function() {
            
            csgozone.status(function(response) {
                 if(response.success)
-                   port.postMessage({msg: "inspectStatus", data: response});
+                   port.postMessage({msg: msg.BACKGROUND_SET_INSPECT_STATUS, data: response});
            });
                       
            metjm.status(function(response) {
                 if(response.success)
-                   port.postMessage({msg: "screenshotStatus", data: response});
+                   port.postMessage({msg: msg.BACKGROUND_SET_SCREENSHOT_STATUS, data: response});
            });
         }
         
@@ -89,32 +89,33 @@ var steamwizard = (function() {
     
     function onMessage(request, port) {
         switch(request.msg) {
-            case 'pluginStatus':
-                  isEnabled = request.status;
-                  broadcaseEvent({msg: 'pluginStatus', status: isEnabled});
-                  break;
-            case 'newItem':
-                  steamwizard.storeItem(request.namespace, request.key, request.value);
-                  broadcaseEvent(request);
-                  break;
-            case 'inspectLimit':
-                   broadcaseEvent(request);
-                   break;
-            case 'inspectStatus':
-                   broadcaseEvent(request);
-                   break;
-		    case 'screenshotStatus':
-                   broadcaseEvent(request);
-                   break;
-			case 'token':
-				var jsonToken = parseToken(request.data);
-				if(jsonToken && jsonToken.name)
-					broadcaseEvent({msg:'username',data:jsonToken.name});
-				break;
+            case msg.PLUGIN_STATUS:
+                 isEnabled = request.status;
+                 broadcastEvent(request);
+                 break;
+            case msg.BROADCAST_ITEM:
+                 steamwizard.storeItem(request.namespace, request.key, request.value);
+                 broadcastEvent(request);
+                 break;
+            case msg.BROADCAST_INSPECT_USAGE:
+                 broadcastEvent(request);
+                 break;
+            case msg.BROADCAST_INSPECT_STATUS:
+                 broadcastEvent(request);
+                 break;
+            case msg.BROADCAST_SCREENSHOT_STATUS:
+                 broadcastEvent(request);
+                 break;
+            case msg.BROADCAST_TOKEN:
+                 token = request.token;
+                 var jsonToken = parseToken(request.token);
+                 if(jsonToken && jsonToken.name)
+                    broadcastEvent({msg: msg.USERNAME, data:jsonToken.name});
+                 break;
         }
     }
     
-    function broadcaseEvent(msg) {
+    function broadcastEvent(msg) {
         for(var i = 0; i < eventListeners.length; i++)
             eventListeners[i](msg);
     }
@@ -150,10 +151,10 @@ var steamwizard = (function() {
             deferredList[request.requestid].resolve();
         };
         port.onMessage.addListener(localListener);
-        port.postMessage({msg: 'getToken', requestid: 0})
-        port.postMessage({msg: 'getPluginStatus', requestid: 1});
-        port.postMessage({msg: 'getStorage', namespace: NAMESPACE_SCREENSHOT, requestid: 2});
-        port.postMessage({msg: 'getStorage', namespace: NAMESPACE_MARKET_INSPECT, requestid: 3});
+        port.postMessage({msg: msg.BACKGROUND_GET_TOKEN, requestid: 0})
+        port.postMessage({msg: msg.BACKGROUND_GET_PLUGIN_STATUS, requestid: 1});
+        port.postMessage({msg: msg.BACKGROUND_GET_STORAGE, namespace: NAMESPACE_SCREENSHOT, requestid: 2});
+        port.postMessage({msg: msg.BACKGROUND_GET_STORAGE, namespace: NAMESPACE_MARKET_INSPECT, requestid: 3});
 
         $.when.apply(null, deferredList).then(function() {
             port.onMessage.removeListener(localListener);
@@ -161,7 +162,7 @@ var steamwizard = (function() {
                     
             if(!validateToken(token)) {
                 token = null;
-                port.postMessage({msg: 'revokeToken'});
+                port.postMessage({msg: msg.BACKGROUND_REVOKE_TOKEN});
             }
             
             deferredList = [];
@@ -204,24 +205,24 @@ var steamwizard = (function() {
             return isLoggedIn;
         },
         
-		getUsername : function(){
-			var jsonToken = parseToken(token);
-			if(jsonToken && jsonToken.name)
-				return jsonToken.name;
-			else
-				return null;
-		},
-		
-		refreshToken : function(callback){
-			token = null;
-			port.postMessage({msg: 'revokeToken'});
-			steamwizard.login(callback);
-		},
+        getUsername : function(){
+            var jsonToken = parseToken(token);
+            if(jsonToken && jsonToken.name)
+               return jsonToken.name;
+            else
+               return null;
+        },
+
+        refreshToken : function(callback){
+            token = null;
+            port.postMessage({msg: msg.BACKGROUND_REVOKE_TOKEN});
+            steamwizard.login(callback);
+        },
 		
         revokeToken: function() {
             token = null;
             isLoggedIn = false;
-            port.postMessage('revokeToken');
+            port.postMessage({msg: msg.BACKGROUND_REVOKE_TOKEN});
         },
         
         login: function(callback) {
@@ -238,7 +239,7 @@ var steamwizard = (function() {
             storage[namespace][key] = value;
             
             if(notifyBackground)
-               port.postMessage({msg: 'storeItem', namespace: namespace, key: key, value: value});
+               port.postMessage({msg: msg.BACKGROUND_SET_ITEM, namespace: namespace, key: key, value: value});
         },
             
         getScreenshot: function(inspectLink, callback) {
@@ -266,7 +267,7 @@ var steamwizard = (function() {
                 if(data.success === true) {
                     steamwizard.storeItem(NAMESPACE_MARKET_INSPECT, util.getAssetID(inspectLink), data, true);
                     callback({status: steamwizard.EVENT_STATUS_DONE , data: data});
-                    port.postMessage({msg: 'inspectUsage', amount: 1});
+                    port.postMessage({msg: msg.BACKGROUND_INCREASE_INSPECT_USAGE, amount: 1});
                 } else {
                    callback({status: steamwizard.EVENT_STATUS_FAIL , msg:'Failed'});
                    if(data.bad_token)
@@ -284,9 +285,9 @@ var steamwizard = (function() {
             return storage[NAMESPACE_MARKET_INSPECT][assetid];
         },
 		
-		getScreenshotCachedFromAssetid : function(assetid){
-			return storage[NAMESPACE_SCREENSHOT][assetid];
-		},
+        getScreenshotCachedFromAssetid : function(assetid){
+                return storage[NAMESPACE_SCREENSHOT][assetid];
+        },
 		
         getScreenshotCached : function(inspectLink){
             var assetid = util.getAssetID(inspectLink);

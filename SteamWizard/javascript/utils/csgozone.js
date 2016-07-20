@@ -12,7 +12,7 @@ var csgozone = {
         var port = chrome.runtime.connect();
         var localListener = function(request, port) {
             switch(request.msg) {
-                case 'loginDone':
+                case msg.LOGIN_SUCCESS:
                     var data = request.data;              
                     if(data.success === true)
                        csgozone.setToken(data.token);
@@ -20,7 +20,7 @@ var csgozone = {
                     callback(data);
                     deferred.resolve();
                     break;
-                 case 'loginFailed':
+                 case msg.LOGIN_FAILED:
                     deferred.resolve();                     
                     callback({success: false, error: request.errorThrown});
             }
@@ -30,7 +30,7 @@ var csgozone = {
         };
         
         port.onMessage.addListener(localListener);
-        port.postMessage({msg: 'login', 
+        port.postMessage({msg: msg.BACKGROUND_DO_LOGIN, 
                           PLUGIN_API_URL: csgozone.PLUGIN_API_URL, 
                           LOGIN_REQUEST: csgozone.LOGIN_REQUEST});
         return deferred;

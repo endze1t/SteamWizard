@@ -131,49 +131,58 @@ var background = (function() {
 
         handleMessage: function(request, port) {
             var response;
-            switch(request.msg) {
-                case "getPluginStatus":
-                    response = {msg: 'pluginStatus', status : background.pluginEnabled};
-                    break;
-                case "login":
+            switch(request.msg) {                
+                case msg.BACKGROUND_DO_LOGIN:
                    $.ajax({type: "POST", url: request.PLUGIN_API_URL, data: request.LOGIN_REQUEST, xhrFields: {withCredentials: true}})
                     .done(function(data) {
-                        port.postMessage({msg: 'loginDone', data: data, requestid : request.requestid});
+                        port.postMessage({msg: msg.LOGIN_SUCCESS, data: data, requestid : request.requestid});
                     }).fail(function(jqXHR, textStatus, errorThrown) {
-                        port.postMessage({msg: 'loginFailed', textStatus: textStatus, errorThrown: errorThrown, requestid : request.requestid});
+                        port.postMessage({msg: msg.LOGIN_FAILED, textStatus: textStatus, errorThrown: errorThrown, requestid : request.requestid});
                     });
                     break;
-                case "getStorage":
-                    response = {msg: "storageResponse", namespace: request.namespace, value: storage.get(request.namespace)};
+                    
+                case msg.BACKGROUND_GET_PLUGIN_STATUS:
+                    response = {msg: msg.PLUGIN_STATUS, status : background.pluginEnabled};
                     break;
-                case "storeItem":
+
+                case msg.BACKGROUND_GET_STORAGE:
+                    response = {msg: msg.STORAGE, namespace: request.namespace, value: storage.get(request.namespace)};
+                    break;
+                    
+                case msg.BACKGROUND_SET_ITEM:
                     storage.add(request.namespace, request.key, request.value);
                     /* notify all listening threads that a new item was added */
-                    background.broadcastMessage({msg: "newItem", namespace: request.namespace, key: request.key, value: request.value}, port);
+                    background.broadcastMessage({msg: msg.BROADCAST_ITEM, namespace: request.namespace, key: request.key, value: request.value}, port);
                     break;
-                case "inspectStatus":
+                    
+                case msg.BACKGROUND_SET_INSPECT_STATUS:
                     updateStatus(request.data);
-                    background.broadcastMessage({msg: "inspectStatus", data: request.data});
+                    background.broadcastMessage({msg: msg.BROADCAST_INSPECT_STATUS, data: request.data});
                     break;
-				case "screenshotStatus":
+                    
+		case msg.BACKGROUND_SET_SCREENSHOT_STATUS:
                     updateScreenshotStatus(request.data);
-                    background.broadcastMessage({msg: "screenshotStatus", data: request.data});
+                    background.broadcastMessage({msg: msg.BROADCAST_SCREENSHOT_STATUS, data: request.data});
                     break;
-                case "inspectUsage":
+                    
+                case msg.BACKGROUND_INCREASE_INSPECT_USAGE:
                     inspectStatus.usage += request.amount;
                     if(inspectStatus.limit)
-                       background.broadcastMessage({msg: "inspectLimit", data: inspectStatus.limit - inspectStatus.usage});
+                       background.broadcastMessage({msg: msg.BROADCAST_INSPECT_USAGE, data: inspectStatus.limit - inspectStatus.usage});
                     break;
-                case "getToken":
-                    response = {msg: 'token', token: storage.get('config', 'token')};
+                    
+                case msg.BACKGROUND_GET_TOKEN:
+                    response = {msg: msg.TOKEN, token: storage.get(namespace.NAMESPACE_CONFIG, 'token')};
                     break;
-                case "setToken":
-                    storage.add('config', 'token', request.token);
-                    background.broadcastMessage({msg: "token", data: request.token});
+                    
+                case msg.BACKGROUND_SET_TOKEN:
+                    storage.add(namespace.NAMESPACE_CONFIG, 'token', request.token);
+                    background.broadcastMessage({msg: msg.BROADCAST_TOKEN, data: request.token});
                     break;
-                case "revokeToken":
-                    storage.remove('config', 'token');
-                    background.broadcastMessage({msg: "tokenRevoke"});
+                    
+                case msg.BACKGROUND_REVOKE_TOKEN:
+                    storage.remove(namespace.NAMESPACE_CONFIG, 'token');
+                    background.broadcastMessage({msg: msg.BROADCAST_REVOKE_TOKEN});
                     break;
             }
             

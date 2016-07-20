@@ -16,7 +16,7 @@ var metjm = {
         var port = chrome.runtime.connect();
         var localListener = function(request, port) {
             switch(request.msg) {
-                case 'loginDone':
+                case msg.LOGIN_SUCCESS:
                     var data = request.data;              
                     if(data.success === true)
                        metjm.setToken(data.token);
@@ -24,7 +24,7 @@ var metjm = {
                     callback(data);
                     deferred.resolve();
                     break;
-                 case 'loginFailed':
+                 case msg.LOGIN_FAILED:
                     deferred.resolve();                     
                     callback({success: false, error: request.errorThrown});
             }
@@ -34,7 +34,7 @@ var metjm = {
         };
         
         port.onMessage.addListener(localListener);
-        port.postMessage({msg: 'login', 
+        port.postMessage({msg: msg.BACKGROUND_DO_LOGIN, 
                           PLUGIN_API_URL: metjm.API_URL, 
                           LOGIN_REQUEST: metjm.LOGIN_REQUEST});
         return deferred;
