@@ -106,6 +106,11 @@ var steamwizard = (function() {
 		    case 'screenshotStatus':
                    broadcaseEvent(request);
                    break;
+			case 'token':
+				var jsonToken = parseToken(request.data);
+				if(jsonToken && jsonToken.username)
+					broadcaseEvent({msg:'username',data:jsonToken.username});
+				break;
         }
     }
     
@@ -199,6 +204,20 @@ var steamwizard = (function() {
             return isLoggedIn;
         },
         
+		getUsername : function(){
+			var jsonToken = parseToken(token);
+			if(jsonToken && jsonToken.username)
+				return jsonToken.username;
+			else
+				return null;
+		},
+		
+		refreshToken : function(callback){
+			token = null;
+			port.postMessage({msg: 'revokeToken'});
+			steamwizard.login(callback);
+		},
+		
         revokeToken: function() {
             token = null;
             isLoggedIn = false;

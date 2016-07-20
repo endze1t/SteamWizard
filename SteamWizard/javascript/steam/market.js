@@ -134,8 +134,8 @@ function initButtons() {
 		$("#searchResultsRows").find(".market_listing_row").each(function(index, marketListingRow) {
 			var $marketListingRow = $(marketListingRow);
 			
-                        var container = $("<div>").insertBefore($marketListingRow.find(".market_listing_item_name_block"));
-                        container.addClass('market_listing_right_cell steam_wizard_market_cell');
+			var container = $("<div>").insertBefore($marketListingRow.find(".market_listing_item_name_block"));
+			container.addClass('market_listing_right_cell steam_wizard_market_cell');
                         
 			//button which gets float
 			var $getFloatButton = ui.createGreenSteamButton("Get Float");
@@ -217,6 +217,7 @@ function removeButtons() {
 }
 
 function steamWizardEventListener(request) {    
+	console.log(request);
     switch(request.msg) {
         case 'pluginStatus':
             start();
@@ -276,6 +277,9 @@ function steamWizardEventListener(request) {
 				$("#steam_wizard_screenshots_premium_queue").text('false');
 			}
 			break;
+		case 'username':
+			updateDisplayedUsername();
+			break;
     }
 }
 
@@ -284,6 +288,25 @@ function start() {
         initButtons();
      else
         removeButtons();
+}
+
+function updateDisplayedUsername(){
+	var username = steamwizard.getUsername();
+	
+	var $paragraph = $("#steam_wizard_loggedin_as_paragraph");
+	var $refreshButton = $("#steam_wizard_refresh_login");
+	$refreshButton.off();
+	if(!username || username == "")
+		username = "not logged in.";
+	console.log("WAT");
+	console.log(username);
+	$paragraph.show();
+	$("#steam_wizard_loggedin_as").text(username);
+	$refreshButton.click(function(){
+		$("#steam_wizard_loggedin_as").text("not logged in.");
+		steamwizard.refreshToken(function(){
+		});
+	});
 }
 
 function init() {	
@@ -328,6 +351,8 @@ function init() {
 			$radioPanel[0].setChecked(loadedItemsNum);
 			$container.before($radioPanel);
 		}
+	/*refresh login to change accounts*/
+	updateDisplayedUsername();
 
     /* for paging */
     var observer = new MutationObserver(function(mutation) {

@@ -143,3 +143,8 @@ form input[type='radio'] {
     color: #66e029 !important;
 }
 
+.steam_wizard_market_link{
+	color: white;
+    text-decoration: underline;
+    cursor: pointer;
+}

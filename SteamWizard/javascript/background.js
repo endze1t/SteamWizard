@@ -155,7 +155,7 @@ var background = (function() {
                     updateStatus(request.data);
                     background.broadcastMessage({msg: "inspectStatus", data: request.data});
                     break;
-		case "screenshotStatus":
+				case "screenshotStatus":
                     updateScreenshotStatus(request.data);
                     background.broadcastMessage({msg: "screenshotStatus", data: request.data});
                     break;
