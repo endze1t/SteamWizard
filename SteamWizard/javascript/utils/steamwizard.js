@@ -35,8 +35,8 @@ var steamwizard = (function() {
     var storage = {};
     
     /* name must not include "_" */
-    var NAMESPACE_SCREENSHOT     = constant.NAMESPACE_SCREENSHOT;
-    var NAMESPACE_MARKET_INSPECT = constant.NAMESPACE_MARKET_INSPECT;
+    var NAMESPACE_SCREENSHOT     = namespace.NAMESPACE_SCREENSHOT;
+    var NAMESPACE_MARKET_INSPECT = namespace.NAMESPACE_MARKET_INSPECT;
 
     /* port to backend */
     var port = chrome.runtime.connect();        

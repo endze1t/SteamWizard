@@ -4,8 +4,8 @@ var background = (function() {
         var store = {};
         var limit = {};
         
-        limit[constant.NAMESPACE_SCREENSHOT] = 100;
-        limit[constant.NAMESPACE_MARKET_INSPECT] = 1000;
+        limit[namespace.NAMESPACE_SCREENSHOT] = 100;
+        limit[namespace.NAMESPACE_MARKET_INSPECT] = 1000;
         
         function lsKey(name, key) {
             return name + '$' + key;
