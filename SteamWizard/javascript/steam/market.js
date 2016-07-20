@@ -237,13 +237,14 @@ function steamWizardEventListener(request) {
 			console.log(request);
 			break;
 		case 'inspectStatus':
+                    console.log(request);
 			$("#steam_wizard_inspects_left_today").text(request.data.limit - request.data.usage + " / " + request.data.limit);
 			$("#steam_wizard_inspects_left_today").removeClass('steam_wizard_rotating');
 			if (request.premium == true){
-				$("#steam_wizard_csgozone_prem_active").text("premium active");
+				$("#steam_wizard_csgozone_prem_active").text("Active to: "+new Date(request));
 				$("#steam_wizard_csgozone_prem_active").addClass('steam_wizard_prem_active');
 			}else{
-				$("#steam_wizard_csgozone_prem_active").text("increase quota");
+				$("#steam_wizard_csgozone_prem_active").text("- increase quota -");
 				$("#steam_wizard_csgozone_prem_active").addClass('steam_wizard_prem_inactive');
 				$("#steam_wizard_csgozone_prem_active").click(function(){
 					ui.showGeneralOverlay("", "", "Ok", function(){
@@ -264,7 +265,7 @@ function steamWizardEventListener(request) {
 				$("#steam_wizard_metjm_prem_active").addClass('steam_wizard_prem_active');
 				$("#steam_wizard_screenshots_premium_queue").text('true');
 			}else{
-				$("#steam_wizard_metjm_prem_active").text('activate');
+				$("#steam_wizard_metjm_prem_active").text('- activate -');
 				$("#steam_wizard_metjm_prem_active").addClass('steam_wizard_prem_inactive');
 				$("#steam_wizard_metjm_prem_active").click(function(){
 					ui.showGeneralOverlay("", "", "Ok", function(){

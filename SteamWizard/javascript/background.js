@@ -68,18 +68,28 @@ var background = (function() {
                     console.log(e);
                 }
 
-                if(sizes[namespace] >= limit[namespace] * 2)
+                if(sizes[namespace] && sizes[namespace] >= limit[namespace] * 2)
                    this.cleanup(namespace, sizes[namespace] - limit[namespace]);
             },
             get: function(namespace, key) {
+                if(store[namespace] === undefined)
+                   return null;
+               
                 return key ? store[namespace][key] : store[namespace];
+            },
+            remove: function(namespace, key) {       
+                if(store[namespace] === undefined) {
+                   return;
+                }
+                
+                var lskey = lsKey(namespace, key);
+                localStorage.removeItem(lskey);
+                delete store[namespace][key];
             },
             cleanup: function(namespace, deleteCount) {
                 console.log(sizes[namespace], Object.keys(store[namespace]).length, namespace, deleteCount);
                 for(var i in store[namespace]) {
-                    var lskey = lsKey(namespace, i);
-                    localStorage.removeItem(lskey);
-                    delete store[namespace][i];
+                    this.remove(namespace, i);
                     
                     if(--deleteCount <= 0)
                        break;
@@ -145,7 +155,7 @@ var background = (function() {
                     updateStatus(request.data);
                     background.broadcastMessage({msg: "inspectStatus", data: request.data});
                     break;
-				case "screenshotStatus":
+		case "screenshotStatus":
                     updateScreenshotStatus(request.data);
                     background.broadcastMessage({msg: "screenshotStatus", data: request.data});
                     break;
@@ -153,6 +163,17 @@ var background = (function() {
                     inspectStatus.usage += request.amount;
                     if(inspectStatus.limit)
                        background.broadcastMessage({msg: "inspectLimit", data: inspectStatus.limit - inspectStatus.usage});
+                    break;
+                case "getToken":
+                    response = {msg: 'token', token: storage.get('config', 'token')};
+                    break;
+                case "setToken":
+                    storage.add('config', 'token', request.token);
+                    background.broadcastMessage({msg: "token", data: request.token});
+                    break;
+                case "revokeToken":
+                    storage.remove('config', 'token');
+                    background.broadcastMessage({msg: "tokenRevoke"});
                     break;
             }
             

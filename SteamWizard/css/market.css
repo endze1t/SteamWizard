@@ -104,8 +104,9 @@ form input[type='radio'] {
 	margin:10px 0px 10px 0px;
 }
 .steam_wizard_status_panel_content{
-	position: relative;
-    background-color: rgba(0, 0, 0, 0.4);
+    position: relative;
+    -background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgb(22, 32, 45);
     padding: 15px;
 }
 .steam_wizard_status_panel_button_container{
@@ -134,8 +135,11 @@ form input[type='radio'] {
 	color:#A4D007 !important;
 }
 .steam_wizard_prem_inactive{
-	color: white;
-    text-decoration: underline;
+    color: white;
+    text-decoration: none;
     cursor: pointer;
+    font-size: 10px;
+    margin-left: 10px !important;
+    color: #66e029 !important;
 }
 

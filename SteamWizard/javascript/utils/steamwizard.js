@@ -41,17 +41,20 @@ var steamwizard = (function() {
     /* port to backend */
     var port = chrome.runtime.connect();        
         
+    function parseToken(token) {
+        try {
+            return JSON.parse(atob(token));
+        } catch(e) {
+            return null;
+        }
+    }
     function validateToken(token) {
         if(token == null)
            return false;
 
-        try {
-            var json = JSON.parse(atob(token));
-        } catch(e) {
-            return false;
-        }
+        var json = parseToken(token);
 
-        if(json.timestamp == null || new Date().getTime() - json.timestamp > 2 * 24 * 60 * 60 * 1000)
+        if(json === null || json.timestamp === undefined || new Date().getTime() - json.timestamp > 2 * 24 * 60 * 60 * 1000)
            return false;
 
         return true;
@@ -60,7 +63,7 @@ var steamwizard = (function() {
     function loginCallback(response) {
         if(response.success === true) {
            token = response.token;
-           window.localStorage.setItem('steam_wizard_token', response.token);
+           port.postMessage({msg: "setToken", token: response.token});
         }
     }
 
@@ -75,9 +78,9 @@ var steamwizard = (function() {
                    port.postMessage({msg: "inspectStatus", data: response});
            });
                       
-            metjm.status(function(response) {
+           metjm.status(function(response) {
                 if(response.success)
-					port.postMessage({msg: "screenshotStatus", data: response});
+                   port.postMessage({msg: "screenshotStatus", data: response});
            });
         }
         
@@ -122,13 +125,8 @@ var steamwizard = (function() {
 
     /* start init */
     function init() {
-        token = window.localStorage.getItem('steam_wizard_token');
+        var deferredList = [$.Deferred(), $.Deferred(), $.Deferred(), $.Deferred()];
 
-        if(!validateToken(token)) {
-            token = null;
-            window.localStorage.removeItem('steam_wizard_token');
-        }
-        
         /* ask backend for initialization stuff */
 	var localListener = function(request, port) {
             switch(request.msg) {
@@ -138,33 +136,39 @@ var steamwizard = (function() {
                 case 'storageResponse':
                      storage[request.namespace] = request.value || {};
                      break;
+                case 'token':
+                     token = request.token;
+                     break;
             }
             
             /* each id maps to a deferred */
             deferredList[request.requestid].resolve();
         };
-        
-        var deferredList = [$.Deferred(), $.Deferred(), $.Deferred()];
-        
         port.onMessage.addListener(localListener);
-        port.postMessage({msg: 'getPluginStatus', requestid: 0});
-        port.postMessage({msg: 'getStorage', namespace: NAMESPACE_SCREENSHOT, requestid: 1});
-        port.postMessage({msg: 'getStorage', namespace: NAMESPACE_MARKET_INSPECT, requestid: 2});
+        port.postMessage({msg: 'getToken', requestid: 0})
+        port.postMessage({msg: 'getPluginStatus', requestid: 1});
+        port.postMessage({msg: 'getStorage', namespace: NAMESPACE_SCREENSHOT, requestid: 2});
+        port.postMessage({msg: 'getStorage', namespace: NAMESPACE_MARKET_INSPECT, requestid: 3});
 
-        if(token === null) {
-           deferredList.push(csgozone.login(loginCallback));
-           deferredList.push(metjm.login(loginCallback));
-        }
-        
         $.when.apply(null, deferredList).then(function() {
             port.onMessage.removeListener(localListener);
             port.onMessage.addListener(onMessage);
-            console.log(storage);
-            console.log(Object.keys(storage['marketinspect']).length);
-            ready();
-        });
+                    
+            if(!validateToken(token)) {
+                token = null;
+                port.postMessage({msg: 'revokeToken'});
+            }
+            
+            deferredList = [];
+                        
+            if(token === null) {
+               deferredList.push(csgozone.login(loginCallback));
+               deferredList.push(metjm.login(loginCallback));
+            }
+            
+            $.when.apply(null, deferredList).then(ready);
+        })
     }
-
     init();
     
     return {
@@ -197,8 +201,8 @@ var steamwizard = (function() {
         
         revokeToken: function() {
             token = null;
-            window.localStorage.removeItem('steam_wizard_token');
             isLoggedIn = false;
+            port.postMessage('revokeToken');
         },
         
         login: function(callback) {
