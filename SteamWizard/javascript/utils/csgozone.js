@@ -9,7 +9,13 @@ var csgozone = {
     login: function(callback) {
         var deferred = jQuery.Deferred();
                 
-        var port = chrome.runtime.connect();
+        var port = chrome.runtime.connect({name: 'csgozone.js'});
+        function afterLogin(data) {
+            callback(data);
+            deferred.resolve();
+            port.onMessage.removeListener(localListener);
+            port.disconnect();
+        }
         var localListener = function(request, port) {
             switch(request.msg) {
                 case msg.LOGIN_SUCCESS:
@@ -17,16 +23,13 @@ var csgozone = {
                     if(data.success === true)
                        csgozone.setToken(data.token);
                     
-                    callback(data);
-                    deferred.resolve();
+                    afterLogin(data);
                     break;
                  case msg.LOGIN_FAILED:
-                    deferred.resolve();                     
-                    callback({success: false, error: request.errorThrown});
+                    afterLogin({success: false, error: request.errorThrown});
+                    break;
             }
 
-            port.onMessage.removeListener(localListener);
-            port.disconnect();
         };
         
         port.onMessage.addListener(localListener);

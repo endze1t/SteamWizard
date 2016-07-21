@@ -39,7 +39,7 @@ var steamwizard = (function() {
     var NAMESPACE_MARKET_INSPECT = namespace.NAMESPACE_MARKET_INSPECT;
 
     /* port to backend */
-    var port = chrome.runtime.connect();        
+    var port = chrome.runtime.connect({name: 'steamwizrd'});        
         
     function parseToken(token) {
         try {
@@ -136,13 +136,13 @@ var steamwizard = (function() {
         /* ask backend for initialization stuff */
 	var localListener = function(request, port) {
             switch(request.msg) {
-                case 'pluginStatus':
+                case msg.PLUGIN_STATUS:
                      isEnabled = request.status;                   
                      break;
-                case 'storageResponse':
+                case msg.STORAGE:
                      storage[request.namespace] = request.value || {};
                      break;
-                case 'token':
+                case msg.TOKEN:
                      token = request.token;
                      break;
             }
