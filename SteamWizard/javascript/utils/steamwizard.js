@@ -107,11 +107,9 @@ var steamwizard = (function() {
                  broadcastEvent(request);
                  break;
             case msg.BROADCAST_TOKEN:
-                 token = request.token;
-                 var jsonToken = parseToken(request.token);
-                 if(jsonToken && jsonToken.name)
-                    broadcastEvent({msg: msg.USERNAME, data:jsonToken.name});
-                 break;
+                token = request.data;
+                broadcastEvent({msg: msg.USERNAME, data:parseToken(request.token)});
+                break;
 			 case msg.BROADCAST_REVOKE_TOKEN:
 				broadcastEvent(request);
 				break;

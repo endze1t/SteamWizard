@@ -264,9 +264,7 @@ function steamWizardEventListener(request) {
 		case msg.BROADCAST_INSPECT_STATUS:
 			$("#steam_wizard_inspects_left_today").text(request.data.limit - request.data.usage + " / " + request.data.limit);
 			$("#steam_wizard_inspects_left_today").removeClass('steam_wizard_rotating');
-			console.log(request);
 			if (request.data.premium == true){
-				console.log(request);
 				$("#steam_wizard_csgozone_prem_active").text("Reset in: "+timeUntil(request.data.reset));
 				$("#steam_wizard_csgozone_prem_active").addClass('steam_wizard_prem_active');
 			}else{
