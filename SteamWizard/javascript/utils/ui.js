@@ -213,7 +213,7 @@ var ui = {
 		var $panel = $("<div>");
 		var $content = $("<div>");
 		var $buttonsContainer = $("<div>");
-		var $loggedInAs = $("<p style='steam_wizard_loggedin_as_paragraph'>Logged in as: <span class='market_commodity_orders_header_promote' id='steam_wizard_loggedin_as'>not logged in.</span> <span id='steam_wizard_refresh_login' class='steam_wizard_market_link'>refresh</span></p>");
+		var $loggedInAs = $("<p style='steam_wizard_loggedin_as_paragraph'>Logged in as: <span class='market_commodity_orders_header_promote' id='steam_wizard_loggedin_as'>not logged in.</span> <span id='steam_wizard_refresh_login' class='btn_green_white_innerfade btn_small steam_wizard_load_button'>refresh</span></p>");
 		var $inspectsLeftToday = $("<p>Float requests left today: <span id='steam_wizard_inspects_left_today' class='market_commodity_orders_header_promote steam_wizard_rotating'> </span> <span id='steam_wizard_csgozone_prem_active'  class='market_commodity_orders_header_promote'></span></p>");
 		var $screenshotPremiumQeue = $("<p>Screenshots priority queue: <span id='steam_wizard_screenshots_premium_queue' class='market_commodity_orders_header_promote steam_wizard_rotating'></span> <span id='steam_wizard_metjm_prem_active' class='market_commodity_orders_header_promote'></span></p>");
 		

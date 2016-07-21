@@ -208,6 +208,34 @@ function showNumMarketItems(num){
 /**************************************
 **************** MISC *****************
 **************************************/
+function timeUntil(date) {
+	date = new Date(new Date().getTime() + date);
+
+    var seconds = Math.floor((date - new Date()) / 1000);
+
+    var interval = Math.floor(seconds / 31536000);
+
+    if (interval > 1) {
+        return interval + " years";
+    }
+    interval = Math.floor(seconds / 2592000);
+    if (interval > 1) {
+        return interval + " months";
+    }
+    interval = Math.floor(seconds / 86400);
+    if (interval > 1) {
+        return interval + " days";
+    }
+    interval = Math.floor(seconds / 3600);
+    if (interval > 1) {
+        return interval + " hours";
+    }
+    interval = Math.floor(seconds / 60);
+    if (interval > 1) {
+        return interval + " minutes";
+    }
+    return Math.floor(seconds) + " seconds";
+}
 
 function removeButtons() {
     $("#searchResultsRows").find('.steam_wizard_load_button_float').remove();
@@ -239,7 +267,7 @@ function steamWizardEventListener(request) {
 			console.log(request);
 			if (request.data.premium == true){
 				console.log(request);
-				$("#steam_wizard_csgozone_prem_active").text("Active until: "+new Date(request.data.expire));
+				$("#steam_wizard_csgozone_prem_active").text("Reset in: "+timeUntil(request.data.reset));
 				$("#steam_wizard_csgozone_prem_active").addClass('steam_wizard_prem_active');
 			}else{
 				$("#steam_wizard_csgozone_prem_active").text("- increase quota -");
@@ -276,7 +304,14 @@ function steamWizardEventListener(request) {
 		case msg.USERNAME:
 			updateDisplayedUsername();
 			break;
+		case msg.BROADCAST_REVOKE_TOKEN:
+			setButtonsLoggedOut();
+			break;
     }
+}
+
+function setButtonsLoggedOut(){
+	$("#steam_wizard_loggedin_as").text("not logged in.");
 }
 
 function start() {
@@ -297,7 +332,7 @@ function updateDisplayedUsername(){
 	$paragraph.show();
 	$("#steam_wizard_loggedin_as").text(username);
 	$refreshButton.click(function(){
-		$("#steam_wizard_loggedin_as").text("not logged in.");
+		setButtonsLoggedOut();
 		steamwizard.refreshToken(function(){
 			
 		});
