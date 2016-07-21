@@ -205,13 +205,23 @@ var steamwizard = (function() {
             return isLoggedIn;
         },
         
-        getUsername : function(){
-            var jsonToken = parseToken(token);
-            if(jsonToken && jsonToken.name)
-               return jsonToken.name;
-            else
-               return null;
-        },
+        getUsername : function(withDomain){
+			var jsonToken = parseToken(token);
+			if(jsonToken && jsonToken.name){
+				if (withDomain){
+					var issuer = "";
+					if (withDomain && jsonToken.issuer == "ISSUED_BY_METJM")
+						issuer = " (metjm.net)";
+					else if (withDomain && jsonToken.issuer == "ISSUED_BY_CSGOZONE")
+						issuer = " (csgozone.net)";
+					return (jsonToken.name + issuer);
+				}else{
+					return jsonToken.name;
+				}
+			}else{
+				return null;
+			}
+		},
 
         refreshToken : function(callback){
             token = null;

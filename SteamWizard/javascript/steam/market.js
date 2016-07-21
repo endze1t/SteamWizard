@@ -217,10 +217,10 @@ function removeButtons() {
 
 function steamWizardEventListener(request) {    
     switch(request.msg) {
-        case 'pluginStatus':
+        case msg.PLUGIN_STATUS:
             start();
             break;
-		case 'newItem':
+		case msg.BROADCAST_ITEM:
 			if (request.namespace == constant.NAMESPACE_MARKET_INSPECT && visibleAssets[request.key]){
 				var cachedFloatValue = steamwizard.getFloatValueCachedFromAssetid(request.key);
 				var $getFloatButton = $(visibleAssets[request.key]).find(".steam_wizard_load_button_float");
@@ -233,11 +233,12 @@ function steamWizardEventListener(request) {
 				}
 			}
 			break;
-		case 'inspectStatus':
+		case msg.BROADCAST_INSPECT_STATUS:
 			$("#steam_wizard_inspects_left_today").text(request.data.limit - request.data.usage + " / " + request.data.limit);
 			$("#steam_wizard_inspects_left_today").removeClass('steam_wizard_rotating');
-			if (request.premium == true){
-				$("#steam_wizard_csgozone_prem_active").text("Active to: "+new Date(request));
+			console.log(request);
+			if (request.data.premium == true){
+				$("#steam_wizard_csgozone_prem_active").text("Active until: "+new Date(request.data));
 				$("#steam_wizard_csgozone_prem_active").addClass('steam_wizard_prem_active');
 			}else{
 				$("#steam_wizard_csgozone_prem_active").text("- increase quota -");
@@ -250,11 +251,11 @@ function steamWizardEventListener(request) {
 				});
 			}
 			break;
-		case 'inspectLimit':
+		case msg.BROADCAST_INSPECT_USAGE:
 			$("#steam_wizard_inspects_left_today").text(request.data);
 			$("#steam_wizard_inspects_left_today").removeClass('steam_wizard_rotating');
 			break;
-		case 'screenshotStatus':
+		case msg.BROADCAST_SCREENSHOT_STATUS:
 			$("#steam_wizard_screenshots_premium_queue").removeClass('steam_wizard_rotating');
 			if (request.data.user_has_premium){
 				$("#steam_wizard_metjm_prem_active").addClass('steam_wizard_prem_active');
@@ -271,7 +272,7 @@ function steamWizardEventListener(request) {
 				$("#steam_wizard_screenshots_premium_queue").text('false');
 			}
 			break;
-		case 'username':
+		case msg.USERNAME:
 			updateDisplayedUsername();
 			break;
     }
@@ -285,7 +286,7 @@ function start() {
 }
 
 function updateDisplayedUsername(){
-	var username = steamwizard.getUsername();
+	var username = steamwizard.getUsername(true);
 	
 	var $paragraph = $("#steam_wizard_loggedin_as_paragraph");
 	var $refreshButton = $("#steam_wizard_refresh_login");
