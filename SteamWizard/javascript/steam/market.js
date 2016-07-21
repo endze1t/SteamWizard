@@ -238,7 +238,8 @@ function steamWizardEventListener(request) {
 			$("#steam_wizard_inspects_left_today").removeClass('steam_wizard_rotating');
 			console.log(request);
 			if (request.data.premium == true){
-				$("#steam_wizard_csgozone_prem_active").text("Active until: "+new Date(request.data));
+				console.log(request);
+				$("#steam_wizard_csgozone_prem_active").text("Active until: "+new Date(request.data.expire));
 				$("#steam_wizard_csgozone_prem_active").addClass('steam_wizard_prem_active');
 			}else{
 				$("#steam_wizard_csgozone_prem_active").text("- increase quota -");
