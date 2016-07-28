@@ -16,7 +16,7 @@ function onGetFloat(){
 	
 	steamwizard.getFloatValue(inspectLink, function(result){
 		if (result.status == steamwizard.EVENT_STATUS_DONE){
-			$getFloatButton.find('span').text(result.floatvalue);
+			$getFloatButton.find('span').text(result.data.wear);
 		}else if (result.status == steamwizard.EVENT_STATUS_FAIL){
 			$getFloatButton.find('span').text('Failed');
 			$getFloatButton.click(onGetFloat);
