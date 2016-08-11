@@ -59,8 +59,9 @@ function createButton(text){
 function onIteminfoVisible($itemActions){
 	$inspectButton = $itemActions.find("a[href^='steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20']");
 	var inspectLink = $inspectButton.attr('href');
+	var skinLink = /730/.test($(inspectLink));
 	
-	if (inspectLink){
+	if (skinLink){
 		var $getFloatButton = createButton('Get Float').addClass('steam_wizard_get_float_button steam_wizard');
 		var $getScreenButton = createButton('Get Screenshot').addClass('steam_wizard_get_screen_button steam_wizard');
 		
