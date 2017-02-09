@@ -204,7 +204,6 @@ var background = (function() {
         },
 
         handleDisconnect: function(port) {
-            console.log("Disconnected: " + port.name);
             var index = background.connections.indexOf(port);
             if(index > -1)
                background.connections.splice(index, 1);
