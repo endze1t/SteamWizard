@@ -274,7 +274,7 @@ function steamWizardEventListener(request) {
 					ui.showGeneralOverlay("", "", "Ok", function(){
 						ui.removeOverlay();
 					});
-					$("#steam_wizard_general_overlay_title").html("You can increase the daily limit to 20,000 by activating the \"Steam Market Lister\" pass on <a style='text-decoration: underline;' target='_blank' href='http://csgozone.net'>csgozone</a>");
+					$("#steam_wizard_general_overlay_title").html("You can increase the daily limit to 20,000 by activating the \"Premium\" on <a style='text-decoration: underline;' target='_blank' href='http://csgozone.net/inspect'>csgozone</a>");
 				});
 			}
 			break;
