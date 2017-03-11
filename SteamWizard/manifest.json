@@ -3,11 +3,11 @@
 
 	"name": "SteamWizard",
 	"description": "SteamWizard is a browser extension that helps loading additional information for CS:GO items on the steam community market.",
-	"version": "0.9.8",
+	"version": "1.0.0",
 	
 	"icons": {	"16": "images/icon_16.png",
-				"48": "images/icon_48.png",
-				"128": "images/icon_128.png" },
+			"48": "images/icon_48.png",
+			"128": "images/icon_128.png" },
 
 	"browser_action": {
 		"default_icon": "images/icon_128.png"
@@ -17,41 +17,51 @@
 		"https://steamcommunity.com/*"
 	],
 	"background": {
-		"scripts": ["javascript/jquery-3.0.0.min.js",
-                            "javascript/utils/constant.js",
-                            "javascript/utils/util.js",
-                            "javascript/background.js"],
+		"scripts": ["javascript/lib/jquery-3.0.0.min.js",
+                            "javascript/lib/require.js",      
+                            
+                            "javascript/background/config.js",
+                            "javascript/background/background.js"],
                 "presistant": false
 	},
 	"content_scripts": [
 		{
 		  "matches": ["http://steamcommunity.com/market/listings/730/*", "https://steamcommunity.com/market/listings/730/*"],
 		  "run_at": "document_end",
-		  "js": ["javascript/jquery-3.0.0.min.js",
-                         "javascript/utils/constant.js",
-                         "javascript/utils/util.js",
-                         "javascript/utils/csgozone.js", 
-                         "javascript/utils/metjm.js", 
-                         "javascript/utils/steamwizard.js", 
-                         "javascript/utils/ui.js", 
-                         "javascript/steam/market.js"],
+		  "js": ["javascript/lib/jquery-3.0.0.min.js",
+                         "javascript/lib/require.js",
+                         
+                         "javascript/core/csgozone.js",
+                         "javascript/core/metjm.js",
+                         "javascript/core/steamwizard.js",
+                         
+                         "javascript/util/common_ui.js", 
+                         "javascript/util/constants.js",
+                         "javascript/util/util.js",
+                         
+                         "javascript/content_script/config.js",
+                         "javascript/content_script/market.js"],
 		  "css" : ["css/market.css"]
 		},{
 		  "matches": ["http://steamcommunity.com/profiles/*/inventory*", "http://steamcommunity.com/id/*/inventory*", "https://steamcommunity.com/profiles/*/inventory*", "https://steamcommunity.com/id/*/inventory*"],
 		  "run_at": "document_end",
-		  "js": ["javascript/jquery-3.0.0.min.js", 
-                         "javascript/utils/constant.js",
-                         "javascript/utils/util.js",
-                         "javascript/utils/csgozone.js", 
-                         "javascript/utils/metjm.js", 
-                         "javascript/utils/steamwizard.js", 
-                         "javascript/utils/ui.js", 
-                         "javascript/steam/inventory.js"],
+		  "js": ["javascript/lib/jquery-3.0.0.min.js", 
+                         "javascript/lib/require.js",
+                        
+                         "javascript/core/csgozone.js",
+                         "javascript/core/metjm.js",
+                         "javascript/core/steamwizard.js",
+                         
+                         "javascript/util/common_ui.js", 
+                         "javascript/util/constants.js",
+                         "javascript/util/util.js",
+                         
+                         "javascript/content_script/inventory.js"],
 		  "css" : ["css/market.css"]
 		}
 	  ],
 	 "web_accessible_resources": [
-		"javascript/jquery-3.0.0.min.js", 
+		"javascript/lib/jquery-3.0.0.min.js", 
 		"images/logo_csgozone.png", 
 		"images/logo_metjm.png",
 		"css/popup.css",
