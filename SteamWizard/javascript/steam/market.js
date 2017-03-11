@@ -189,7 +189,7 @@ function showWarningOrDisplayNumItems(numItems){
 				numDisplayedItems = numItems;
 				window.localStorage.setItem("steam_wizard_quota_warning_displayed", true);
 			});
-		}else if (parseInt($("#searchResults_total").text().replace(".","")) > 10){
+		}else if (parseInt($("#searchResults_total").text().replace(".","").replace(",","")) > 10){
 			showNumMarketItems(numItems)
 			numDisplayedItems = numItems;
 			saveNumMarket(numItems);
