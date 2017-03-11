@@ -190,8 +190,11 @@ function showWarningOrDisplayNumItems(numItems){
 				window.localStorage.setItem("steam_wizard_quota_warning_displayed", true);
 			});
 		}else if ($("#searchResults_total").text() > 10){
-			numDisplayedItems = numItems;
 			showNumMarketItems(numItems)
+			numDisplayedItems = numItems;
+			saveNumMarket(numItems);
+		}else{
+			numDisplayedItems = numItems;
 			saveNumMarket(numItems);
 		}
 	}
