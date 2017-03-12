@@ -67,7 +67,7 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
                 ui_helper.displayUsername();
                 break;
             case constants.msg.BROADCAST_REVOKE_TOKEN:
-                setButtonsLoggedOut();
+                $("#steam_wizard_loggedin_as").text("not logged in");
                 break;
         }
     }
@@ -168,7 +168,7 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
             $paragraph.show();
             $("#steam_wizard_loggedin_as").text(username);
             $refreshButton.click(function () {
-                setButtonsLoggedOut();
+                $("#steam_wizard_loggedin_as").text("not logged in");
                 steamwizard.refreshToken(function () {
 
                 });
@@ -177,6 +177,10 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
         
         getTotalNumItem: function() {
             return parseInt($("#searchResults_total").text().replace(".","").replace(",",""));
+        },
+        
+        getCurrentNumItem: function() {
+            return document.querySelectorAll("#searchResultsRows .market_recent_listing_row").length;
         },
         
         initDisplay: function() {
@@ -295,8 +299,11 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
     }
     
     function changeNumOfDisplayedItems(numItems) {
+        var total = ui_helper.getTotalNumItem();
+        var current = ui_helper.getCurrentNumItem();
+        
         /* return if we already display the max amount */
-        if(ui_helper.getTotalNumItem() <= numItems) {
+        if(current === total && total <= numItems) {
            ui_helper.initDisplay();
            return;
         }

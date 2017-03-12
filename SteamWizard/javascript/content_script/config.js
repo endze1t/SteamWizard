@@ -11,7 +11,7 @@
  *
  */
 
-var STEAMWIZARD_VERSION = "1.0.0";
+var STEAMWIZARD_VERSION = "1.0.1";
 
 require.config({
     baseUrl: "/javascript",
