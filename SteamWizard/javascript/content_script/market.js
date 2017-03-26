@@ -375,10 +375,11 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
         
         /* TODO: LOADING INDICATION */
         steamwizard.ready(function () {
+            ui_helper.initDisplay();
+            
             if(steamwizard.getMarketDisplayCount() !== 10)
                changeNumOfDisplayedItems(steamwizard.getMarketDisplayCount());
-            else
-               ui_helper.initDisplay();
+
         });
     })();
 });
