@@ -363,7 +363,7 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
             ui_helper.initDisplay();
         });
 
-        observer.observe($('#searchResults_end')[0], {characterData: true, subtree: true});
+        observer.observe($('#searchResults_end')[0], {childList: true, characterData: true, subtree: true});
 
         //remove overlay on escape
         $(document).keyup(function (e) {
@@ -375,11 +375,10 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
         
         /* TODO: LOADING INDICATION */
         steamwizard.ready(function () {
-            ui_helper.initDisplay();
-            
             if(steamwizard.getMarketDisplayCount() !== 10)
                changeNumOfDisplayedItems(steamwizard.getMarketDisplayCount());
-
+            else
+               ui_helper.initDisplay();
         });
     })();
 });
