@@ -363,6 +363,7 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
             ui_helper.initDisplay();
         });
 
+        /* chrome bug .. must use childList */
         observer.observe($('#searchResults_end')[0], {childList: true, characterData: true, subtree: true});
 
         //remove overlay on escape
