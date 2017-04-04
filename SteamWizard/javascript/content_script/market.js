@@ -185,10 +185,10 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
             container.find('.advert').remove();
                
             var advert = $("<div>").addClass('steam_wizard_market_advert');
-            advert.append($("<div>").text('Sponsor of the Month'));
+            advert.append($("<div>").text('Sponsor of the month'));
             
             var link = $("<a>").attr("href", data.href).attr('target', '_blank');
-            link.append($("<img>").attr("src", data.image));
+            link.append($("<img>").attr("src", data.image).attr("title", data.title));
             
             link.click(function() {
                 steamwizard.log();
