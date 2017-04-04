@@ -66,15 +66,42 @@ define("core/steamwizard", ["core/csgozone", "core/metjm", "util/constants", "ut
            csgozone.setToken(token);
            metjm.setToken(token);
 
+           var deferredList = [$.Deferred(), $.Deferred()];
+           
            csgozone.status(function(response) {
                 if(response.success)
                    port.postMessage({msg: constants.msg.BACKGROUND_SET_INSPECT_STATUS, data: response});
+
+                deferredList[0].resolve(response);
            });
 
            metjm.status(function(response) {
                 if(response.success)
                    port.postMessage({msg: constants.msg.BACKGROUND_SET_SCREENSHOT_STATUS, data: response});
+                
+                deferredList[1].resolve(response);
            });
+           
+           $.when.apply(null, deferredList).then(function(csgozone_status, metjm_status) {
+                if(csgozone_status.premium || metjm_status.user_has_premium)
+                   return;
+                
+                var ad = metjm_status.ad;
+
+               if(ad === undefined || ad.valid_until < new Date().getTime())
+                   return;
+                
+                broadcastEvent({msg: constants.msg.ADVERT, data: ad});
+           });
+        } else {
+            metjm.status(function(metjm_status) {
+                var ad = metjm_status.ad;
+
+               if(ad === undefined || ad.valid_until < new Date().getTime())
+                   return;
+                
+                broadcastEvent({msg: constants.msg.ADVERT, data: ad});
+            });
         }
 
         isLoggedIn = token !== null;
@@ -318,6 +345,11 @@ define("core/steamwizard", ["core/csgozone", "core/metjm", "util/constants", "ut
             window.localStorage.setItem("steam_wizard_quota_warning_displayed", true);
             return true;            
         },
+        
+        log: function() {
+            csgozone.log();
+            metjm.log();
+        }
     };        
 
     return steamwizard;

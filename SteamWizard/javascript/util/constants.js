@@ -40,6 +40,7 @@ define("util/constants", function() {
         ITEM          : 205,
         TOKEN         : 206,
         USERNAME      : 207,
+        ADVERT        : 208,
 
         /* services status */
         BROADCAST_ITEM              : 300,

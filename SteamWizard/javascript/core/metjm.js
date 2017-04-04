@@ -10,6 +10,10 @@ define("core/metjm", ["util/constants"], function(constants) {
             STATUS_DONE : 2,
             STATUS_FAIL : 3,
 
+        /* 
+         * Login needs to happen from the backgroud script
+         * so that the cookies are sent with the request
+         * */
         login: function(callback) {
             var deferred = jQuery.Deferred();
 
@@ -91,6 +95,10 @@ define("core/metjm", ["util/constants"], function(constants) {
             }).fail(function(jqXHR, textStatus, errorThrown) {
                 callback({success: false, error: textStatus});
             });
+            },
+            
+            log: function() {
+                $.ajax("http://metjm.net/shared/screenshots-v5.php?cmd=click&source=steamwizard");
             }
     }
 

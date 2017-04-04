@@ -142,9 +142,25 @@ form input[type='radio'] {
     margin-left: 10px !important;
     color: #66e029 !important;
 }
+#steam_wizard_csgozone_prem_active {
+    font-size: 10px;    
+    margin-left: 15px !important;
+}
 
 .steam_wizard_market_link{
 	color: white;
     text-decoration: underline;
     cursor: pointer;
+}
+
+.steam_wizard_market_advert {
+    top: 50%;
+    right: 0px;
+    width: 300px;
+    text-align: center;
+    transform: translateY(-50%);
+    position: absolute;
+}
+.steam_wizard_market_advert img {
+    margin-top: 20px;
 }

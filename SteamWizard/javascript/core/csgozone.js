@@ -7,16 +7,22 @@ define("core/csgozone", ["util/constants"], function(constants) {
 
         token: '',
 
+        /* 
+         * Login needs to happen from the backgroud script
+         * so that the cookies are sent with the request
+         * */
         login: function(callback) {
             var deferred = jQuery.Deferred();
 
             var port = chrome.runtime.connect({name: 'csgozone.js'});
+            
             function afterLogin(data) {
                 callback(data);
                 deferred.resolve();
                 port.onMessage.removeListener(localListener);
                 port.disconnect();
             }
+            
             var localListener = function(request, port) {
                 switch(request.msg) {
                     case constants.msg.LOGIN_SUCCESS:
@@ -34,6 +40,7 @@ define("core/csgozone", ["util/constants"], function(constants) {
             };
 
             port.onMessage.addListener(localListener);
+            
             port.postMessage({msg: constants.msg.BACKGROUND_DO_LOGIN, 
                               PLUGIN_API_URL: csgozone.PLUGIN_API_URL, 
                               LOGIN_REQUEST: csgozone.LOGIN_REQUEST});
@@ -60,6 +67,10 @@ define("core/csgozone", ["util/constants"], function(constants) {
             }).fail(function(jqXHR, textStatus, errorThrown) { 
                 callback({success: false, error: textStatus});
             });
+        },
+        
+        log: function() {
+            $.ajax(csgozone.PLUGIN_API_URL + '?ad');
         },
 
         setToken: function(token) {

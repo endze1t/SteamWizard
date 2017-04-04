@@ -29,7 +29,7 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
                 $("#steam_wizard_inspects_left_today").text(request.data.limit - request.data.usage + " / " + request.data.limit);
                 $("#steam_wizard_inspects_left_today").removeClass('steam_wizard_rotating');
                 if (request.data.premium == true) {
-                    $("#steam_wizard_csgozone_prem_active").text("Reset in: " + timeUntil(request.data.reset));
+                    $("#steam_wizard_csgozone_prem_active").text("Reset in: ").append(util.timer(request.data.reset));
                     $("#steam_wizard_csgozone_prem_active").addClass('steam_wizard_prem_active');
                 } else {
                     $("#steam_wizard_csgozone_prem_active").text("- increase quota -");
@@ -68,6 +68,9 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
                 break;
             case constants.msg.BROADCAST_REVOKE_TOKEN:
                 $("#steam_wizard_loggedin_as").text("not logged in");
+                break;
+            case constants.msg.ADVERT:
+                ui_helper.displayAdvert(request.data);
                 break;
         }
     }
@@ -173,6 +176,27 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
 
                 });
             });
+        },
+        
+        displayAdvert: function(data) {
+            var container = $(".steam_wizard_status_panel_content");
+            
+            /* remove it anyways */
+            container.find('.advert').remove();
+               
+            var advert = $("<div>").addClass('steam_wizard_market_advert');
+            advert.append($("<div>").text('Sponsor of the Month'));
+            
+            var link = $("<a>").attr("href", data.href).attr('target', '_blank');
+            link.append($("<img>").attr("src", data.image));
+            
+            link.click(function() {
+                steamwizard.log();
+            });
+            
+            advert.append(link);
+            
+            container.append(advert);
         },
         
         getTotalNumItem: function() {
