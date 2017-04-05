@@ -10,7 +10,12 @@
     c - total value of trade offer for both parties
 
 4- All Trades Page
-    
+    a - number of items in the trade
+    b - value for single items, total value of both parties
+	c - button to request float/screenshot for each item
+	d - count number of keys automatically on load
+	e - button for each item to go to the corresponding market page
+	f - quick accept button (check if this is ok with steam TOS)
 
 4- Market
     a- Show stickers on market page
