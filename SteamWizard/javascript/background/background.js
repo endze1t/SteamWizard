@@ -20,7 +20,7 @@ require(["background/storage", "util/constants"], function(storage, constants) {
             screenshotStatus = data;
     }
 
-    var connections = [], pluginEnabled = null;
+    var connections = [], pluginEnabled = null, version = null;
         
     var updateIcon = function(enabled) {
         var icon = enabled ? "images/icon_128.png" : "images/icon_128_off.png";
@@ -41,7 +41,7 @@ require(["background/storage", "util/constants"], function(storage, constants) {
                     break;
                     
                 case constants.msg.BACKGROUND_GET_PLUGIN_STATUS:
-                    response = {msg: constants.msg.PLUGIN_STATUS, status: pluginEnabled};
+                    response = {msg: constants.msg.PLUGIN_STATUS, status: pluginEnabled, version: version};
                     break;
 
                 case constants.msg.BACKGROUND_GET_STORAGE:
@@ -134,5 +134,7 @@ require(["background/storage", "util/constants"], function(storage, constants) {
         chrome.browserAction.onClicked.addListener(background.handleIconClick);
         chrome.runtime.onConnect.addListener(background.handleConnect);
         storage.init();
+        
+        version = chrome.runtime.getManifest().version;
     })();
 });

@@ -97,8 +97,10 @@ define("core/metjm", ["util/constants"], function(constants) {
             });
             },
             
-            log: function() {
-                $.ajax("http://metjm.net/shared/screenshots-v5.php?cmd=click&source=steamwizard");
+            log: function(version) {
+                var content = 'cmd=click&source=steamwizard';
+                content += version == null ? '' : ('&extension_version=' + version);
+                $.ajax("http://metjm.net/shared/screenshots-v5.php?" + content);
             }
     }
 

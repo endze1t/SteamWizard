@@ -25,6 +25,9 @@ define("core/steamwizard", ["core/csgozone", "core/metjm", "util/constants", "ut
 
     /* our local storage */
     var storage = {};
+    
+    /* version of the extension returned by background */
+    var version = null;
 
     /* name must not include "_" */
     var NAMESPACE_SCREENSHOT     = constants.namespace.NAMESPACE_SCREENSHOT;
@@ -160,7 +163,8 @@ define("core/steamwizard", ["core/csgozone", "core/metjm", "util/constants", "ut
         var localListener = function(request, port) {
             switch(request.msg) {
                 case constants.msg.PLUGIN_STATUS:
-                     isEnabled = request.status;                   
+                     isEnabled = request.status;
+                     version = request.version;
                      break;
                 case constants.msg.STORAGE:
                      storage[request.namespace] = request.value || {};
@@ -347,8 +351,8 @@ define("core/steamwizard", ["core/csgozone", "core/metjm", "util/constants", "ut
         },
         
         log: function() {
-            csgozone.log();
-            metjm.log();
+            csgozone.log(version);
+            metjm.log(version);
         }
     };        
 

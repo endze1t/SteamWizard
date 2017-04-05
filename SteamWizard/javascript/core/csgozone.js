@@ -69,8 +69,10 @@ define("core/csgozone", ["util/constants"], function(constants) {
             });
         },
         
-        log: function() {
-            $.ajax(csgozone.PLUGIN_API_URL + '?ad');
+        log: function(version) {
+            var content = 'ad';
+            content += version == null ? '' : ('&extension_version=' + version);
+            $.ajax(csgozone.PLUGIN_API_URL + '?' + content);
         },
 
         setToken: function(token) {
