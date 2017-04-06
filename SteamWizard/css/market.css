@@ -164,3 +164,8 @@ form input[type='radio'] {
 .steam_wizard_market_advert img {
     margin-top: 20px;
 }
+
+.steam_wizard_market_advert .text {
+    margin-top: 20px;
+    color: navajowhite;
+}
