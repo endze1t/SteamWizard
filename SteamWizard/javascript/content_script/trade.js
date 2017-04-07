@@ -11,9 +11,7 @@
  *
  */
 
-require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], function(steamwizard, constants, common_ui, util) {
-   
-   
+require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], function(steamwizard, constants, common_ui, util) {   
     /* namespace shorthand */
     var NAMESPACE_SCREENSHOT     = constants.namespace.NAMESPACE_SCREENSHOT;
     var NAMESPACE_MARKET_INSPECT = constants.namespace.NAMESPACE_MARKET_INSPECT;
