@@ -83,6 +83,23 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
                 break;
         }
     }
+
+    var moveItems = function(containerSelector, itemVisibility, speed) {
+        var event = new MouseEvent('dblclick', {
+            'view': window,
+            'bubbles': true,
+            'cancelable': true
+        });
+
+        var items = $(containerSelector).find(".item" + itemVisibility).toArray();
+
+        (function doNext() {
+            if(items.length > 0) {
+                items.shift().dispatchEvent(event);
+                setTimeout(doNext, speed);
+            }
+        })();
+    }
         
     var events = {
        
@@ -114,10 +131,10 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
             /* make sure radio buttons are enabled */
             $(".steam_wizard_radio_panel_numitems").find("input:radio").attr("disabled", false);
             
-            if(steamwizard.isEnabled())
-               ui_helper.displayButtons();
-            else
-               ui_helper.removeButtons();
+//            if(steamwizard.isEnabled())
+//               ui_helper.displayButtons();
+//            else
+//               ui_helper.removeButtons();
         }
     };
         
@@ -137,37 +154,30 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
             });
         });
 
-        /* other buttons */
-        if ($("#searchResultsRows").find(".market_listing_row").length > 0) {
-            //button to load all floats
-            var $getAllFloatsButton = common_ui.createGreenSteamButton("Load All Floats");
-            $getAllFloatsButton.addClass('steam_wizard_load_button_float_all');
-            $getAllFloatsButton.click(events.getAllFloatsButtonClick);
-
+        {
+            //button to add current page to trade
             var $container = $(".steam_wizard_status_panel_button_container");
-            $container.append($getAllFloatsButton);
+            var $addCurrentPageToTradeButton = common_ui.createGreenSteamButton("Select All");
+            $addCurrentPageToTradeButton.click(function(){
+                moveItems(".inventory_ctn:visible", ":visible", 20);
+            });
 
-            //button to sort by floatvalue
-            var $sortByFloatsButton = common_ui.createGreenSteamButton("Sort by Float");
-            $sortByFloatsButton.addClass('steam_wizard_sort_by_float_button');
-            $sortByFloatsButton.click(events.sortFloatsButtonClick);
-            $container.append($sortByFloatsButton);
+             //button for removing items from trade
+            var $removeAllFromTradeButton = common_ui.createGreenSteamButton("Remove All");
+            $removeAllFromTradeButton.click(function(){
+                moveItems("#trade_yours:visible", ":visible", 100);
+            });
 
-            //button to show more than 10 items
-            var array = [10, 25, 50, 75, 100];
-            var $radioPanel = common_ui.createRadioPanel(array, events.radioPanelChanged, steamwizard.getMarketDisplayCount());
-            $radioPanel.addClass("steam_wizard_radio_panel_numitems");
+            //button for dumping inventory
+            var $dumpInventoryButton = common_ui.createGreenSteamButton("Dump Inventory");
+            $dumpInventoryButton.click(function(){
+                moveItems(".inventory_ctn", "", 50);
+            });
 
-            $container.before($radioPanel);
+            $container.append($addCurrentPageToTradeButton);
+            $container.append($removeAllFromTradeButton);
+            $container.append($dumpInventoryButton);
         }
-        
-        /* for paging */
-        var observer = new MutationObserver(function () {
-            ui_helper.initDisplay();
-        });
-
-        /* chrome bug ... must use childList */
-        observer.observe($('#searchResults_end')[0], {childList: true, characterData: true, subtree: true});
 
         //remove overlay on escape
         $(document).keyup(function (e) {
