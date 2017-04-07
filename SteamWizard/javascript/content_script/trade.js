@@ -83,6 +83,25 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
                 break;
         }
     }
+
+    var moveItems = function(containerSelector, itemVisibility = ":visible"){
+        var event = new MouseEvent('dblclick', {
+            'view': window,
+            'bubbles': true,
+            'cancelable': true
+        });
+
+        var items = $(containerSelector).find(".item" + itemVisibility).toArray();
+
+        var doNext = function(){
+            if(items.length > 0){
+                var item = items.pop();
+                item.dispatchEvent(event);
+                setTimeout(doNext, 15);
+            }
+        }
+        doNext();
+    }
         
     var events = {
        
@@ -160,14 +179,32 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
 
             $container.before($radioPanel);
         }
-        
-        /* for paging */
-        var observer = new MutationObserver(function () {
-            ui_helper.initDisplay();
-        });
 
-        /* chrome bug ... must use childList */
-        observer.observe($('#searchResults_end')[0], {childList: true, characterData: true, subtree: true});
+
+        {
+            //button to add current page to trade
+            var $container = $(".steam_wizard_status_panel_button_container");
+            var $addCurrentPageToTradeButton = common_ui.createGreenSteamButton("Select All");
+            $addCurrentPageToTradeButton.click(function(){
+                moveItems(".inventory_ctn:visible");
+            });
+
+             //button for removing items from trade
+            var $removeAllFromTradeButton = common_ui.createGreenSteamButton("Remove All");
+            $removeAllFromTradeButton.click(function(){
+                moveItems("#trade_yours:visible");
+            });
+
+            //button for dumping inventory
+            var $dumpInventoryButton = common_ui.createGreenSteamButton("Dump Inventory");
+            $dumpInventoryButton.click(function(){
+                moveItems(".inventory_ctn", "");
+            });
+
+            $container.append($addCurrentPageToTradeButton);
+            $container.append($removeAllFromTradeButton);
+            $container.append($dumpInventoryButton);
+        }
 
         //remove overlay on escape
         $(document).keyup(function (e) {
@@ -177,12 +214,14 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
 
         steamwizard.addEventListener(steamWizardEventListener);
         
+
         /* TODO: LOADING INDICATION */
         steamwizard.ready(function () {
             if(steamwizard.getMarketDisplayCount() !== 10)
                changeNumOfDisplayedItems(steamwizard.getMarketDisplayCount());
             else
                ui_helper.initDisplay();
+
         });
     })();
 });
