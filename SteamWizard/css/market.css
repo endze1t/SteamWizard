@@ -169,3 +169,16 @@ form input[type='radio'] {
     margin-top: 20px;
     color: navajowhite;
 }
+
+#steam_wizard_data_helper {
+    display: none;
+}
+
+.steam_wizard_market_stickers {
+    display: inline-block;    
+    vertical-align: middle;
+}
+
+.steam_wizard_market_stickers img {
+    width: 40px;
+}

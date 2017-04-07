@@ -115,8 +115,31 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
             $(".steam_wizard_status_panel_button_container").hide();
         },
     
-        displayButtons: function() {
+        displayButtons: function(g_rgAssets) {
             visibleAssets = {};
+            
+            var marketids = {};
+            
+            var items = g_rgAssets["730"]["2"];
+
+            for(var i in items) {
+                var description = items[i];
+
+                if(description.actions) {
+                    for(var i = 0; i < description.actions.length; i++) {
+                        var action = description.actions[i];
+
+                        if(action.name && action.name.startsWith('Inspect')) {
+                            var inspect = description.actions[0].link;
+
+                            var M = inspect.match(/M(\d+)A/)[1];
+                            marketids[M] = description;
+                            marketids[M].inspect = inspect.replace('%assetid%', description.id);
+                            break;
+                        }
+                    }
+                }
+            }
             
             /* make sure all buttons are removed before building again */
             ui_helper.removeButtons();
@@ -130,7 +153,10 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
 
                 var container = $("<div>").insertBefore($marketListingRow.find(".market_listing_item_name_block"));
                 container.addClass('market_listing_right_cell steam_wizard_market_cell');
-
+                
+                var $stickerContainer = $('<div>').addClass('steam_wizard_market_stickers');
+                $stickerContainer.appendTo(container);
+                
                 //button which gets float
                 var $getFloatButton = common_ui.createGreenSteamButton("Get Float");
                 $getFloatButton.click(events.getFloatButtonClick);
@@ -142,7 +168,25 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
                 $getScreenshotButton.click(events.getScreenshotButtonClick);
                 $getScreenshotButton.addClass('steam_wizard_load_button_screenshot');
                 $getScreenshotButton.appendTo(container);
-
+                
+                /* print stickers */
+                var M = $marketListingRow.attr('id').split('_')[1];
+                
+                if(marketids[M]) {
+                    $marketListingRow[0].inspectLink = marketids[M].inspect;
+                   
+                    var data = marketids[M];
+                   
+                    var array = util.parseStickerData(data.descriptions);
+                    
+                    if(array) {
+                       for(var i=0; i < array.length; i++) {
+                            var img = $('<img>').attr('src', array[i].image).attr('title', array[i].name);
+                            $stickerContainer.append(img);
+                        }
+                    }
+                }
+                
                 setTimeout(function () {
                     //load cached floats
                     var inspectLink = ui_helper.extractInspectLink($marketListingRow);
@@ -218,10 +262,14 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
             /* make sure radio buttons are enabled */
             $(".steam_wizard_radio_panel_numitems").find("input:radio").attr("disabled", false);
             
-            if(steamwizard.isEnabled())
-               ui_helper.displayButtons();
-            else
+            if(!steamwizard.isEnabled()) {
                ui_helper.removeButtons();
+               return;
+            }
+            
+            assetFetcher.get(function(data) {
+                ui_helper.displayButtons(data);
+            });
         }
     };
     
@@ -339,12 +387,20 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
         /* disable radio buttons while we do the change */
         $(".steam_wizard_radio_panel_numitems").find("input:radio").attr("disabled", true);
             
-        var actualCode = '(function() {g_oSearchResults.m_cPageSize = ' + numItems + ';g_oSearchResults.GoToPage(0, true);} )();';
+        var actualCode = '(' +
+                function(num) {
+                    g_oSearchResults.m_cPageSize = num;
+                    g_oSearchResults.GoToPage(0, true);
+                }
+                + ')('+numItems+');';
+        
         var script = document.createElement('script');
         script.textContent = actualCode;
         (document.head||document.documentElement).appendChild(script);
         script.remove();
     }
+    
+    var assetFetcher;
     
     /*
      * Initialize
@@ -401,6 +457,54 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
         });
 
         steamwizard.addEventListener(steamWizardEventListener);
+        
+        assetFetcher = (function(){
+            var handler = null;
+            var interval = null;
+
+            // Event listener
+            document.addEventListener('SteamWizard_Message', function(e) {
+                if(handler && e.detail) {
+                   handler(e.detail);
+                   clearInterval(interval);
+                }
+            });
+
+            // inject code into "the other side" to talk back to this side;
+            var script = document.createElement('script');
+            //appending text to a function to convert it's src to string only works in Chrome
+            script.textContent = '(' +
+                    function() {
+                        document.getElementById('steam_wizard_data_helper').onclick = function() {
+                            document.dispatchEvent(new CustomEvent('SteamWizard_Message', {
+                                detail: window.g_rgAssets
+                            }));
+                        };
+                    }
+                + ')();';
+
+            //cram that sucker in 
+            (document.head || document.documentElement).appendChild(script);
+
+            script.remove();
+
+            return {
+                get: function(callback) {
+                    handler = callback;
+                    $('#steam_wizard_data_helper')[0].click();
+
+                    clearInterval(interval);
+                    var counter = 50;
+                    
+                    interval = setInterval(function() {
+                        $('#steam_wizard_data_helper')[0].click();
+
+                        if(counter-- < 1)
+                           clearInterval(interval);
+                    }, 100);
+                }
+            }
+        })();
         
         /* TODO: LOADING INDICATION */
         steamwizard.ready(function () {

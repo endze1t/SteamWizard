@@ -1,5 +1,5 @@
 1- Item Pricing
-    a- in trade
+    a- in trade                 -> DONE
     b- in inventory
 
 2- Float values for trade offers
@@ -18,6 +18,6 @@
 	f - quick accept button (check if this is ok with steam TOS)
 
 4- Market
-    a- Show stickers on market page
+    a- Show stickers on market page                     -> DONE
     b- Show patterns on market  -> sub'ed users
 
