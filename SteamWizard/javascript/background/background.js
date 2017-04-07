@@ -19,7 +19,9 @@ require(["background/storage", "util/constants"], function(storage, constants) {
     function updateScreenshotStatus(data){
             screenshotStatus = data;
     }
-
+    
+    var cachedResource = {};
+    
     var connections = [], pluginEnabled = null, version = null;
         
     var updateIcon = function(enabled) {
@@ -39,13 +41,29 @@ require(["background/storage", "util/constants"], function(storage, constants) {
                         port.postMessage({msg: constants.msg.LOGIN_FAILED, textStatus: textStatus, errorThrown: errorThrown, requestid : request.requestid});
                     });
                     break;
-                    
+                /* TODO: Expire resource after some time */
+                case constants.msg.BACKGROUND_DO_GET_RESOURCE:
+                    if(cachedResource[request.name])
+                       response = {msg: constants.msg.RESOURCE_SUCCESS, data: cachedResource[request.name]};
+                    else
+                       $.ajax({type: "POST", url: request.PLUGIN_API_URL, data: request.REQUEST})
+                                .done(function (data) {
+                                    cachedResource[request.name] = data;
+                                    port.postMessage({msg: constants.msg.RESOURCE_SUCCESS, data: data, requestid: request.requestid});
+                                }).fail(function (jqXHR, textStatus, errorThrown) {
+                                    port.postMessage({msg: constants.msg.RESOURCE_FAILED, textStatus: textStatus, errorThrown: errorThrown, requestid: request.requestid});
+                                });
+                    break;
                 case constants.msg.BACKGROUND_GET_PLUGIN_STATUS:
                     response = {msg: constants.msg.PLUGIN_STATUS, status: pluginEnabled, version: version};
                     break;
 
                 case constants.msg.BACKGROUND_GET_STORAGE:
                     response = {msg: constants.msg.STORAGE, namespace: request.namespace, value: storage.get(request.namespace)};
+                    break;
+                    
+                case constants.msg.BACKGROUND_GET_TOKEN:
+                    response = {msg: constants.msg.TOKEN, token: storage.get(constants.namespace.NAMESPACE_CONFIG, 'token')};
                     break;
                     
                 case constants.msg.BACKGROUND_SET_ITEM:
@@ -68,10 +86,6 @@ require(["background/storage", "util/constants"], function(storage, constants) {
                     inspectStatus.usage += request.amount;
                     if(inspectStatus.limit)
                        background.broadcastMessage({msg: constants.msg.BROADCAST_INSPECT_USAGE, data: inspectStatus.limit - inspectStatus.usage});
-                    break;
-                    
-                case constants.msg.BACKGROUND_GET_TOKEN:
-                    response = {msg: constants.msg.TOKEN, token: storage.get(constants.namespace.NAMESPACE_CONFIG, 'token')};
                     break;
                     
                 case constants.msg.BACKGROUND_SET_TOKEN:

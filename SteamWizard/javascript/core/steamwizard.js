@@ -3,7 +3,14 @@
  * Handles all communication with background thread
  * Checks whether or not user is logged in
  */
-define("core/steamwizard", ["core/csgozone", "core/metjm", "util/constants", "util/util"], function(csgozone, metjm, constants, util) {
+define("core/steamwizard", ["core/csgozone", "core/metjm", "util/constants", "util/util",
+       "port!BACKGROUND_GET_TOKEN", 
+       "port!BACKGROUND_GET_PLUGIN_STATUS", 
+       "port!BACKGROUND_GET_STORAGE, namespace: NAMESPACE_SCREENSHOT",
+       "port!BACKGROUND_GET_STORAGE, namespace: NAMESPACE_MARKET_INSPECT"],
+    function(csgozone, metjm, constants, util,
+             token_msg, plugin_status, screenshot_storage, inspect_storage) {
+
     "using strict";
     /* list of functions to be called after we finish initializing */
     var onReadyList = [];
@@ -12,7 +19,7 @@ define("core/steamwizard", ["core/csgozone", "core/metjm", "util/constants", "ut
     var eventListeners = [];
 
     /* is the plugin enabled or disabled */
-    var isEnabled = false;
+    var isEnabled = plugin_status.status;
 
     /* did we finish initialization or not */
     var isReady = false;
@@ -21,13 +28,13 @@ define("core/steamwizard", ["core/csgozone", "core/metjm", "util/constants", "ut
     var isLoggedIn = false;
 
     /* api token */
-    var token = null;
+    var token = token_msg.token;
 
     /* our local storage */
     var storage = {};
     
     /* version of the extension returned by background */
-    var version = null;
+    var version = plugin_status.version;
 
     /* name must not include "_" */
     var NAMESPACE_SCREENSHOT     = constants.namespace.NAMESPACE_SCREENSHOT;
@@ -157,50 +164,24 @@ define("core/steamwizard", ["core/csgozone", "core/metjm", "util/constants", "ut
      * Initialize 
      */
     (function() {
-        var deferredList = [$.Deferred(), $.Deferred(), $.Deferred(), $.Deferred()];
+        if (!validateToken(token_msg.token)) {
+            token = null;
+            port.postMessage({msg: constants.msg.BACKGROUND_REVOKE_TOKEN});
+        }
+        
+        storage[NAMESPACE_SCREENSHOT] = screenshot_storage.value || {};
+        storage[NAMESPACE_MARKET_INSPECT] = inspect_storage.value || {};
+                     
+        var deferredList = [];
 
-        /* ask backend for initialization stuff */
-        var localListener = function(request, port) {
-            switch(request.msg) {
-                case constants.msg.PLUGIN_STATUS:
-                     isEnabled = request.status;
-                     version = request.version;
-                     break;
-                case constants.msg.STORAGE:
-                     storage[request.namespace] = request.value || {};
-                     break;
-                case constants.msg.TOKEN:
-                     token = request.token;
-                     break;
-            }
+        port.onMessage.addListener(onMessage);
 
-            /* each id maps to a deferred */
-            deferredList[request.requestid].resolve();
-        };
-        port.onMessage.addListener(localListener);
-        port.postMessage({msg: constants.msg.BACKGROUND_GET_TOKEN, requestid: 0})
-        port.postMessage({msg: constants.msg.BACKGROUND_GET_PLUGIN_STATUS, requestid: 1});
-        port.postMessage({msg: constants.msg.BACKGROUND_GET_STORAGE, namespace: NAMESPACE_SCREENSHOT, requestid: 2});
-        port.postMessage({msg: constants.msg.BACKGROUND_GET_STORAGE, namespace: NAMESPACE_MARKET_INSPECT, requestid: 3});
+        if(token === null) {
+            deferredList.push(csgozone.login(loginCallback));
+            deferredList.push(metjm.login(loginCallback));
+         }
 
-        $.when.apply(null, deferredList).then(function() {
-            port.onMessage.removeListener(localListener);
-            port.onMessage.addListener(onMessage);
-
-            if(!validateToken(token)) {
-                token = null;
-                port.postMessage({msg: constants.msg.BACKGROUND_REVOKE_TOKEN});
-            }
-
-            deferredList = [];
-
-            if(token === null) {
-               deferredList.push(csgozone.login(loginCallback));
-               deferredList.push(metjm.login(loginCallback));
-            }
-
-            $.when.apply(null, deferredList).then(ready);
-        });
+        $.when.apply(null, deferredList).then(ready);
     })();
 
     var steamwizard = {

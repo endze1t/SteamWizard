@@ -1,4 +1,26 @@
-define("core/csgozone", ["util/constants"], function(constants) {
+define("core/csgozone", ["util/constants", "port"], function(constants, port) {
+
+    var POST = function(url, content, onload, onerror) {
+        var xhr = new XMLHttpRequest();
+
+        xhr.open('POST', url, true);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+        xhr.onload = function() {
+            if(onload)
+               onload(JSON.parse(xhr.responseText));
+        };
+        xhr.onerror = function() {
+            if(onerror)
+               onerror();
+        };
+
+        if(content != null)
+           xhr.send(content);
+        else
+           xhr.send();
+    };
+        
     var csgozone = {
         PLUGIN_API_URL: 'https://www.csgozone.net/_service/plugin',
         LOGIN_REQUEST:  'type=login',
@@ -14,36 +36,31 @@ define("core/csgozone", ["util/constants"], function(constants) {
         login: function(callback) {
             var deferred = jQuery.Deferred();
 
-            var port = chrome.runtime.connect({name: 'csgozone.js'});
-            
+            var msg = { msg: constants.msg.BACKGROUND_DO_LOGIN, 
+                        PLUGIN_API_URL: csgozone.PLUGIN_API_URL, 
+                        LOGIN_REQUEST: csgozone.LOGIN_REQUEST
+                      };
+
             function afterLogin(data) {
                 callback(data);
                 deferred.resolve();
-                port.onMessage.removeListener(localListener);
-                port.disconnect();
             }
             
-            var localListener = function(request, port) {
-                switch(request.msg) {
+            port.postMessage(msg, function(response) {
+                switch(response.msg) {
                     case constants.msg.LOGIN_SUCCESS:
-                        var data = request.data;              
+                        var data = response.data;              
                         if(data.success === true)
                            csgozone.setToken(data.token);
 
                         afterLogin(data);
                         break;
                      case constants.msg.LOGIN_FAILED:
-                        afterLogin({success: false, error: request.errorThrown});
+                        afterLogin({success: false, error: response.errorThrown});
                         break;
                 }
-
-            };
-
-            port.onMessage.addListener(localListener);
+            });
             
-            port.postMessage({msg: constants.msg.BACKGROUND_DO_LOGIN, 
-                              PLUGIN_API_URL: csgozone.PLUGIN_API_URL, 
-                              LOGIN_REQUEST: csgozone.LOGIN_REQUEST});
             return deferred;
         },
 
@@ -77,7 +94,25 @@ define("core/csgozone", ["util/constants"], function(constants) {
 
         setToken: function(token) {
             this.token = token;
-        }
+        },
+        
+        /* requirejs plugin api functions */
+        load: function(name, parentRequire, onload, config) {
+            var msg = { msg: constants.msg.BACKGROUND_DO_GET_RESOURCE, 
+                        PLUGIN_API_URL: csgozone.PLUGIN_API_URL,
+                        REQUEST: "type=" + name,
+                        name: name
+                      };
+                     
+            var handler = function(result) {
+                if(result.msg === constants.msg.RESOURCE_SUCCESS)
+                   onload(result.data.data);
+                else
+                   onload.onerror();
+            };
+            
+            port.postMessage(msg, handler);
+        },
     };
     
     return csgozone;

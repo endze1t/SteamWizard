@@ -31,6 +31,8 @@
                 "js": [ "javascript/lib/jquery-3.0.0.min.js",
                          "javascript/lib/require.js",
                          
+                         "javascript/async/port.js",
+                         
                          "javascript/core/csgozone.js",
                          "javascript/core/metjm.js",
                          "javascript/core/steamwizard.js",
@@ -50,6 +52,8 @@
 		  "js": ["javascript/lib/jquery-3.0.0.min.js",
                          "javascript/lib/require.js",
                          
+                         "javascript/async/port.js",
+
                          "javascript/core/csgozone.js",
                          "javascript/core/metjm.js",
                          "javascript/core/steamwizard.js",
@@ -57,6 +61,7 @@
                          "javascript/util/common_ui.js", 
                          "javascript/util/constants.js",
                          "javascript/util/util.js",
+                         "javascript/util/price.js",
                          
                          "javascript/content_script/config.js",
                          "javascript/content_script/market.js"],
@@ -66,7 +71,9 @@
 		  "run_at": "document_end",
 		  "js": ["javascript/lib/jquery-3.0.0.min.js", 
                          "javascript/lib/require.js",
-                        
+
+                         "javascript/async/port.js",
+
                          "javascript/core/csgozone.js",
                          "javascript/core/metjm.js",
                          "javascript/core/steamwizard.js",
