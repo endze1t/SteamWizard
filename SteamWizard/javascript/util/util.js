@@ -10,7 +10,26 @@ define("util/util", function() {
             });
         };
     }
-    
+      
+    function _extractSticker(input) {
+        var sticker = [];
+        var regex = /<img.*?src="(.*?)">/g;
+        var m = regex.exec(input);
+        while(m != null) {
+            sticker.push({image: m[1]});
+            m = regex.exec(input);
+        }
+
+        var s = input.match('>Sticker:(.*?)<');
+        if(s[1] && s[1].split(",").length === sticker.length) {
+           s = s[1].split(",");
+           for(var i=0; i < s.length; i++)
+               sticker[i].name = s[i].trim();
+        }
+
+        return sticker;
+    }
+
     var util = {
         getAssetID : function(inspectLink){
             var reg = /.*A(\d+).*/;
@@ -48,7 +67,16 @@ define("util/util", function() {
 
             return time;
         },
-    };
+        
+        parseStickerData: function(descriptions) {
+            if(descriptions) {
+                for(var k=0; k < descriptions.length; k++) {
+                    if(descriptions[k].value && descriptions[k].value.indexOf("sticker_info") != -1)
+                       return _extractSticker(descriptions[k].value);
+                }
+            }
+        }
+    }
     
     return util;
 });

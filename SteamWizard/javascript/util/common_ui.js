@@ -221,7 +221,9 @@ define("util/common_ui", function() {
             $content.append($inspectsLeftToday);
             $content.append($screenshotPremiumQeue);
             $content.append($buttonsContainer);
-
+            
+            $panel.append('<div id="steam_wizard_data_helper">');
+            
             $(".market_listing_filter").after($panel);
         },
         
