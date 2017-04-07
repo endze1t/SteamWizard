@@ -61,7 +61,6 @@
                          "javascript/util/common_ui.js", 
                          "javascript/util/constants.js",
                          "javascript/util/util.js",
-                         "javascript/util/price.js",
                          
                          "javascript/content_script/config.js",
                          "javascript/content_script/market.js"],
