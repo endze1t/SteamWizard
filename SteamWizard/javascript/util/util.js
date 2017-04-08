@@ -77,7 +77,7 @@ define("util/util", function() {
             }
         },
         
-        fetchGlobal: function(variable, callback) {
+        fetchGlobal: function(variable, callback, processor) {
             var interval = null;
             
             var id = 'SteamWizard_Message_' + new Date().getTime();
@@ -102,15 +102,21 @@ define("util/util", function() {
             var script = document.createElement('script');
             //appending text to a function to convert it's src to string only works in Chrome
             script.textContent = '(' +
-                    function(classname) {
+                    function(classname, processor) {
                         document.getElementById(classname).onclick = function() {
                             var var_name = this.getAttribute('variable');
+                            
+                            var result = window[var_name];
+                            
+                            if(processor)
+                               result = processor(result);
+                           
                             document.dispatchEvent(new CustomEvent(classname, {
-                                detail: window[var_name]
+                                detail: result
                             }));
                         };
                     }
-                + ')("'+ id +'");';
+                + ')("{0}", {1});'.format(id, processor ? processor : 'undefined');
 
             //cram that sucker in 
             (document.head || document.documentElement).appendChild(script);

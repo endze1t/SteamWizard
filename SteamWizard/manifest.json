@@ -26,64 +26,98 @@
 	},
 	"content_scripts": [
             {
-                "matches": ["http://steamcommunity.com/tradeoffer/*", "https://steamcommunity.com/tradeoffer/*"],
+                "matches": ["*://steamcommunity.com/tradeoffer/*"],
+                "run_at": "document_end",
+                "js": [ "javascript/lib/jquery-3.0.0.min.js",
+                        "javascript/lib/require.js",
+
+                        "javascript/async/port.js",
+
+                        "javascript/core/csgozone.js",
+                        "javascript/core/metjm.js",
+                        "javascript/core/steamwizard.js",
+
+                        "javascript/util/common_ui.js", 
+                        "javascript/util/constants.js",
+                        "javascript/util/util.js",
+
+                        "javascript/content_script/config.js",
+                        "javascript/content_script/trade.js"],
+                  "css" : ["css/trade.css"]
+            },
+            
+            {
+                "matches": ["*://steamcommunity.com/id/*/tradeoffers",
+                            "*://steamcommunity.com/id/*/tradeoffers/", 
+                            "*://steamcommunity.com/id/*/tradeoffers/sent",
+                            "*://steamcommunity.com/id/*/tradeoffers/sent/",
+                            
+                            "*://steamcommunity.com/profiles/*/tradeoffer",
+                            "*://steamcommunity.com/profiles/*/tradeoffer/",
+                            "*://steamcommunity.com/profiles/*/tradeoffers/sent",
+                            "*://steamcommunity.com/profiles/*/tradeoffers/sent/"],
+
                 "run_at": "document_end",
                 "js": [ "javascript/lib/jquery-3.0.0.min.js",
                          "javascript/lib/require.js",
-                         
+
                          "javascript/async/port.js",
-                         
+
                          "javascript/core/csgozone.js",
                          "javascript/core/metjm.js",
                          "javascript/core/steamwizard.js",
-                         
+
                          "javascript/util/common_ui.js", 
                          "javascript/util/constants.js",
                          "javascript/util/util.js",
-                         
+
                          "javascript/content_script/config.js",
-                         "javascript/content_script/trade.js"],
-		  "css" : ["css/trade.css"]
-                },
-                
-		{
-		  "matches": ["http://steamcommunity.com/market/listings/730/*", "https://steamcommunity.com/market/listings/730/*"],
-		  "run_at": "document_end",
-		  "js": ["javascript/lib/jquery-3.0.0.min.js",
-                         "javascript/lib/require.js",
-                         
-                         "javascript/async/port.js",
+                         "javascript/content_script/trade_all.js"],
+                  "css" : ["css/trade.css"]
+            },
+            
+            {
+                "matches": ["*://steamcommunity.com/market/listings/730/*"],
+                "run_at": "document_end",
+                "js": ["javascript/lib/jquery-3.0.0.min.js",
+                       "javascript/lib/require.js",
 
-                         "javascript/core/csgozone.js",
-                         "javascript/core/metjm.js",
-                         "javascript/core/steamwizard.js",
-                         
-                         "javascript/util/common_ui.js", 
-                         "javascript/util/constants.js",
-                         "javascript/util/util.js",
-                         
-                         "javascript/content_script/config.js",
-                         "javascript/content_script/market.js"],
-		  "css" : ["css/market.css"]
-		},{
-		  "matches": ["http://steamcommunity.com/profiles/*/inventory*", "http://steamcommunity.com/id/*/inventory*", "https://steamcommunity.com/profiles/*/inventory*", "https://steamcommunity.com/id/*/inventory*"],
-		  "run_at": "document_end",
-		  "js": ["javascript/lib/jquery-3.0.0.min.js", 
-                         "javascript/lib/require.js",
+                       "javascript/async/port.js",
 
-                         "javascript/async/port.js",
+                       "javascript/core/csgozone.js",
+                       "javascript/core/metjm.js",
+                       "javascript/core/steamwizard.js",
 
-                         "javascript/core/csgozone.js",
-                         "javascript/core/metjm.js",
-                         "javascript/core/steamwizard.js",
-                         
-                         "javascript/util/common_ui.js", 
-                         "javascript/util/constants.js",
-                         "javascript/util/util.js",
-                         
-                         "javascript/content_script/inventory.js"],
-		  "css" : ["css/market.css"]
-		}
+                       "javascript/util/common_ui.js", 
+                       "javascript/util/constants.js",
+                       "javascript/util/util.js",
+
+                       "javascript/content_script/config.js",
+                       "javascript/content_script/market.js"],
+                "css" : ["css/market.css"]
+            },
+            
+            {
+                "matches": ["*://steamcommunity.com/id/*/inventory*",
+                            "*://steamcommunity.com/profiles/*/inventory*"],
+                        
+                "run_at": "document_end",
+                "js": ["javascript/lib/jquery-3.0.0.min.js", 
+                       "javascript/lib/require.js",
+
+                       "javascript/async/port.js",
+
+                       "javascript/core/csgozone.js",
+                       "javascript/core/metjm.js",
+                       "javascript/core/steamwizard.js",
+
+                       "javascript/util/common_ui.js", 
+                       "javascript/util/constants.js",
+                       "javascript/util/util.js",
+
+                       "javascript/content_script/inventory.js"],
+                "css" : ["css/market.css"]
+            }
 	  ],
 	 "web_accessible_resources": [
 		"javascript/lib/jquery-3.0.0.min.js", 
