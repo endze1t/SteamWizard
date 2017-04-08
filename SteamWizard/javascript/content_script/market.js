@@ -267,7 +267,7 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
                return;
             }
             
-            fetchGlobal('g_rgAssets', function(data) {
+            util.fetchGlobal('g_rgAssets', function(data) {
                 ui_helper.displayButtons(data);
             });
         }

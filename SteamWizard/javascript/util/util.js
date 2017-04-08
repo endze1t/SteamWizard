@@ -77,7 +77,6 @@ define("util/util", function() {
             }
         },
         
-        
         fetchGlobal: function(variable, callback) {
             var interval = null;
             
@@ -130,6 +129,22 @@ define("util/util", function() {
             }, 100);
 
             $('#'+id)[0].click();
+        },
+        
+        getProperties: function(name) {
+            var prop = {};
+
+            prop.isKnife        = /^★/.test(name);
+            prop.isSticker      = /^Sticker \|/.test(name);
+            prop.isSouvenir     = /^Souvenir .*?\|/.test(name);
+            prop.isMusic        = /^Music \|/.test(name);
+            prop.isKey          = /Case Key/.test(name) || /eSports Key/.test(name);
+            prop.isStatTrak     = /StatTrak™/.test(name);
+            prop.isGraffiti     = /^Sealed Graffiti/.test(name);
+            prop.isOffer        = /^Offer \|/.test(name);
+            prop.isUsedGraffiti = /^Graffiti \|/.test(name);
+
+            return prop;
         }
     }
     
