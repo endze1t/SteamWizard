@@ -17,20 +17,19 @@
     font-size: 85.7%  !important;
 }
 
+.steam_wizard_control_button {
+    padding: 0px 20px !important;
+    font-size: 12px !important;
+    line-height: 22px;
+    margin-right: 15px;
+}
+
 form input[type='radio'] {
   display: inline-block;    
 }
-.steam_wizard_load_button_float_all, .steam_wizard_sort_by_float_button, .steam_wizard_show_100_button {
-    padding: 0px 20px !important;
-    font-size: 12px !important;
-    line-height: 22px !important;
-}
-.steam_wizard_load_button_float_all{
-	margin-left:0px !important;
-}
 
 .steam_wizard_multiple_choice_button{
-	padding: 0px 20px !important;
+    padding: 0px 20px !important;
     font-size: 12px !important;
     margin-left: 10px !important;
     line-height: 22px !important;
@@ -115,9 +114,9 @@ form input[type='radio'] {
     padding: 15px;
 }
 .steam_wizard_status_panel_button_container{
-	box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    
+    margin-top: 15px;
 }
 .steam_wizard_why_limited{
 	position:absolute;

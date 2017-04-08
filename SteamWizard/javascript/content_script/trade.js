@@ -156,7 +156,7 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
         script.remove();
     };
 
-    var moveItems = function(containerSelector, itemVisibility, speed) {
+    var moveItems = function(containerSelector, itemVisibility, direction) {
         var event = new MouseEvent('dblclick', {
             'view': window,
             'bubbles': true,
@@ -167,8 +167,12 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
 
         (function doNext() {
             if(items.length > 0) {
-                items.shift().dispatchEvent(event);
-                setTimeout(doNext, speed);
+                for(var i=0; i < 16 && i < items.length; i++) {
+                    var item = direction ? items.shift() : items.pop();
+                    item.dispatchEvent(event);
+                }
+                
+                setTimeout(doNext, 5);
             }
         })();
     }
@@ -233,23 +237,29 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
             //button to add current page to trade
             var $container = $(".steam_wizard_status_panel_button_container");
             var $addCurrentPageToTradeButton = common_ui.createGreenSteamButton("Select All");
+            $addCurrentPageToTradeButton.removeClass('steam_wizard_load_button')
+                                        .addClass('steam_wizard_control_button');
             $addCurrentPageToTradeButton.click(function(){
-                moveItems("#inventories:visible .inventory_ctn:visible", ":visible", 20);
+                moveItems("#inventories:visible .inventory_ctn:visible", ":visible", true);
             });
 
              //button for removing items from trade
             var $removeAllFromTradeButton = common_ui.createGreenSteamButton("Remove All");
+            $removeAllFromTradeButton.removeClass('steam_wizard_load_button')
+                                     .addClass('steam_wizard_control_button');
             $removeAllFromTradeButton.click(function(){
                 if($("#inventory_select_your_inventory").hasClass("active"))
-                    moveItems("#trade_yours:visible", ":visible",5);
+                    moveItems("#trade_yours:visible", ":visible", false);
                 else
-                    moveItems("#trade_theirs:visible", ":visible", 5);
+                    moveItems("#trade_theirs:visible", ":visible", false);
             });
 
             //button for dumping inventory
             var $dumpInventoryButton = common_ui.createGreenSteamButton("Dump Inventory");
+            $dumpInventoryButton.removeClass('steam_wizard_load_button')
+                                .addClass('steam_wizard_control_button');
             $dumpInventoryButton.click(function(){
-                moveItems(".inventory_ctn:visible", "", 5);
+                moveItems(".inventory_ctn:visible", "", true);
             });
 
             $container.append($addCurrentPageToTradeButton);
