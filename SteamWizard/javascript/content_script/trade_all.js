@@ -11,7 +11,7 @@
  *
  */
 
-require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], function(steamwizard, constants, common_ui, util) {   
+require(["core/steamwizard", "util/constants", "util/common_ui", "util/util", "util/price"], function(steamwizard, constants, common_ui, util, price) {   
     /* namespace shorthand */
     var NAMESPACE_SCREENSHOT     = constants.namespace.NAMESPACE_SCREENSHOT;
     var NAMESPACE_MARKET_INSPECT = constants.namespace.NAMESPACE_MARKET_INSPECT;
@@ -121,7 +121,6 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
         }
     };
     
-    
     /*
      * Initialize
      */
@@ -138,29 +137,35 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
             });
         });
         
-        util.fetchGlobal('g_rgEconomyDisplay', function(g_rgEconomyDisplay) {
-            console.log(g_rgEconomyDisplay);
-            
-            $('.tradeoffer').each(function() {
-                $(this).find('.trade_item').each(function() {
-                    var data_econ = $(this).attr('data-economy-item');
+        $('.tradeoffer').each(function() {
+            $(this).find('.trade_item').each(function() {
+                var data_econ = $(this).attr('data-economy-item');
+
+                if(!data_econ)
+                    return;
+
+                if(!/730\/2/.test(data_econ))
+                    return;
+
+                var split = data_econ.split('/');
+                var itemid = split[2];
+                var userid = split[3];
+
+                if(!itemid || !userid)
+                    return;
+                
+                var $parent = $(this);
+                
+                $.get('http://steamcommunity.com/economy/itemhover/730/2/{0}?content_only=1&omit_owner=1&l=english&o={1}'.format(itemid, userid), function(data) {
+                    var text = data.match(/BuildHover\s*\(\s*'economy_item_.*?'\s*,\s*(.*?)\)\s*;\s*\$\('economy_item_/)[1];
+                    var json = JSON.parse(text);
                     
-                    if(!data_econ)
-                        return;
+                    var div = $('<div>').addClass('steam_wizard_item_price');
+                    div.text(price.getItemSteamPrice(json.market_name));
                     
-                    if(!/730\/2/.test(data_econ))
-                        return;
-                    
-                    var itemid = data_econ.split('/')[2];
-                    
-                    if(!itemid)
-                        return;
-                    
-                    $.get('http://steamcommunity.com/economy/itemhover/730/2/9151869454?content_only=1&omit_owner=1&l=english&o=76561198216437008', function() {
-                        
-                    })
+                    $parent.append(div);
                 });
-            })
+            });
         });
 
         //remove overlay on escape

@@ -15,31 +15,31 @@ define("util/price", ["core/csgozone!market-price", "core/csgozone!market-price-
     function(marketPrice, marketPriceHighend, marketPriceConditional) {
     
     "using strict";
-    
-    var price = {
+        
+    var obj = {
         getItemSteamPrice: function(marketname, skinindex) {
-            var conditional = price.getItemConditionalPrice(marketname, skinindex);
+            var conditional = obj.getItemConditionalPrice(marketname, skinindex);
 
             var price = 40000;
 
             if(conditional !== null)
                price = conditional;
 
-            if(marketPriceHighend.data[marketname])
-               price = marketPriceHighend.data[marketname].price;
+            if(marketPriceHighend[marketname])
+               price = marketPriceHighend[marketname].price;
 
-            else if(marketPrice.data[marketname])
-               price = marketPrice.data[marketname].price;
+            else if(marketPrice[marketname])
+               price = marketPrice[marketname].price;
 
             price /= 100;
             return price;
         },
 
         getItemConditionalPrice: function(marketname, skinindex) {
-            if(marketPriceConditional.data[marketname] === undefined)
+            if(marketPriceConditional[marketname] === undefined)
                return null;
 
-            var conditional = marketPriceConditional.data[marketname];
+            var conditional = marketPriceConditional[marketname];
 
             for(var i=0; i < conditional.length; i++) {
                 var condition = conditional[i];
@@ -56,5 +56,5 @@ define("util/price", ["core/csgozone!market-price", "core/csgozone!market-price-
         }
     };
     
-    return price;
+    return obj;
 });
