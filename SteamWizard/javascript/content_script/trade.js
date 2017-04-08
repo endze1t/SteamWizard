@@ -84,6 +84,79 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
         }
     }
 
+    var replaceEnsureSufficientTradeSlotsFunction = function(){
+        //extremely ugly solution to skipping the animation
+        var actualCode = `// 
+        function EnsureSufficientTradeSlots( bYourSlots, cSlotsInUse, cCurrencySlotsInUse ){
+                console.log('sup');
+                var elSlotContainer = bYourSlots ? $('your_slots') : $('their_slots');
+                
+                var cTotalSlotsInUse = cSlotsInUse + cCurrencySlotsInUse;
+
+                var cDesiredSlots;
+                if ( Economy_UseResponsiveLayout() )
+                    cDesiredSlots = cTotalSlotsInUse + 1;
+                else
+                    cDesiredSlots = Math.max( Math.floor( ( cTotalSlotsInUse + 5 ) / 4 ) * 4, 8 );
+
+                var cDesiredItemSlots = cDesiredSlots - cCurrencySlotsInUse;
+
+                var cCurrentItemSlots = elSlotContainer.childElements().length;
+                var cCurrentSlots = cCurrentItemSlots + cCurrencySlotsInUse;
+
+                var $ContainerParent = $J( elSlotContainer.parentNode );
+                $ContainerParent.css( 'height', $ContainerParent.height() + 'px' );
+                $ContainerParent.css('overflow','hidden');
+
+                var bElementsChanged = false;
+                var fnOnAnimComplete = null;
+                if ( cDesiredSlots > cCurrentSlots )
+                {
+                    for( var i = cCurrentItemSlots; i < cDesiredItemSlots; i++ )
+                    {
+                        CreateTradeSlot( bYourSlots, i );
+                    }
+                    bElementsChanged = true;
+                }
+                else if ( cDesiredSlots < cCurrentSlots )
+                {
+                    // going to compact
+                    var prefix = bYourSlots ? 'your_slot_' : 'their_slot_';
+                    var rgElementsToRemove = new Array();
+                    for ( var i = cDesiredItemSlots; i < cCurrentItemSlots; i++)
+                    {
+                        var element = $(prefix + i );
+                        element.id='';
+                        $(elSlotContainer.parentNode).appendChild( element.remove() );
+                        rgElementsToRemove.push( element );
+                    }
+                    fnOnAnimComplete = function() { rgElementsToRemove.invoke('remove') };
+                    bElementsChanged = true;
+                }
+                if ( bElementsChanged )
+                {
+                    if ( cCurrentSlots ){
+                        var iNewHeight = $ContainerParent[0].scrollHeight - parseInt( $ContainerParent.css('paddingTop') );
+                        $ContainerParent.css({ height: iNewHeight + 'px' });
+                        $ContainerParent.css( 'height', '' ).css( 'overflow', '' );
+                        fnOnAnimComplete && fnOnAnimComplete();
+                    }else{
+                        $ContainerParent.css( 'height', '' ).css( 'overflow', '' );
+                        fnOnAnimComplete && fnOnAnimComplete();
+                    }
+                }
+                else
+                {
+                    $ContainerParent.css( 'height', '' ).css( 'overflow', '' );
+                }
+            }
+        `;
+        var script = document.createElement('script');
+        script.textContent = actualCode;
+        (document.head||document.documentElement).appendChild(script);
+        script.remove();
+    };
+
     var moveItems = function(containerSelector, itemVisibility, speed) {
         var event = new MouseEvent('dblclick', {
             'view': window,
@@ -154,24 +227,30 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
             });
         });
 
+
+        replaceEnsureSufficientTradeSlotsFunction();
+
         {
             //button to add current page to trade
             var $container = $(".steam_wizard_status_panel_button_container");
             var $addCurrentPageToTradeButton = common_ui.createGreenSteamButton("Select All");
             $addCurrentPageToTradeButton.click(function(){
-                moveItems(".inventory_ctn:visible", ":visible", 20);
+                moveItems("#inventories:visible .inventory_ctn:visible", ":visible", 20);
             });
 
              //button for removing items from trade
             var $removeAllFromTradeButton = common_ui.createGreenSteamButton("Remove All");
             $removeAllFromTradeButton.click(function(){
-                moveItems("#trade_yours:visible", ":visible", 100);
+                if($("#inventory_select_your_inventory").hasClass("active"))
+                    moveItems("#trade_yours:visible", ":visible",5);
+                else
+                    moveItems("#trade_theirs:visible", ":visible", 5);
             });
 
             //button for dumping inventory
             var $dumpInventoryButton = common_ui.createGreenSteamButton("Dump Inventory");
             $dumpInventoryButton.click(function(){
-                moveItems(".inventory_ctn", "", 50);
+                moveItems(".inventory_ctn:visible", "", 5);
             });
 
             $container.append($addCurrentPageToTradeButton);
