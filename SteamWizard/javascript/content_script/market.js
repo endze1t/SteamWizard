@@ -267,7 +267,7 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
                return;
             }
             
-            assetFetcher.get(function(data) {
+            fetchGlobal('g_rgAssets', function(data) {
                 ui_helper.displayButtons(data);
             });
         }
@@ -399,9 +399,7 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
         (document.head||document.documentElement).appendChild(script);
         script.remove();
     }
-    
-    var assetFetcher;
-    
+        
     /*
      * Initialize
      */
@@ -457,54 +455,6 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
         });
 
         steamwizard.addEventListener(steamWizardEventListener);
-        
-        assetFetcher = (function(){
-            var handler = null;
-            var interval = null;
-
-            // Event listener
-            document.addEventListener('SteamWizard_Message', function(e) {
-                if(handler && e.detail) {
-                   handler(e.detail);
-                   clearInterval(interval);
-                }
-            });
-
-            // inject code into "the other side" to talk back to this side;
-            var script = document.createElement('script');
-            //appending text to a function to convert it's src to string only works in Chrome
-            script.textContent = '(' +
-                    function() {
-                        document.getElementById('steam_wizard_data_helper').onclick = function() {
-                            document.dispatchEvent(new CustomEvent('SteamWizard_Message', {
-                                detail: window.g_rgAssets
-                            }));
-                        };
-                    }
-                + ')();';
-
-            //cram that sucker in 
-            (document.head || document.documentElement).appendChild(script);
-
-            script.remove();
-
-            return {
-                get: function(callback) {
-                    handler = callback;
-                    $('#steam_wizard_data_helper')[0].click();
-
-                    clearInterval(interval);
-                    var counter = 50;
-                    
-                    interval = setInterval(function() {
-                        $('#steam_wizard_data_helper')[0].click();
-
-                        if(counter-- < 1)
-                           clearInterval(interval);
-                    }, 100);
-                }
-            }
-        })();
         
         /* TODO: LOADING INDICATION */
         steamwizard.ready(function () {

@@ -86,9 +86,8 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
 
     var replaceEnsureSufficientTradeSlotsFunction = function(){
         //extremely ugly solution to skipping the animation
-        var actualCode = `// 
-        function EnsureSufficientTradeSlots( bYourSlots, cSlotsInUse, cCurrencySlotsInUse ){
-                console.log('sup');
+        var actualCode = '(EnsureSufficientTradeSlots = ' +
+            function( bYourSlots, cSlotsInUse, cCurrencySlotsInUse ) {
                 var elSlotContainer = bYourSlots ? $('your_slots') : $('their_slots');
                 
                 var cTotalSlotsInUse = cSlotsInUse + cCurrencySlotsInUse;
@@ -150,7 +149,7 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
                     $ContainerParent.css( 'height', '' ).css( 'overflow', '' );
                 }
             }
-        `;
+        + ')();';
         var script = document.createElement('script');
         script.textContent = actualCode;
         (document.head||document.documentElement).appendChild(script);

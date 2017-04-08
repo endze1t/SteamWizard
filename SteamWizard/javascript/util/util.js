@@ -75,6 +75,61 @@ define("util/util", function() {
                        return _extractSticker(descriptions[k].value);
                 }
             }
+        },
+        
+        
+        fetchGlobal: function(variable, callback) {
+            var interval = null;
+            
+            var id = 'SteamWizard_Message_' + new Date().getTime();
+            var $element = $('<div>').attr('id', id);
+            $element.appendTo(document.body);
+            
+            // Event listener
+            document.addEventListener(id, function listener(e) {
+                if(callback && e.detail) {
+                   callback(e.detail);
+                   clearInterval(interval);
+                   
+                   /* remove event listener */
+                   document.removeEventListener(id, listener);
+                   
+                   /* remove element from dom */
+                   $element.remove();
+                }
+            });
+
+            // inject code into "the other side" to talk back to this side;
+            var script = document.createElement('script');
+            //appending text to a function to convert it's src to string only works in Chrome
+            script.textContent = '(' +
+                    function(classname) {
+                        document.getElementById(classname).onclick = function() {
+                            var var_name = this.getAttribute('variable');
+                            document.dispatchEvent(new CustomEvent(classname, {
+                                detail: window[var_name]
+                            }));
+                        };
+                    }
+                + ')("'+ id +'");';
+
+            //cram that sucker in 
+            (document.head || document.documentElement).appendChild(script);
+
+            script.remove();
+            $element.attr('variable', variable);
+            
+            clearInterval(interval);
+            var counter = 50;
+
+            interval = setInterval(function () {
+                $('#'+id)[0].click();
+
+                if (counter-- < 1)
+                    clearInterval(interval);
+            }, 100);
+
+            $('#'+id)[0].click();
         }
     }
     
