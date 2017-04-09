@@ -11,7 +11,7 @@
  *
  */
 
-require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], function(steamwizard, constants, common_ui, util) {   
+require(["core/steamwizard", "util/constants", "util/common_ui", "util/util","util/price"], function(steamwizard, constants, common_ui, util, price) {
     /* namespace shorthand */
     var NAMESPACE_SCREENSHOT     = constants.namespace.NAMESPACE_SCREENSHOT;
     var NAMESPACE_MARKET_INSPECT = constants.namespace.NAMESPACE_MARKET_INSPECT;
@@ -156,7 +156,7 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
         script.remove();
     };
 
-    var moveItems = function(containerSelector, itemVisibility, direction) {
+    var moveItems = function(containerSelector, itemVisibility, direction, filter) {
         var event = new MouseEvent('dblclick', {
             'view': window,
             'bubbles': true,
@@ -164,10 +164,18 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
         });
 
         var items = $(containerSelector).find(".item" + itemVisibility).toArray();
+        if(filter && filter == "keys"){
+            for(var i = items.length -1;i>=0;i--){
+                var hashname = $(items[i]).prop("data-hashname");
+                var properties = util.getProperties(hashname);
+                if(!properties.isKey)
+                    items.splice(i,1);
+            }
+        }
 
         (function doNext() {
             if(items.length > 0) {
-                for(var i=0; i < 16 && i < items.length; i++) {
+                for(var i=0; i < 1 && i < items.length; i++) {
                     var item = direction ? items.shift() : items.pop();
                     item.dispatchEvent(event);
                 }
@@ -176,9 +184,66 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
             }
         })();
     }
-        
+
+    var updateTradeStats = function($itemContainer, $statusRow){
+        var numItems = $itemContainer.find(".has_item").length;
+        var val = 0.0;
+        var foundAllPrices = true;
+        $itemContainer.find(".has_item").each(function(index, value){
+            var price = $(value).find(".item").prop("data-price");
+            if(price)
+                val += price;
+            else  
+                foundAllPrices = false;
+        });
+        $statusRow.find(".status_count").text(numItems);
+        $statusRow.find(".status_value").text("$" + val.toFixed(2));
+    }
+    
     var events = {
        
+    }
+
+    var cachedInventories = {};
+
+    var getInventory = function(inventoryId, getInvCallback){
+        if(cachedInventories[inventoryId]){
+            //don't callback again, everything should be prepared
+            //getInvCallback(cachedInventories[inventoryId]);
+        }else{
+            util.fetchGlobal('g_ActiveInventory', function(data) {
+                cachedInventories[inventoryId] = data;
+                getInvCallback(data);
+            }, function(input){
+                var output = {};
+
+                output.appid = input.appid;
+                output.contextid = input.contextid;
+                output.elInventoryId = input.elInventory.id;
+                
+                var keys = Object.keys(input.rgInventory);
+                for(var i = 0;i<keys.length;i++){
+                    output[keys[i]] = input.rgInventory[keys[i]].market_hash_name;
+                }
+                return output;
+            });
+        }
+    }
+
+    var updateInventory = function(inventoryId){
+        getInventory(inventoryId, function(inventory){
+            $("#" + inventoryId).find(".item").each(function(index, value){
+                var $item = $(value);
+                var itemId = value.id.split("_")[2];
+                if(inventory[itemId]){
+                    var hashname = inventory[itemId];
+                    $item.prop('data-hashname', hashname);
+                    var itemPrice = price.getItemSteamPrice(hashname);
+                    $item.append($("<p style='position:absolute;top:-14px;left:0px;'>").text("$" + itemPrice));
+                    $item.prop("data-price", itemPrice);
+                }
+            });
+        });
     }
     
     var ui_helper = {
@@ -234,8 +299,35 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
         replaceEnsureSufficientTradeSlotsFunction();
 
         {
-            //button to add current page to trade
+            //table for status
+            var $statusTable = $("<table class='steam_wizard_status_table'><tr><th></th><th>#Items</th><th>Sum Value</th></tr></table>");
+            var $statusTableYours = $("<tr><th>Yours</th><td class='status_count'>0</td><td class='status_value'>$0.00</td></tr>");
+            var $statusTableTheirs = $("<tr><th>Theirs</th><td class='status_count'>0</td><td class='status_value'>$0.00</td></tr>");
+            $statusTable.append($statusTableYours);
+            $statusTable.append($statusTableTheirs);
+
+            //trigger for calculating number and value of items
+            $theirSlots = $('#their_slots');
+            $yourSlots = $("#your_slots");
+            var observerYours = new MutationObserver(function () {updateTradeStats($yourSlots, $statusTableYours) });
+            var observerTheirs = new MutationObserver(function () {updateTradeStats($theirSlots, $statusTableTheirs) });
+            observerTheirs.observe($theirSlots[0], {childList: true, characterData: false, subtree: true});
+            observerYours.observe($yourSlots[0], {childList: true, characterData: false, subtree: true});
+
+            //observe when user changes inventory, then update hashnames
+            var inventoryChangeObserver = new MutationObserver(function () {
+                //only react if the inventory is done loading
+                if($("#trade_inventory_unavailable:visible").length == 0){
+                    //get the id of the currently visible inventory
+                    var inventoryId = $(".inventory_ctn:visible")[0].id;
+                    updateInventory(inventoryId);
+                }
+            });
+            inventoryChangeObserver.observe($("#appselect_activeapp")[0], {childList: true, characterData: false, subtree: false});
+            
             var $container = $(".steam_wizard_status_panel_button_container");
+
+            //button to add current page to trade
             var $addCurrentPageToTradeButton = common_ui.createGreenSteamButton("Select All");
             $addCurrentPageToTradeButton.removeClass('steam_wizard_load_button')
                                         .addClass('steam_wizard_control_button');
@@ -262,9 +354,18 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
                 moveItems(".inventory_ctn:visible", "", true);
             });
 
+            //button to add current page to trade
+            var $addKeysToTradeButton = common_ui.createGreenSteamButton("Keys");
+            $addKeysToTradeButton.removeClass('steam_wizard_load_button').addClass('steam_wizard_control_button');
+            $addKeysToTradeButton.click(function(){
+                moveItems("#inventories:visible .inventory_ctn:visible", ":visible", true, "keys");
+            });
+
+            $container.append($statusTable);
             $container.append($addCurrentPageToTradeButton);
             $container.append($removeAllFromTradeButton);
             $container.append($dumpInventoryButton);
+            $container.append($addKeysToTradeButton);
         }
 
         //remove overlay on escape
@@ -275,7 +376,6 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
 
         steamwizard.addEventListener(steamWizardEventListener);
         
-
         /* TODO: LOADING INDICATION */
         steamwizard.ready(function () {
             if(steamwizard.getMarketDisplayCount() !== 10)

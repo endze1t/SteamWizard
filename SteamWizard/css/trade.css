@@ -173,3 +173,10 @@ form input[type='radio'] {
     margin-top: 20px;
     color: navajowhite;
 }
+
+.steam_wizard_status_table{
+	margin-bottom: 15px;
+}
+.steam_wizard_status_table tr{
+	text-align:right;
+}
