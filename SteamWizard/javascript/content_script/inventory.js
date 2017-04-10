@@ -5,7 +5,7 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
     
     function onGetFloat(){
             if(!steamwizard.isLoggedIn()) {
-                ui.showLoginOverlay();
+                common_ui.showLoginOverlay();
                 return;
             }
 
@@ -43,7 +43,7 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
                             $getScreenshotButton.find('span').text(result.msg);
                     }else if (result.status == steamwizard.EVENT_STATUS_DONE){
                             $getScreenshotButton.find('span').text('Open Screenshot');
-                            $getScreenshotButton.click(function(){ui.showScreenshotOverlay(result.image_url);});
+                            $getScreenshotButton.click(function(){common_ui.showScreenshotOverlay(result.image_url);});
                             $getScreenshotButton[0].click();
                     }else if (result.status == steamwizard.EVENT_STATUS_FAIL){
                             $getScreenshotButton.find('span').text(result.msg);
