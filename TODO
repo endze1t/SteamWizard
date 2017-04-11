@@ -1,23 +1,44 @@
-1- Item Pricing
-    a- in trade                 -> DONE
-    b- in inventory
+Trade
+-----
+- Item Pricing                                                          -> DONE
+- Float value for items
+- button to add all items/keys currently visible to the tradeoffer      -> DONE
+- how many items/keys are currently added to the trade offer            -> DONE
+- total value of trade offer for both parties                           -> DONE
+- ctrl+left click: select all of this item on that page, 
+- ctrl+shift+left click: select all of this item in the whole inventory
+- Move check-box and accept to top of page
+- display ad in SteamWizard panel
 
-2- Float values for trade offers
 
-3- Single Trade Page
-    a - button to add all items/keys currently visible to the tradeoffer    -> DONE
-    b - how many items/keys are currently added to the trade offer
-    c - total value of trade offer for both parties
 
-4- All Trades Page
-    a - number of items in the trade
-    b - value for single items, total value of both parties
-	c - button to request float/screenshot for each item
-	d - count number of keys automatically on load
-	e - button for each item to go to the corresponding market page
-	f - quick accept button (check if this is ok with steam TOS)
+Trade All
+---------
+- number of items in the trade
+- value for single items, total value of both parties
+- button to request float/screenshot for each item
+- count number of keys automatically on load
+- button for each item to go to the corresponding market page
+- quick accept button (check if this is ok with steam TOS)
+- SteamWizard panel
 
-4- Market
-    a- Show stickers on market page                     -> DONE
-    b- Show patterns on market  -> sub'ed users
 
+Market
+------
+- Show stickers on market page                                          -> DONE
+- Show patterns on market  -> sub'ed users
+- Extended info: pattern / origin / skin ...
+
+
+Inventory
+---------
+- Item Pricing
+
+
+Configuration Panel
+-------------------
+- Panel should popup when the icon is pressed
+
+
+Alerts
+------

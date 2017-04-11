@@ -6,8 +6,8 @@
 define("core/steamwizard", ["core/csgozone", "core/metjm", "util/constants", "util/util",
        "port!BACKGROUND_GET_TOKEN", 
        "port!BACKGROUND_GET_PLUGIN_STATUS", 
-       "port!BACKGROUND_GET_STORAGE, namespace: NAMESPACE_SCREENSHOT",
-       "port!BACKGROUND_GET_STORAGE, namespace: NAMESPACE_MARKET_INSPECT"],
+       "port!BACKGROUND_GET_STORAGE, namespace: screenshot",
+       "port!BACKGROUND_GET_STORAGE, namespace: marketinspect"],
     function(csgozone, metjm, constants, util,
              token_msg, plugin_status, screenshot_storage, inspect_storage) {
 
