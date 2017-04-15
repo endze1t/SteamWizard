@@ -96,6 +96,7 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
             if(floatvalue != null){
                $getFloatButton.off().addClass('btn_grey_white_innerfade');
                $getFloatButton.empty().append(common_ui.createWearValueSpan(floatvalue.paintwear.toFixed(15)));
+               $getFloatButton.append($("<span>").text(floatvalue.paintseed).attr('title', 'Pattern Index'));
             }
         },
         
