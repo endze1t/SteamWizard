@@ -31,6 +31,30 @@ define("util/util", function() {
     }
 
     var util = {
+
+        getJquerySelector : function(element){
+            var pieces = [];
+            for (;element && element.tagName !== undefined; element = element.parentNode) {
+                if (element.className) {
+                    var classes = element.className.split(' ');
+                    for (var i in classes) {
+                        if (classes.hasOwnProperty(i) && classes[i]) {
+                            pieces.unshift(classes[i]);
+                            pieces.unshift('.');
+                        }
+                    }
+                }
+                if (element.id && !/\s/.test(element.id)) {
+                    pieces.unshift(element.id);
+                    pieces.unshift('#');
+                }
+                pieces.unshift(element.tagName);
+                pieces.unshift(' > ');
+            }
+
+            return pieces.slice(1).join('');
+        },
+
         getAssetID : function(inspectLink){
             var reg = /.*A(\d+).*/;
             var match = reg.exec(inspectLink);

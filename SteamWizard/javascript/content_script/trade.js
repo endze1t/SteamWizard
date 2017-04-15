@@ -11,7 +11,7 @@
  *
  */
 
-require(["core/steamwizard", "util/constants", "util/common_ui", "util/util","util/price"], function(steamwizard, constants, common_ui, util, price) {
+require(["core/steamwizard", "util/constants", "util/common_ui", "util/util","util/price", "util/keys"], function(steamwizard, constants, common_ui, util, price, keys) {
     /* namespace shorthand */
     var NAMESPACE_SCREENSHOT     = constants.namespace.NAMESPACE_SCREENSHOT;
     var NAMESPACE_MARKET_INSPECT = constants.namespace.NAMESPACE_MARKET_INSPECT;
@@ -171,6 +171,12 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util","ut
                 if(!properties.isKey)
                     items.splice(i,1);
             }
+        }else if (filter){
+            for(var i = items.length -1;i>=0;i--){
+                var hashname = $(items[i]).prop("data-hashname");
+                if(hashname != filter)
+                    items.splice(i,1);
+            }
         }
 
         (function doNext() {
@@ -241,6 +247,18 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util","ut
                     var itemPrice = price.getItemSteamPrice(hashname);
                     $item.append($("<p style='position:absolute;top:-14px;left:0px;'>").text("$" + itemPrice));
                     $item.prop("data-price", itemPrice);
+                    $item.click(function(){
+                        var ctrl = keys.getKeyPressed(keys.CTRL);
+                        var shift = keys.getKeyPressed(keys.SHIFT);
+                        console.log(ctrl);
+                        console.log(shift);
+                        var selector = util.getJquerySelector($item.parent().parent().parent()[0]);
+                        if(ctrl && shift){
+                            moveItems(selector, "", false, hashname);
+                        } else if (ctrl) {
+                            moveItems(selector, ":visible", false, hashname);
+                        }
+                    });
                 }
             });
         });
@@ -299,6 +317,9 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util","ut
         replaceEnsureSufficientTradeSlotsFunction();
 
         {
+            keys.observeKey(keys.CTRL);
+            keys.observeKey(keys.SHIFT);
+
             //table for status
             var $statusTable = $("<table class='steam_wizard_status_table'><tr><th></th><th>#Items</th><th>Sum Value</th></tr></table>");
             var $statusTableYours = $("<tr><th>Yours</th><td class='status_count'>0</td><td class='status_value'>$0.00</td></tr>");
