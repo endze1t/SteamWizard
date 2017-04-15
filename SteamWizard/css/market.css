@@ -12,6 +12,10 @@
     font-size: 85.7%  !important;
 }
 
+.steam_wizard_load_button_float > span {
+    display: inline-block !important;
+}
+
 form input[type='radio'] {
   display: inline-block;    
 }
