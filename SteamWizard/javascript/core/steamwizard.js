@@ -334,7 +334,11 @@ define("core/steamwizard", ["core/csgozone", "core/metjm", "util/constants", "ut
         log: function() {
             csgozone.log(version);
             metjm.log(version);
-        }
+        },
+        
+        getMarketAffiliates: function(callback) {
+            csgozone.affiliates(callback);
+        },
     };        
 
     return steamwizard;

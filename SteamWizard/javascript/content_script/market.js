@@ -93,10 +93,10 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
         },
         
         finishFloatButton: function($getFloatButton, floatvalue){
-            if(floatvalue != null){
+            if(floatvalue != null) {
                $getFloatButton.off().addClass('btn_grey_white_innerfade');
                $getFloatButton.empty().append(common_ui.createWearValueSpan(floatvalue.paintwear.toFixed(15)));
-               $getFloatButton.append($("<span>").text(floatvalue.paintseed).attr('title', 'Pattern Index'));
+               $getFloatButton.append($("<span class='pattern'>").text(floatvalue.paintseed).attr('title', 'Pattern Index'));
             }
         },
         
@@ -271,6 +271,55 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
             util.fetchGlobal('g_rgAssets', function(data) {
                 ui_helper.displayButtons(data);
             });
+        },
+        
+        buildAffiliatePanel: function(data) {
+            var $panel = $("<div>").addClass('steam_wizard_status_panel');
+            var $content = $("<div>").addClass('steam_wizard_status_panel_content');
+            var $affiliates = $("<div>").addClass('steam_wizard_market_affiliates');
+            
+            $panel.append($content);
+            $content.append($("<p>External Markets</p>").css({'font-size':'18px'}).addClass('market_commodity_orders_header_promote'));
+            $content.append($affiliates);
+            
+            var itemname = $('.market_listing_nav a')[1].textContent;
+            
+            var list = data.list;
+
+            for(var i=0; i < 6; i++) {
+                $affiliates.append(ui_helper.buildAffiliate(list[i], itemname));
+            }
+            
+            $("#market_buyorder_info").after($panel);
+        },
+        
+        buildAffiliate: function(data, name) {
+            var $cell = $('<div>');
+            
+            if(data) {
+                var $div = $('<div>');
+                $div.append($('<img>').addClass('steam_wizard_affiliate_logo').attr('src', data.logo));
+                $div.append($('<div>').addClass('steam_wizard_affiliate_name').text(data.name));
+                $cell.append($div);
+
+                var $priceButton = common_ui.createGreenSteamButton('loading...');
+                $priceButton.addClass('btn_grey_white_innerfade steam_wizard_affiliate_price');
+                $cell.append($priceButton);
+
+                var split = data.url.split('?');
+
+                $.ajax({type: "POST", 
+                        url: split[0], 
+                        data: split[1].format(encodeURIComponent(name))})
+                .done(function(data) {
+                    $priceButton.addClass('btn_grey_white_innerfade');
+                    $priceButton.empty().append($('<span>').text(data.price ? ('$' + data.price.toFixed(2) + ' USD') : '-'));
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    $priceButton.text('Failed').addClass('steam_wizard_load_button_failed');
+                });
+            }
+
+            return $cell;
         }
     };
     
@@ -463,6 +512,10 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
                changeNumOfDisplayedItems(steamwizard.getMarketDisplayCount());
             else
                ui_helper.initDisplay();
+        });
+        
+        steamwizard.getMarketAffiliates(function(data) {
+            ui_helper.buildAffiliatePanel(data);
         });
     })();
 });

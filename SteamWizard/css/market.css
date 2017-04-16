@@ -16,6 +16,11 @@
     display: inline-block !important;
 }
 
+.steam_wizard_load_button_float .pattern {
+    width: 50px;
+    box-sizing: border-box;
+}
+
 form input[type='radio'] {
   display: inline-block;    
 }
@@ -185,4 +190,43 @@ form input[type='radio'] {
 
 .steam_wizard_market_stickers img {
     width: 40px;
+}
+
+.steam_wizard_market_affiliates {
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+}
+
+.steam_wizard_market_affiliates > div {
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border-radius: 3px;
+    min-width: 130px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.steam_wizard_affiliate_logo {
+    height: 20px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.steam_wizard_affiliate_name {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+.steam_wizard_affiliate_price {
+    margin: 20px 0 5px !important;
+    min-width: 60px;
+    text-align: center;
+}
+
+.steam_wizard_affiliate_price > span {
+    background: rgb(63, 63, 63) !important;
 }

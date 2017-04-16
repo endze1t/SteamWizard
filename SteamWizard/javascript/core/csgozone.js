@@ -22,10 +22,12 @@ define("core/csgozone", ["util/constants", "port"], function(constants, port) {
     };
         
     var csgozone = {
-        PLUGIN_API_URL: 'https://www.csgozone.net/_service/plugin',
-        LOGIN_REQUEST:  'type=login',
-        MARKET_REQUEST: 'type=marketInspect&link={0}&token={1}',
-        STATUS_REQUEST: 'type=status&token={0}',
+        PLUGIN_API_URL     : 'https://www.csgozone.net/_service/plugin',
+        LOGIN_REQUEST      : 'type=login',
+        MARKET_REQUEST     : 'type=marketInspect&link={0}&token={1}',
+        STATUS_REQUEST     : 'type=status&token={0}',
+        AFFILIATES_REQUEST : 'type=marketAffiliates',
+        MARKET_LOWEST_PRICE: 'type=marketLowestPrice&name={0}',
 
         token: '',
 
@@ -96,6 +98,17 @@ define("core/csgozone", ["util/constants", "port"], function(constants, port) {
             this.token = token;
         },
         
+        affiliates: function(callback) {
+            $.ajax({type: "POST", 
+                    url: csgozone.PLUGIN_API_URL, 
+                    data: csgozone.AFFILIATES_REQUEST})
+            .done(function(data) {
+                callback(data);
+            }).fail(function(jqXHR, textStatus, errorThrown) { 
+                callback({success: false, error: textStatus});
+            });
+        },
+        
         /* requirejs plugin api functions */
         load: function(name, parentRequire, onload, config) {
             var msg = { msg: constants.msg.BACKGROUND_DO_GET_RESOURCE, 
@@ -112,7 +125,8 @@ define("core/csgozone", ["util/constants", "port"], function(constants, port) {
             };
             
             port.postMessage(msg, handler);
-        },
+        }
+        
     };
     
     return csgozone;
