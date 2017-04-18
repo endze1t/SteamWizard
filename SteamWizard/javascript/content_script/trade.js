@@ -164,8 +164,9 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util","ut
         });
 
         var items = $(containerSelector).find(".item" + itemVisibility).toArray();
+        
         if(filter && filter == "keys"){
-            for(var i = items.length -1;i>=0;i--){
+            for(var i = items.length -1; i >= 0; i--){
                 var hashname = $(items[i]).prop("data-hashname");
                 var properties = util.getProperties(hashname);
                 if(!properties.isKey)
@@ -248,15 +249,15 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util","ut
                     $item.append($("<p style='position:absolute;top:-14px;left:0px;'>").text("$" + itemPrice));
                     $item.prop("data-price", itemPrice);
                     $item.click(function(){
-                        var ctrl = keys.getKeyPressed(keys.CTRL);
                         var shift = keys.getKeyPressed(keys.SHIFT);
-                        console.log(ctrl);
-                        console.log(shift);
+                        var alt = keys.getKeyPressed(keys.ALT);
+
                         var selector = util.getJquerySelector($item.parent().parent().parent()[0]);
-                        if(ctrl && shift){
-                            moveItems(selector, "", false, hashname);
-                        } else if (ctrl) {
-                            moveItems(selector, ":visible", false, hashname);
+
+                        if(alt && shift){
+                           moveItems(selector, "", false, hashname);
+                        } else if(shift) {
+                           moveItems(selector, ":visible", false, hashname);
                         }
                     });
                 }
@@ -296,7 +297,7 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util","ut
 //               ui_helper.removeButtons();
         }
     };
-        
+
     /*
      * Initialize
      */
@@ -317,7 +318,7 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util","ut
         replaceEnsureSufficientTradeSlotsFunction();
 
         {
-            keys.observeKey(keys.CTRL);
+            keys.observeKey(keys.ALT);
             keys.observeKey(keys.SHIFT);
 
             //table for status
@@ -328,8 +329,8 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util","ut
             $statusTable.append($statusTableTheirs);
 
             //trigger for calculating number and value of items
-            $theirSlots = $('#their_slots');
-            $yourSlots = $("#your_slots");
+            var $theirSlots = $('#their_slots');
+            var $yourSlots  = $("#your_slots");
             var observerYours = new MutationObserver(function () {updateTradeStats($yourSlots, $statusTableYours) });
             var observerTheirs = new MutationObserver(function () {updateTradeStats($theirSlots, $statusTableTheirs) });
             observerTheirs.observe($theirSlots[0], {childList: true, characterData: false, subtree: true});

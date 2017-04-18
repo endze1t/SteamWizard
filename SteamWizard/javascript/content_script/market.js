@@ -303,7 +303,7 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
                 $cell.append($div);
 
                 var $priceButton = common_ui.createGreenSteamButton('loading...');
-                $priceButton.addClass('btn_grey_white_innerfade steam_wizard_affiliate_price');
+                $priceButton.addClass('btn_grey_white_innerfade steam_wizard_affiliate_price btn_grey_white_innerfade');
                 $cell.append($priceButton);
 
                 var split = data.url.split('?');
@@ -312,8 +312,18 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
                         url: split[0], 
                         data: split[1].format(encodeURIComponent(name))})
                 .done(function(data) {
-                    $priceButton.addClass('btn_grey_white_innerfade');
-                    $priceButton.empty().append($('<span>').text(data.price ? ('$' + data.price.toFixed(2) + ' USD') : '-'));
+                    $priceButton.empty();
+            
+                    if(data.price) {
+                        var $span = $('<span>').text('$' + data.price.toFixed(2) + ' USD');
+                        $priceButton.removeClass('btn_grey_white_innerfade').append($span);
+                        $priceButton.click(function() {
+                            if(data.href)
+                               window.open(data.href + '&ref=steamwizard');
+                        });
+                    } else {
+                        $priceButton.append($('<span>').text('-'));                        
+                    }
                 }).fail(function(jqXHR, textStatus, errorThrown) {
                     $priceButton.text('Failed').addClass('steam_wizard_load_button_failed');
                 });

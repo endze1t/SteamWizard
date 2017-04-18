@@ -5,17 +5,18 @@ define("util/keys", function() {
 
     $(document).keydown(function(event){
         if(observedKeys[event.which])
-            observedKeys[event.which].pressed = true;
+           observedKeys[event.which].pressed = true;
     });
 
     $(document).keyup(function(event){
         if(observedKeys[event.which])
-            observedKeys[event.which].pressed = false;
+           observedKeys[event.which].pressed = false;
     });
 
     var keys = {
         SHIFT : 16,
-        CTRL : 17,
+        CTRL  : 17,
+        ALT   : 18,
 
         observeKey: function(keyCode) {
             observedKeys[keyCode] = {
