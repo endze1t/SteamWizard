@@ -1,0 +1,587 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Oct 22, 2017, 7:37:59 PM
+    Author     : ahmed
+*/
+
+
+@ItemRarityDefaultColor: #6a6156;
+@ItemRarityCommonColor: #b0c3d9;
+@ItemRarityUncommonColor: #5e98d9;
+@ItemRarityRareColor: #4b69ff;
+@ItemRarityMythicalColor: #8847ff;
+@ItemRarityLegendaryColor: #d32ce6;
+@ItemRarityAncientColor: #eb4b4b;
+@ItemRarityExceedinglyRareColor: #ffd700;
+@ItemRarityImmortalColor: #e4ae39;
+
+.rarity_color(@property, @opacity: 100%) {
+    &.default {
+      @{property}: fade(@ItemRarityDefaultColor, @opacity);
+    }
+    &.common {
+      @{property}: fade(@ItemRarityCommonColor, @opacity);
+    }
+    &.uncommon {
+      @{property}: fade(@ItemRarityUncommonColor, @opacity);      
+    }
+    &.rare {
+      @{property}: fade(@ItemRarityRareColor, @opacity);
+    }
+    &.mythical {
+      @{property}: fade(@ItemRarityMythicalColor, @opacity);
+    }
+    &.legendary {
+      @{property}: fade(@ItemRarityLegendaryColor, @opacity);
+    }
+    &.ancient {
+      @{property}: fade(@ItemRarityAncientColor, @opacity);
+    }
+    &.exceeding {
+      @{property}: fade(@ItemRarityExceedinglyRareColor, @opacity);
+    }
+    &.immortal {
+      @{property}: fade(@ItemRarityImmortalColor, @opacity);
+    }
+}
+
+@font-face {
+    font-family: quantify;
+    src: url('/font/QUANTIFY BOLD V2.6.ttf');
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: nexa;
+    src: url('/font/NEXA BOLD.otf');
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: nexa;
+    src: url('/font/NEXA LIGHT.otf');
+    font-weight: light;
+}
+
+html, body {
+    margin: 0px;
+    width: 100%;
+    min-width: 800px;
+    height: 100%;
+}
+
+.template {
+    display: none;
+}
+
+.tabs {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    border-bottom: solid 1px rgb(60, 61, 65);
+    background-color: rgb(35, 36, 39);
+    
+    .logo {
+        width: 200px;
+        height: 100px;
+        background-image: url('chrome-extension://__MSG_@@extension_id__/images/logo_512.png');
+        background-size: auto 80%;
+        background-repeat: no-repeat;
+        background-position: center;
+        padding: 0px;
+        vertical-align: top;
+        cursor: pointer;
+    }
+    
+    .section {
+        width: 160px;
+        color: gray;
+        padding: 0px;
+        vertical-align: top;
+        transition: all 1s;
+        
+        .name {
+            text-transform: uppercase;
+            font-family: nexa;
+            text-align: left;
+            font-weight: bold;
+            font-size: 10px;
+            letter-spacing: 2px;
+            margin: 25px 13px 0px 13px;
+        }
+        
+        .border {
+            height: 7px;
+            margin: 13px 13px 0px 13px;
+            background-color: gray;
+        }
+        
+        .tab-container {
+            white-space: nowrap;
+            font-size: 0px;
+        }
+        
+        .tab {
+            display: inline-block;
+            text-transform: capitalize;
+            vertical-align: middle;
+            font-family: nexa;
+            width: 80px;
+            color: gray;
+            font-size: 12px;
+            cursor: default;    
+            padding: 15px 0px 5px 0px;
+            text-align: center;
+        }
+        
+        .tab-split {
+            height: 8px;
+            border-left: 1px solid gray;
+            display: inline-block;
+            vertical-align: middle;
+            width: 0px;
+            vertical-align: top;
+            margin-top: 18px;
+        }
+        
+        .count {
+            display: block;
+            height: 10px;
+            font-size: 10px;
+            text-align: center;
+        }
+    }
+    
+    .section.selectable {
+        .rarity_color(color);
+        
+        .border {
+            .rarity_color(background-color);
+        }
+    }
+    
+    .tab.selectable {
+        .rarity_color(color);
+        
+        &:hover:not(.active) {
+            color: #faa819;
+            cursor: pointer;
+        }
+    }
+    
+    .section.active {
+        .rarity_color(background-color);
+        
+        .name {
+            color: white;
+            text-align: center;
+         }
+        
+        .tab.selectable {
+            color: white !important;
+            text-align: center !important;
+            
+            &.active {
+                background-color: rgba(0, 0, 0, 0.3);
+            }
+            
+            &.active:first-child {
+                border-radius: 0px 5px 0px 0px;                
+            }
+
+            &.active:last-child {
+                border-radius: 5px 0px 0px 0px;                
+            }
+        }
+        
+        .tab-split {
+            height: 0px;
+        }
+    }
+}
+
+.container {
+    height: calc(~"100% - 103px");
+}
+
+.canvas {
+    width: 100%;
+    display: none;
+    table-layout: fixed;
+    height: 100%;
+    
+    &.active {
+        display: table;
+    }
+    
+    .item-selection-section {
+        display: table-cell;
+        width: 220px;
+        border-right: 1px solid rgb(60, 61, 65);
+        background-color: rgb(24, 24, 25);
+        padding: 20px 20px;
+        box-sizing: border-box;
+        vertical-align: top;
+        text-align: left;
+        
+        .tradeup-item {
+            margin: 15px 0px;
+        }
+    }
+    
+    .item-selection-scrollpane {
+        height: calc(~"100% - 170px");
+        overflow: hidden;
+        position: fixed;
+        margin-top: 20px;
+        width: 165px;
+        margin-left: 20px;
+        
+        .mCSB_inside > .mCSB_container {
+            margin-right: 10px;
+        }
+        
+        .mCSB_scrollTools .mCSB_draggerRail {
+            background-color: rgb(60, 61, 65);
+            width: 1px;
+        }
+    }
+    
+    .main-section {
+        display: table-cell;
+        background-color: rgb(38, 39, 41);
+        padding: 40px;
+        padding-bottom: 20px;
+    }
+    
+    .top-section {
+        white-space: nowrap;
+    }
+
+    .tradeup-canvas {
+        width: 774px;
+        padding: 15px;
+        white-space: normal;
+        display: inline-block;
+        vertical-align: top;
+
+        .tradeup-slot {
+            display: inline-block;
+            vertical-align: top;
+            margin: 11px;
+            
+            &:empty {
+                width: 110px;
+                height: 110px;
+                margin: 20px;
+                background-color: rgb(43, 44, 46);
+                border: 1px solid rgb(73, 74, 76);
+            }
+        }
+    }
+
+    .stats {    
+        margin: 5px 20px;
+        padding-left: 30px;
+        vertical-align: top;
+        display: inline-block;
+        border-left: 1px solid rgb(60, 61, 65);
+        
+        .title {
+            color: rgb(69, 128, 194);
+            text-transform: uppercase;
+            font-size: 20px;
+            font-family: quantify;
+            font-weight: bold;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .stat {
+            margin: 14px 0px;
+            
+            div {
+                font-family: nexa;
+                
+                &:first-child {
+                    color: rgb(250, 167, 26);
+                    font-size: 20px;
+                    font-weight: bold;
+                }
+                
+                &:last-child {
+                    color: rgb(216, 216, 216);
+                    font-size: 16px;
+                }
+            }
+        }
+    }
+    
+    .tradeup-results {
+        border: solid 2px rgb(29, 124, 192);
+        background-color: rgb(34, 34, 36);
+        position: relative;
+        margin-top: 30px;
+        padding: 30px 20px;
+        box-sizing: border-box;
+        min-height: 214px;
+        
+        .title {                
+            top: 0px;
+            left: 50%;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            font-size: 0px;
+            
+            .title-pad {
+                width: 15px;
+                height: 4px;
+                background-color: rgb(38, 39, 41);
+                display: inline-block;
+                vertical-align: middle;
+                position: relative;
+                top: -1.5px;
+            }
+
+            .title-text {
+                display: inline-block;
+                vertical-align: middle;
+                color: white;
+                padding: 8px 25px;
+                background-color: #1d7cc0;
+                text-transform: uppercase;
+                font-family: quantify;
+
+                letter-spacing: 3px;
+                font-size: 14px;
+            }
+        }
+        
+        .results-scrollpane {
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        
+        .results-list {
+            
+        }
+    }
+    
+    .tradeup-data {
+        display: table;
+        width: 100%;
+        margin-top: 20px;
+        table-layout: fixed;
+        
+        .copy-button {
+            width: 45px;
+            display: table-cell;
+            padding: 15px;
+            padding-right: 0px;
+            background-color: #8c8c8c;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .data-holder {
+            display: table-cell;
+            vertical-align: top;
+            
+            .data {
+                border: solid 1px rgb(73, 74, 76);
+                background-color: rgb(54, 55, 58);
+                padding: 17px;
+                font-size: 8px;
+                font-family: nexa;
+                font-weight: bold;
+                width: 100%;
+                color: white;
+                letter-spacing: 2px;
+                cursor: pointer;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+        
+        .button-holder {
+            width: 280px;
+            text-align: right;
+            display: table-cell;
+            vertical-align: top;
+        }
+        
+        .import {
+            background-color: #169fc7;
+            font-size: 10px;
+            padding: 14px 75px;
+            color: white;
+            text-transform: uppercase;
+            font-family: quantify;
+            display: inline-block;
+            font-size: 16px;
+            letter-spacing: 3px;
+            
+            cursor: pointer;
+            
+            &:hover {
+                box-shadow: 0px 0px 0px 1px white;
+            }
+        }
+    }
+}
+
+.tradeup-item {    
+    width: 130px;
+    position: relative;
+    display: inline-block;
+    text-align: left;
+    cursor: pointer;
+    
+    .tradeup-item-body {
+        padding: 5px 10px;
+        box-sizing: border-box;
+        background-color: rgb(43, 44, 47);
+        height: 105px;
+    }
+    
+    .collection-image-container {
+        top: -10px;
+        right: -10px;
+        position: absolute;
+        background-color: rgb(51,53,56);
+        border-radius: 5px;
+        padding: 2px;
+    
+        img {
+            width: 30px;
+        }
+    }
+
+    .wear-value {
+        font-family: nexa;
+        font-size: 10px;
+        font-weight: bold;
+        color: rgb(175, 176, 177);
+    }
+
+    .item-image-container {
+        text-align: center;
+        
+        img {
+            width: 96px;
+        }
+    }
+    
+    .tradeup-item-footer {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+    }
+    
+    .price {
+        display: table-cell;
+        background-color: rgb(250, 168, 25);
+        padding: 5px;
+        text-align: center;
+        font-weight: bold;
+        font-family: nexa;
+    }
+    
+    .item-location {
+        display: table-cell;
+        width: 40px;
+        background-color: rgb(29, 30, 33);
+
+        background-image: url(chrome-extension://__MSG_@@extension_id__/images/tradeup/link-icon.png);
+        background-size: 12px auto;
+        background-position: center;
+        background-repeat: no-repeat;
+
+        &:hover {
+            background-image: url(chrome-extension://__MSG_@@extension_id__/images/tradeup/link-icon-hover.png);
+        }
+    }
+}
+
+.tradeup-result {
+    position: relative;
+    display: inline-block;
+    text-align: left;
+    cursor: default;
+    width: 200px;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 0px 10px;
+    box-sizing: border-box;
+    
+    border-right: solid 1px rgb(48, 49, 52);
+    
+    &:last-child {
+        border-right: none;
+    }
+    
+    .collection-image-container {
+        display: inline-block;
+        vertical-align: bottom;
+        margin-right: 10px;
+
+        img {
+            width: 35px;
+        }
+    }
+    
+    .right-side {
+        display: inline-block;
+        vertical-align: bottom;
+        margin-top: 10px;
+    }
+    
+    .item-image-container {
+        text-align: center;
+        
+        img {
+            width: 96px;
+        }
+    }
+
+    .name {
+        .rarity_color(color);
+        text-align: center;
+        overflow: hidden;
+        width: 90%;
+        margin: 0 auto;
+    }   
+    
+    .wear {
+        color: rgb(211, 142, 29);
+        margin-top: 5px;
+    }
+    
+    .bottom {
+        font-size: 0px;
+    }
+    
+    .percentage {
+        display: inline-block;
+        color: rgb(250, 167, 20);
+        padding-right: 10px;
+        border-right: 1px solid rgb(51, 52, 55);
+        font-weight: bold;
+        font-family: nexa;
+        margin-top: 10px;
+        font-size: 12px;
+    }
+    
+    .price {
+        margin-left: 9px;
+        display: inline-block;
+        color: white;
+        font-weight: bold;
+        font-family: nexa;
+        font-size: 12px;
+    }
+}

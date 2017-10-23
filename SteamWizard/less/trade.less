@@ -1,0 +1,383 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Sep 20, 2017, 2:50:56 AM
+    Author     : Ahmed
+*/
+
+
+.steam_wizard_trade_status_panel {
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/trade/header_banner.png');
+    background-size: 100% auto;
+    background-position: top center;
+    background-repeat: no-repeat;
+    
+    margin-bottom: 15px;
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+    color: white;
+    height: 72px;
+    
+    .steam_wizard_trade_status_table {
+        margin: 5px auto;
+        border-collapse: collapse;
+        font-size: 12px;
+        
+        td {
+            width: 100px;
+            padding: 5px 0px;
+        }
+
+        .status_keys > div {
+            display: inline-block;
+            vertical-align: middle;
+            
+            &.status_keys_icon {
+                width: 15px;
+                height: 15px;
+                background-image: url(chrome-extension://__MSG_@@extension_id__/images/trade/key_icon.png);
+                background-repeat: no-repeat;
+                background-size: auto 13px;
+                background-position: center;
+                margin-left: 5px;
+            }
+        }
+                
+        .status_keys:hover {
+            color: #e0af09;
+            
+            .status_keys_icon {                
+                background-image: url(chrome-extension://__MSG_@@extension_id__/images/trade/key_icon_hover.png);
+            }
+        }
+
+        .status_value {
+            color: #e0af09;
+        }
+        
+        tr:first-child td {
+            border-bottom: 1px solid rgb(56, 56, 56);
+        }
+    }
+}
+
+.steam_wizard_trade_control_panel {    
+    top: 285px;
+    width: 170px;
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+    
+    .steam_wizard_trade_button {
+        background-image: url('chrome-extension://__MSG_@@extension_id__/images/trade/button.png');
+        background-size: 100% 100%;
+        background-position: top left;
+        background-repeat: no-repeat;
+        
+        height: 39px;
+        width: 169px;
+        
+        padding-top: 11px;
+        box-sizing: border-box;
+        padding-right: 35px;
+        font-size: 14px;
+        display: inline-block;
+        color: white;
+        text-align: center;
+        margin-bottom: 15px;
+        cursor: pointer;
+        
+        &:hover {
+            color: rgb(253, 203, 7);
+        }
+        
+        
+        &.disabled {
+            cursor: default;
+            color: gray;
+            background-image: url('chrome-extension://__MSG_@@extension_id__/images/trade/button_off.png');                
+        }
+    }
+            
+    .steam_wizard_trade_keys {
+        background-image: url('chrome-extension://__MSG_@@extension_id__/images/trade/keys_button.png');
+        background-size: 100% 100%;
+        background-position: top left;
+        background-repeat: no-repeat;
+        
+        height: 123px;
+        width: 170px;
+        margin-bottom: 15px;
+        white-space: nowrap;
+        
+        .left {
+            display: inline-block;
+            width: 134px;
+            text-align: center;
+            color: white;
+            margin-top: 10px;
+            
+            .steam_wizard_trade_keys_input {
+                border: rgb(226, 159, 2) 1px solid;
+                background-color: black;
+                width: 75px;
+                border-radius: 5px;
+                color: white;
+                text-align: center;
+                padding: 3px 8px;
+                display: inline-block;
+                margin: 10px 0px;
+                box-shadow: 0px 0px 2px rgb(214, 150, 0);
+                
+                &:focus {
+                    outline: 0;
+                }
+                
+                &:disabled {
+                border: rgb(0, 0, 0) 1px solid;
+                box-shadow: 0px 0px 2px rgb(0, 0, 0);
+                }
+            }
+            
+            .key_count {
+                font-size: 10px;
+                
+                .steam_wizard_trade_keys_count {
+                    display: inline-block;
+                }
+            }
+            
+            .checkbox {
+                font-size: 12px;
+                border-top: 2px solid rgb(30, 30, 30);
+                padding-top: 5px;
+                margin-top: 10px;
+
+                label {
+                    cursor: pointer;
+                }
+                
+                input {
+                    vertical-align: middle;
+                    margin-right: 12px;
+                    cursor: pointer;
+                }
+            }
+        }
+        
+        .steam_wizard_trade_keys_button {
+            display: inline-block;
+            width: 36px;
+            height: 100%;
+            float: right;
+            vertical-align: top;
+            
+            background-image: url('chrome-extension://__MSG_@@extension_id__/images/trade/keys_add.png');
+            background-size: auto 100%;
+            background-position: top right;
+            background-repeat: no-repeat;
+            
+            cursor: pointer;
+            
+            &:active {
+                background-image: url('chrome-extension://__MSG_@@extension_id__/images/trade/keys_add_click.png');
+            }
+            
+            &.disabled {
+                cursor: default;
+                background-image: url('chrome-extension://__MSG_@@extension_id__/images/trade/keys_add_click_off.png');                
+            }
+        }
+    }
+    
+    .steam_wizard_trade_hints {
+        background: url('chrome-extension://__MSG_@@extension_id__/images/trade/hint_window.png');
+        background-repeat: no-repeat;
+        height: 335px;
+        width: 170px;
+        padding-top: 15px;
+        text-align: center;
+        font-size: 12px;
+        
+        .title {
+            font-size: 13px;
+            color: white;
+            background: url('chrome-extension://__MSG_@@extension_id__/images/trade/keyboard_icon.png');
+            background-size: 50px auto;
+            background-repeat: no-repeat;
+            background-position: bottom center;
+            margin: 20px 0px 40px 0px;
+            height: 60px;
+            color: #e1aa00;
+            height: 50px;
+            color: #e1aa00;
+        }
+    }
+    
+    .steam_wizard_trade_hint {
+        margin: 20px auto;
+        width: 80%;
+
+        .action {
+            color: rgb(255, 174, 0);
+            font-weight: bold;
+        }
+        
+        .description {
+            color: white;
+        }
+    }
+
+}    
+
+.steam_wizard_trade_price {
+    bottom: 3px;
+    color: black;
+    font-size: 12px;
+    padding: 3px 10px 3px 5px;
+    position: absolute;
+    
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/trade/price_icon.png');
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.steam_wizard_trade_inspect {
+    top: 3px;
+    border-radius: 10px;
+    border: 1px solid;
+    position: absolute;
+    border-radius: 10px;
+    font-size: 10px;
+    color: rgb(253, 203, 7);
+    font-family: sans-serif;
+    padding: 2px 4px 1px 4px;
+    z-index: 10;
+
+    &:hover {
+        cursor: pointer;
+        background-color: rgb(253, 203, 7);
+        color: black;
+    }
+    
+    &.loading, &.loading:hover {
+        background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/ajax-loader.gif');
+        background-size: 100% auto;
+        border: none;
+        padding: 0px;
+        width: 16px;
+        height: 16px;
+        
+        &:before {
+            content: '';
+        }
+    }
+}
+
+.steam_wizard_trade_inspect {
+    right: 3px;
+    
+    &:before {
+        content: 'F';
+    }
+    
+    &.loaded, &.loaded:hover {
+        font-size: 9px;
+        padding: 3px 0px;
+        border: none;
+        background-color: transparent;
+        text-decoration: underlined;
+        color: rgb(253, 203, 7);
+        
+        &:before {
+            content: '';
+        }
+    }
+}
+
+.steam_wizard_trade_screenshot, .steam_wizard_inventory_screenshot {
+    position: absolute;
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/metjm.png');
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 16px;
+    width: 16px;
+    bottom: 5px;
+    right: 22px;
+    z-index: 10;
+    cursor: pointer;
+    
+    &:hover {
+        background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/camera_icon.png');
+    }
+}
+
+.steam_wizard_inventory_screenshot {
+    right: 0px;
+    bottom: 0px;
+}
+
+.steam_wizard_maincontent_wrapper {
+    width: 936px;
+    display: inline-block;
+}
+
+.steam_wizard_inventory_panel {
+    margin: 5px 0px 20px 0px;
+    
+    .wear {
+        font-size: 10px;
+        cursor: text;
+        color: #e0af09;
+        box-sizing: border-box;
+        text-align: center;
+        display: inline-block;
+        position: relative;
+        background-color: black;
+        padding: 6px 13px;
+        width: 126px;
+        margin: 2px;
+    
+        &:before {
+            background-image: url(chrome-extension://__MSG_@@extension_id__/images/inventory/button_frame.png);
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            width: 129.5px;
+            height: 27px;
+            position: absolute;
+            content: '';
+            top: -2px;
+            left: -2px;
+        }
+    }
+    
+    .screenshot {
+        height: 20px;
+        width: 25px;
+        vertical-align: middle;
+        margin: 0px 20px;
+        background-image: url(chrome-extension://__MSG_@@extension_id__/images/inventory/camera.png);
+        background-size: 100% auto;
+        background-position: center;
+        display: inline-block;
+        cursor: pointer;
+    }
+    
+    .tradeup-button {
+        display: inline-block;
+        color: black;
+        background-image: url(chrome-extension://__MSG_@@extension_id__/images/inventory/button.png);
+        background-size: 100% 100%;
+        background-position: center;
+        font-size: 10px;
+        font-weight: bold;
+        padding: 6px 15px;
+        cursor: pointer;
+    }
+}

@@ -1,80 +1,117 @@
-require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], function(steamwizard, constants, common_ui, util) {
+require(["util/constants", "util/common_ui", "util/common", 'util/steam_override', "csgozone", "port", "util/item",
+         "port!BACKGROUND_GET_OPTIONS",
+         "csgozone!market-affiliates",
+         "text!" + chrome.extension.getURL("/html/market.html")],
+         function(constants, common_ui, util, steam_override, csgozone, port, item,
+                  options, affiliates, market_template) {
     "using strict";
     
-    var visibleAssets = {}, sortDir = 1;
+    /* 
+     * store all tradeup items 
+     * gets populated when wear value is loaded
+     **/
+    var loadedItems = {};
     
-    /* namespace shorthand */
-    var NAMESPACE_SCREENSHOT     = constants.namespace.NAMESPACE_SCREENSHOT;
-    var NAMESPACE_MARKET_INSPECT = constants.namespace.NAMESPACE_MARKET_INSPECT;
+    var sortDir = 1;
     
-    function steamWizardEventListener(request) {
-        switch (request.msg) {
-            case constants.msg.PLUGIN_STATUS:
-                ui_helper.initDisplay();
-                break;
-            case constants.msg.BROADCAST_ITEM:
-                if (request.namespace === NAMESPACE_MARKET_INSPECT && visibleAssets[request.key]) {
-                    var cachedFloatValue = steamwizard.getFloatValueCachedFromAssetid(request.key);
-                    var $getFloatButton = $(visibleAssets[request.key]).find(".steam_wizard_load_button_float");
-                    ui_helper.finishFloatButton($getFloatButton, cachedFloatValue);
-                } else if (request.namespace === NAMESPACE_SCREENSHOT && visibleAssets[request.key]) {
-                    var cachedScreenshot = steamwizard.getScreenshotCachedFromAssetid(request.key);
-                    var $getScreenshotButton = $(visibleAssets[request.key]).find(".steam_wizard_load_button_screenshot");
-                    if (cachedScreenshot != null) {
-                        ui_helper.finishScreenshotButton($getScreenshotButton, request.image_url);
+    var $template = $(market_template);
+    
+    /* namespace shorthand */    
+    var init = {
+        buildAffiliatePanel: function(list, g_rgAssets) {
+            var $panel = $template.find('.steam_wizard_market_affiliates_panel');
+            var $affiliates = $panel.find('.steam_wizard_market_affiliates');
+            
+            var $markets = $($affiliates[0]);
+            var $tradebots = $($affiliates[1]);
+            
+            /* this doesnt work for other languages */
+            var itemname = $('.market_listing_nav a')[1].textContent;
+            
+            /* more accurate name from here */
+            if(g_rgAssets) {
+               var items = g_rgAssets["730"]["2"];
+               for(var i in items) {
+                   itemname = util.hashnameToName(items[i].market_hash_name);
+                   break;
+               }
+            }
+            
+            for(var i=0; i < list.length; i++) {
+                if(list[i].type === 'tradebot')
+                    $tradebots.append(init.buildAffiliate(list[i], itemname));
+                else
+                    $markets.append(init.buildAffiliate(list[i], itemname));
+            }
+            
+            $affiliates.each(function(index, value) {
+                for(var i=$(value).children().length; i < 3; i++) {
+                    $(value).append($('<div>'));
+                }
+            });
+
+            $("#market_buyorder_info").after($panel);
+        },
+        
+        buildAffiliate: function(affiliate, itemname) {
+            var $cell = $('<div>');
+            
+            if(affiliate) {
+                var $div = $('<div>');
+                $div.append($('<img>').addClass('steam_wizard_affiliate_logo').attr('src', affiliate.logo));
+                $div.append($('<div>').addClass('steam_wizard_affiliate_name').text(affiliate.name));
+                $cell.append($div);
+
+                var $priceButton = common_ui.createGreenSteamButton('loading...');
+                $priceButton.addClass('btn_grey_white_innerfade steam_wizard_affiliate_price btn_grey_white_innerfade');
+                $cell.append($priceButton);
+
+                csgozone.getAffiliateLowestPrice(affiliate.code, itemname, function(data) {
+                    if(!data.success) {
+                        $priceButton.text('Failed').addClass('steam_wizard_load_button_failed');
+                        return;
                     }
-                }
-                break;
-            case constants.msg.BROADCAST_INSPECT_STATUS:
-                $("#steam_wizard_inspects_left_today").text(request.data.limit - request.data.usage + " / " + request.data.limit);
-                $("#steam_wizard_inspects_left_today").removeClass('steam_wizard_rotating');
-                if (request.data.premium == true) {
-                    $("#steam_wizard_csgozone_prem_active").text("Reset in: ").append(util.timer(request.data.reset));
-                    $("#steam_wizard_csgozone_prem_active").addClass('steam_wizard_prem_active');
-                } else {
-                    $("#steam_wizard_csgozone_prem_active").text("- increase quota -");
-                    $("#steam_wizard_csgozone_prem_active").addClass('steam_wizard_prem_inactive');
-                    $("#steam_wizard_csgozone_prem_active").click(function () {
-                        common_ui.showGeneralOverlay("", "", "Ok", function () {
-                            common_ui.removeOverlay();
+                    
+                    $priceButton.empty();
+
+                    if(data.price) {
+                        var $span = $('<span>').text('$' + data.price.toFixed(2) + ' USD');
+                        $priceButton.removeClass('btn_grey_white_innerfade').append($span);
+                    } else {
+                        $priceButton.append($('<span>').text('-'));                        
+                    }                        
+                    
+                    if(data.href) {
+                        $priceButton.click(function() {
+                           window.open(data.href);
+                           
+                           if(affiliate.code === 'csdeals')
+                              csgozone.log(options.version);    
                         });
-                        $("#steam_wizard_general_overlay_title").html("You can increase the daily limit to 20,000 by activating the \"Premium\" on <a style='text-decoration: underline;' target='_blank' href='http://csgozone.net/inspect'>csgozone</a>");
-                    });
-                }
-                break;
-            case constants.msg.BROADCAST_INSPECT_USAGE:
-                $("#steam_wizard_inspects_left_today").text(request.data);
-                $("#steam_wizard_inspects_left_today").removeClass('steam_wizard_rotating');
-                break;
-            case constants.msg.BROADCAST_SCREENSHOT_STATUS:
-                $("#steam_wizard_screenshots_premium_queue").removeClass('steam_wizard_rotating');
-                if (request.data.user_has_premium) {
-                    $("#steam_wizard_metjm_prem_active").addClass('steam_wizard_prem_active');
-                    $("#steam_wizard_screenshots_premium_queue").text('true');
-                } else {
-                    $("#steam_wizard_metjm_prem_active").text('- activate -');
-                    $("#steam_wizard_metjm_prem_active").addClass('steam_wizard_prem_inactive');
-                    $("#steam_wizard_metjm_prem_active").click(function () {
-                        common_ui.showGeneralOverlay("", "", "Ok", function () {
-                            common_ui.removeOverlay();
-                        });
-                        $("#steam_wizard_general_overlay_title").html("You can activate priority queue by purchasing premium on <a style='text-decoration: underline;' target='_blank' href='http://metjm.net'>metjm.net</a>");
-                    });
-                    $("#steam_wizard_screenshots_premium_queue").text('false');
-                }
-                break;
-            case constants.msg.USERNAME:
-                ui_helper.displayUsername();
-                break;
-            case constants.msg.BROADCAST_REVOKE_TOKEN:
-                $("#steam_wizard_loggedin_as").text("not logged in");
-                break;
-            case constants.msg.ADVERT:
-                ui_helper.displayAdvert(request.data);
-                break;
+                    }
+                });
+            }
+
+            return $cell;
+        },
+        
+        buildControlPanel: function() {
+            var $panel = $template.find('.steam_wizard_market_control_panel');
+            $("#searchResultsRows").before($panel);
+
+            //button to sort by floatvalue
+            $('.steam_wizard_sort_by_float_button').click(events.sortFloatsButtonClick);
+
+            //button to show more than 10 items
+            $('#steam_wizard_radio_panel_' + options.market_display_count).prop('checked', true);
+            $('.steam_wizard_radio_panel input').change(events.radioPanelChanged);
+            
+            var batch = options.batch_requests ? 'on' : 'off';
+            $('#steam_wizard_radio_batch_' + batch).prop('checked', true);
+            $('.steam_wizard_radio_batch input').change(events.radioBatchChanged);
         }
     }
-        
+    
     var ui_helper = {
         extractInspectLink: function($marketListingRow) {
             if($marketListingRow[0].inspectLink)
@@ -92,14 +129,6 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
             return inspectLink;            
         },
         
-        finishFloatButton: function($getFloatButton, floatvalue){
-            if(floatvalue != null) {
-               $getFloatButton.off().addClass('btn_grey_white_innerfade');
-               $getFloatButton.empty().append(common_ui.createWearValueSpan(floatvalue.paintwear.toFixed(15)));
-               $getFloatButton.append($("<span class='pattern'>").text(floatvalue.paintseed).attr('title', 'Pattern Index'));
-            }
-        },
-        
         finishScreenshotButton : function($getScreenshotButton, screenshotlink){
             if(screenshotlink){
                 $getScreenshotButton.off();
@@ -111,14 +140,25 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
             }
         },
         
+        enableControlPanel: function(enable) {
+            $(".steam_wizard_radio_panel input:radio").attr("disabled", enable === false ? true : null);
+            $(".steam_wizard_radio_batch input:radio").attr("disabled", enable === false ? true : null);
+
+            if(enable === false) {
+                $('.steam_wizard_sort_by_float_button').off();
+                $(".steam_wizard_radio_loader").addClass('loading');
+            } else {
+                $('.steam_wizard_sort_by_float_button').click(events.sortFloatsButtonClick);
+                $(".steam_wizard_radio_loader").removeClass('loading');
+            }
+        },
+        
         removeButtons: function() {
             $("#searchResultsRows").find('.steam_wizard_market_cell').remove();
             $(".steam_wizard_status_panel_button_container").hide();
         },
     
         displayButtons: function(g_rgAssets) {
-            visibleAssets = {};
-            
             var marketids = {};
             
             var items = g_rgAssets["730"]["2"];
@@ -130,8 +170,8 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
                     for(var i = 0; i < description.actions.length; i++) {
                         var action = description.actions[i];
 
-                        if(action.name && action.name.startsWith('Inspect')) {
-                            var inspect = description.actions[0].link;
+                        if(action.name && action.link) {
+                            var inspect = action.link;
 
                             var M = inspect.match(/M(\d+)A/)[1];
                             marketids[M] = description;
@@ -141,10 +181,7 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
                     }
                 }
             }
-            
-            /* make sure all buttons are removed before building again */
-            ui_helper.removeButtons();
-            
+
             /* only display buttons if the item has inspect links */
             if(ui_helper.extractInspectLink($("#searchResultsRows .market_recent_listing_row").first()) === null)
                return;
@@ -152,104 +189,47 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
             $("#searchResultsRows").find(".market_listing_row").each(function (index, marketListingRow) {
                 var $marketListingRow = $(marketListingRow);
 
-                var container = $("<div>").insertBefore($marketListingRow.find(".market_listing_item_name_block"));
-                container.addClass('market_listing_right_cell steam_wizard_market_cell');
-                
-                var $stickerContainer = $('<div>').addClass('steam_wizard_market_stickers');
-                $stickerContainer.appendTo(container);
-                
-                //button which gets float
-                var $getFloatButton = common_ui.createGreenSteamButton("Get Float");
-                $getFloatButton.click(events.getFloatButtonClick);
-                $getFloatButton.addClass('steam_wizard_load_button_float');
-                $getFloatButton.appendTo(container);
-
-                //button which gets screenshot
-                var $getScreenshotButton = common_ui.createGreenSteamButton("Get Screen");
-                $getScreenshotButton.click(events.getScreenshotButtonClick);
-                $getScreenshotButton.addClass('steam_wizard_load_button_screenshot');
-                $getScreenshotButton.appendTo(container);
-                
-                /* print stickers */
+                /* current row data */
                 var M = $marketListingRow.attr('id').split('_')[1];
                 
-                if(marketids[M]) {
-                    $marketListingRow[0].inspectLink = marketids[M].inspect;
-                   
-                    var data = marketids[M];
-                   
-                    var array = util.parseStickerData(data.descriptions);
-                    
-                    if(array) {
-                       for(var i=0; i < array.length; i++) {
-                            var img = $('<img>').attr('src', array[i].image).attr('title', array[i].name);
-                            $stickerContainer.append(img);
-                        }
+                var data = marketids[M];
+
+                if(!data)
+                    return;
+                
+                var marketname = util.hashnameToName(data.market_hash_name);
+                var image = 'https://steamcommunity-a.akamaihd.net/economy/image/' + data.icon_url + '/150x150f';
+                
+                var $container = $("<div>").insertBefore($marketListingRow.find(".market_listing_item_name_block"));
+                $container.addClass('market_listing_right_cell steam_wizard_market_cell');
+                
+                var $stickerContainer = $('<div>').addClass('steam_wizard_market_stickers');
+                $container.append($stickerContainer);
+                
+                $container.append(ui_helper.createInspectButton({
+                    image: image,
+                    inspect: data.inspect, 
+                    marketname: marketname}));
+                
+                //button which gets screenshot
+                $container.append(ui_helper.createScreenshotButton(data.inspect));
+                
+                /* populate stickers */
+                var array = util.parseStickerData(data.descriptions);
+
+                if (array) {
+                    for (var i = 0; i < array.length; i++) {
+                        var img = $('<img>').attr('src', array[i].image).attr('title', array[i].name);
+                        $stickerContainer.append(img);
                     }
                 }
-                
-                setTimeout(function () {
-                    //load cached floats
-                    var inspectLink = ui_helper.extractInspectLink($marketListingRow);
-                    visibleAssets[util.getAssetID(inspectLink)] = $marketListingRow;
 
-                    var cachedFloatValue = steamwizard.getFloatValueCached(inspectLink);
-                    ui_helper.finishFloatButton($getFloatButton, cachedFloatValue);
 
-                    //load cached screenshot
-                    var cachedScreenshot = steamwizard.getScreenshotCached(inspectLink);
-                    ui_helper.finishScreenshotButton($getScreenshotButton, cachedScreenshot);
-                }, index * 20);
             });
-
-            $(".steam_wizard_status_panel_button_container").show();
-        },
-        
-        displayUsername: function() {
-            var username = steamwizard.getUsername(true);
-
-            var $paragraph = $("#steam_wizard_loggedin_as_paragraph");
-            var $refreshButton = $("#steam_wizard_refresh_login");
-            $refreshButton.off();
-            if (!username || username === "")
-                username = "not logged in.";
-            $paragraph.show();
-            $("#steam_wizard_loggedin_as").text(username);
-            $refreshButton.click(function () {
-                $("#steam_wizard_loggedin_as").text("not logged in");
-                steamwizard.refreshToken(function () {
-
-                });
-            });
-        },
-        
-        displayAdvert: function(data) {
-            var container = $(".steam_wizard_status_panel_content");
-            
-            /* remove it anyways */
-            container.find('.advert').remove();
-               
-            var advert = $("<div>").addClass('steam_wizard_market_advert');
-            advert.append($("<div>").text('Sponsor of the month'));
-            
-            var link = $("<a>").attr("href", data.href + '?steamwizard').attr('target', '_blank');
-            link.click(function() {
-                steamwizard.log();
-            });
-            
-            link.append($("<img>").attr("src", data.image).attr("title", data.title));
-            
-            link.append($("<div>").text(data.href));
-            
-            advert.append(link);
-            
-            advert.append($("<div>").addClass('text').text(data.text));
-            
-            container.append(advert);
         },
         
         getTotalNumItem: function() {
-            return parseInt($("#searchResults_total").text().replace(".","").replace(",",""));
+            return parseInt($("#searchResults_total").text().replace(/.,/g, ''));
         },
         
         getCurrentNumItem: function() {
@@ -257,146 +237,96 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
         },
         
         initDisplay: function() {
-            /* refresh login to change accounts */
-            ui_helper.displayUsername();
-
-            /* make sure radio buttons are enabled */
-            $(".steam_wizard_radio_panel_numitems").find("input:radio").attr("disabled", false);
-            
-            if(!steamwizard.isEnabled()) {
-               ui_helper.removeButtons();
-               return;
-            }
-            
+            ui_helper.enableControlPanel(false);
+                
             util.fetchGlobal('g_rgAssets', function(data) {
-                ui_helper.displayButtons(data);
+                ui_helper.displayButtons(data.g_rgAssets);
+                ui_helper.enableControlPanel(true);
             });
         },
         
-        buildAffiliatePanel: function(data) {
-            var $panel = $("<div>").addClass('steam_wizard_status_panel');
-            var $content = $("<div>").addClass('steam_wizard_status_panel_content');
-            var $affiliates = $("<div>").addClass('steam_wizard_market_affiliates');
-            
-            $panel.append($content);
-            $content.append($("<p>External Markets</p>").css({'font-size':'18px'}).addClass('market_commodity_orders_header_promote'));
-            $content.append($affiliates);
-            
-            var itemname = $('.market_listing_nav a')[1].textContent;
-            
-            var list = data.list;
+        changeMarketDisplay: function(num_items) {
+            var total = ui_helper.getTotalNumItem();
+            var current = ui_helper.getCurrentNumItem();
 
-            for(var i=0; i < 6; i++) {
-                $affiliates.append(ui_helper.buildAffiliate(list[i], itemname));
+            /* return if we already display the max amount */
+            if(current === total && total <= num_items) {
+               ui_helper.initDisplay();
+               return;
             }
-            
-            $("#market_buyorder_info").after($panel);
+
+            /* disable radio buttons while we do the change */
+            ui_helper.enableControlPanel(false);
+            ui_helper.removeButtons();
+
+            steam_override.changeMarketDisplayCount(num_items);            
         },
         
-        buildAffiliate: function(data, name) {
-            var $cell = $('<div>');
-            
-            if(data) {
-                var $div = $('<div>');
-                $div.append($('<img>').addClass('steam_wizard_affiliate_logo').attr('src', data.logo));
-                $div.append($('<div>').addClass('steam_wizard_affiliate_name').text(data.name));
-                $cell.append($div);
+        createInspectButton: function(info) {
+            var $button = common_ui.createGreenSteamButton("Get Float");
+            $button.addClass('steam_wizard_load_button_float');
 
-                var $priceButton = common_ui.createGreenSteamButton('loading...');
-                $priceButton.addClass('btn_grey_white_innerfade steam_wizard_affiliate_price btn_grey_white_innerfade');
-                $cell.append($priceButton);
-
-                var split = data.url.split('?');
-
-                $.ajax({type: "POST", 
-                        url: split[0], 
-                        data: split[1].format(encodeURIComponent(name))})
-                .done(function(data) {
-                    $priceButton.empty();
-            
-                    if(data.price) {
-                        var $span = $('<span>').text('$' + data.price.toFixed(2) + ' USD');
-                        $priceButton.removeClass('btn_grey_white_innerfade').append($span);
-                        $priceButton.click(function() {
-                            if(data.href)
-                               window.open(data.href + '&ref=steamwizard');
-                        });
-                    } else {
-                        $priceButton.append($('<span>').text('-'));                        
-                    }
-                }).fail(function(jqXHR, textStatus, errorThrown) {
-                    $priceButton.text('Failed').addClass('steam_wizard_load_button_failed');
-                });
+            function load(force) {
+                $button.off().text('loading...').addClass('btn_grey_white_innerfade');
+                port.getItemInfo(info.inspect, onload, force, options.batch_requests);
             }
 
-            return $cell;
+            function onclick(event) {
+                load(true);
+
+                if (event)
+                    event.stopPropagation();
+            }
+
+            function onload(data) {
+                if (!data || !data.success) {
+                    $button.click(onclick);
+                    $button.text('Failed').addClass('steam_wizard_load_button_failed');                    
+                } else if (data.iteminfo.paintwear) {
+                    var iteminfo = data.iteminfo;                    
+                    $button.off().attr('class', '').addClass('steamwizard_market_wear');
+                    
+                    $button.empty().text(iteminfo.paintwear.toFixed(15) + '\u200B');
+                    $button.css({"background": local_util.getInspectBackground(iteminfo.paintwear)});
+                    $button.attr('data-wear', iteminfo.paintwear);
+                    
+//                    $button.append($("<span class='pattern'>").text(iteminfo.paintseed).attr('title', 'Pattern Index'));
+                    
+                    var itemid = data.iteminfo.itemid;
+                    loadedItems[itemid] = new item().fromName(info.marketname).fromInspection(data.iteminfo);
+                    loadedItems[itemid].image = info.image;
+                    
+                    var $tradeupButton = $('<div>').text('Tradeup').addClass("steamwizard_market_tradeup_button");
+                    $tradeupButton.click(function() {
+                        local_util.attemptTradeup(data.iteminfo.itemid)
+                    });
+                    $button.after($tradeupButton);
+                }
+            }
+
+            load(options.autoload_floats);
+
+            return $button;
+        },
+        
+        createScreenshotButton: function(inspect) {
+            var $getScreenshotButton = $('<div>').addClass('steam_wizard_market_screenshot');
+            
+            function onclick() {
+                port.getScreenshot(inspect);
+            };
+            
+            $getScreenshotButton.click(onclick);
+
+            return $getScreenshotButton;
         }
     };
     
     var events = {
-        getFloatButtonClick: function() {
-            if(!steamwizard.isLoggedIn()) {
-                common_ui.showLoginOverlay();
-                return;
-            }
-
-            var $marketListingRow = $(this.closest('.market_listing_row'));
-            var inspectLink = ui_helper.extractInspectLink($marketListingRow);
-
-            var $getFloatButton = $marketListingRow.find(".steam_wizard_load_button_float").first();
-            $getFloatButton.off().text('loading...').addClass('btn_grey_white_innerfade');
-
-            steamwizard.getFloatValue(inspectLink, function (result) {
-                if (result.status === steamwizard.EVENT_STATUS_DONE) {
-                    ui_helper.finishFloatButton($getFloatButton, result.data);
-                } else if (result.status === steamwizard.EVENT_STATUS_FAIL) {
-                    $getFloatButton.text('Failed').addClass('steam_wizard_load_button_failed');
-                    $getFloatButton.click(events.getFloatButtonClick);
-                }
-            });
-        },
-        
-        getScreenshotButtonClick: function() {
-            if(!steamwizard.isLoggedIn()) {
-                common_ui.showLoginOverlay();
-                return;
-            }
-
-            var $marketListingRow = $(this.closest('.market_listing_row'));
-            var inspectLink = ui_helper.extractInspectLink($marketListingRow);
-
-            var $getScreenshotButton = $marketListingRow.find(".steam_wizard_load_button_screenshot").first();
-            $getScreenshotButton.off().text('loading...').addClass('btn_grey_white_innerfade');
-
-            steamwizard.getScreenshot(inspectLink, function (result) {
-                if (result.status === steamwizard.EVENT_STATUS_PROGRESS) {
-                    $getScreenshotButton.text(result.msg).addClass('btn_grey_white_innerfade');
-                } else if (result.status === steamwizard.EVENT_STATUS_DONE) {
-                    ui_helper.finishScreenshotButton($getScreenshotButton, result.image_url);
-                } else if (result.status === steamwizard.EVENT_STATUS_FAIL) {
-                    $getScreenshotButton.text(result.msg).addClass('steam_wizard_load_button_failed');
-                    $getScreenshotButton.click(events.getScreenshotButtonClick);
-                }
-            });
-        },
-        
-        getAllFloatsButtonClick: function() {
-            if(!steamwizard.isLoggedIn()) {
-                common_ui.showLoginOverlay();
-                return;
-            }
-
-            $('.steam_wizard_load_button_float').each(function (index, value) {
-                setTimeout(function () {
-                    value.click();
-                }, index * 50);
-            });
-        },
-        
         sortFloatsButtonClick: function() {
-            $(".market_recent_listing_row").sort(function(a,b){
-                var floatA = parseFloat($(a).find(".steam_wizard_load_button_float").text());
-                var floatB = parseFloat($(b).find(".steam_wizard_load_button_float").text());
+            $(".market_recent_listing_row").sort(function(a,b) {
+                var floatA = parseFloat($(a).find(".steamwizard_market_wear").attr('data-wear'));
+                var floatB = parseFloat($(b).find(".steamwizard_market_wear").attr('data-wear'));
 
                 if(isNaN(floatA) && isNaN(floatB))
                     return 0;
@@ -420,112 +350,81 @@ require(["core/steamwizard", "util/constants", "util/common_ui", "util/util"], f
             sortDir *= -1;
         },
         
-        radioPanelChanged: function(numItems) {
-            if(numItems > 10 && steamwizard.displayQuotaWarning()) {
-                common_ui.showGeneralOverlay("This will deplete your daily float request quota faster", "", "Ok", function() {
-                    common_ui.removeOverlay();
-                    changeNumOfDisplayedItems(numItems);
-                });
-            } else {
-                changeNumOfDisplayedItems(numItems);                
+        radioPanelChanged: function() {
+            ui_helper.changeMarketDisplay(this.value);
+            port.setOption('market_display_count', this.value);
+        },
+        
+        radioBatchChanged: function() {
+            port.setOption('batch_requests', this.value === 'true');
+        },
+        
+        backgroundListener: function(msg) {
+            switch (msg.type) {
+                case constants.msg.PLUGIN_OPTIONS:
+                    options = msg.data;
+                    break;
             }
-            
-            steamwizard.saveMarketDisplayCount(numItems);
         }
-    }
+    };
+        
+    var local_util = {
+        attemptTradeup: function(itemid) {
+            var item = loadedItems[itemid];
+            
+            if(item && item.canTradeup) {
+                port.addTradeupItem(item, function(response) {
+                    console.log(response);
+                });
+            }
+        },
+        
+        getInspectBackground: function(wear) {
+            var ranges = 
+                [[1.00, 0.45],
+                 [0.45, 0.38],
+                 [0.38, 0.15],
+                 [0.15, 0.07],
+                 [0.07, 0.00]];
+
+            var range;
+            for(var i in ranges)
+                if(wear >= ranges[i][1]) {
+                   range = ranges[i];
+                   break;
+               }
+
+            var r = (range[0] - wear) / (range[0] - range[1]);
+            var rgbValue = parseInt(r * 128);
+            return "rgb(" + rgbValue + "," + rgbValue + "," + rgbValue +")";
+        }
+    };
     
-    function changeNumOfDisplayedItems(numItems) {
-        var total = ui_helper.getTotalNumItem();
-        var current = ui_helper.getCurrentNumItem();
-        
-        /* return if we already display the max amount */
-        if(current === total && total <= numItems) {
-           ui_helper.initDisplay();
-           return;
-        }
-        
-        /* disable radio buttons while we do the change */
-        $(".steam_wizard_radio_panel_numitems").find("input:radio").attr("disabled", true);
-            
-        var actualCode = '(' +
-                function(num) {
-                    g_oSearchResults.m_cPageSize = num;
-                    g_oSearchResults.GoToPage(0, true);
-                }
-                + ')('+numItems+');';
-        
-        var script = document.createElement('script');
-        script.textContent = actualCode;
-        (document.head||document.documentElement).appendChild(script);
-        script.remove();
-    }
-        
     /*
      * Initialize
      */
     (function() {
-        common_ui.buildScreenshotOverlay();
-        common_ui.buildGeneralOverlay();
-        common_ui.buildSteamWizardStatusPanel();
-        common_ui.buildLoginOverlay(function (e) {
-            common_ui.removeOverlay();
-
-            /* TODO: LOADING INDICATION */
-            steamwizard.login(function () {
-                ui_helper.initDisplay();
-            });
-        });
-
-        /* other buttons */
-        if ($("#searchResultsRows").find(".market_listing_row").length > 0) {
-            //button to load all floats
-            var $getAllFloatsButton = common_ui.createGreenSteamButton("Load All Floats");
-            $getAllFloatsButton.addClass('steam_wizard_load_button_float_all');
-            $getAllFloatsButton.click(events.getAllFloatsButtonClick);
-
-            var $container = $(".steam_wizard_status_panel_button_container");
-            $container.append($getAllFloatsButton);
-
-            //button to sort by floatvalue
-            var $sortByFloatsButton = common_ui.createGreenSteamButton("Sort by Float");
-            $sortByFloatsButton.addClass('steam_wizard_sort_by_float_button');
-            $sortByFloatsButton.click(events.sortFloatsButtonClick);
-            $container.append($sortByFloatsButton);
-
-            //button to show more than 10 items
-            var array = [10, 25, 50, 75, 100];
-            var $radioPanel = common_ui.createRadioPanel(array, events.radioPanelChanged, steamwizard.getMarketDisplayCount());
-            $radioPanel.addClass("steam_wizard_radio_panel_numitems");
-
-            $container.before($radioPanel);
-        }
+        port.addEventListener(events.backgroundListener);
         
+        util.fetchGlobal('g_rgAssets', function(data) {
+            init.buildAffiliatePanel(affiliates, data.g_rgAssets);
+        });
+                
+        if ($("#searchResultsRows").find(".market_listing_row").length === 0)
+            return;
+        
+        init.buildControlPanel();
+
         /* for paging */
         var observer = new MutationObserver(function () {
             ui_helper.initDisplay();
         });
-
         /* chrome bug ... must use childList */
         observer.observe($('#searchResults_end')[0], {childList: true, characterData: true, subtree: true});
 
-        //remove overlay on escape
-        $(document).keyup(function (e) {
-            if (e.keyCode === 27)
-                common_ui.removeOverlay();
-        });
-
-        steamwizard.addEventListener(steamWizardEventListener);
-        
-        /* TODO: LOADING INDICATION */
-        steamwizard.ready(function () {
-            if(steamwizard.getMarketDisplayCount() !== 10)
-               changeNumOfDisplayedItems(steamwizard.getMarketDisplayCount());
-            else
-               ui_helper.initDisplay();
-        });
-        
-        steamwizard.getMarketAffiliates(function(data) {
-            ui_helper.buildAffiliatePanel(data);
-        });
+        if(options.market_display_count !== 10)
+           ui_helper.changeMarketDisplay(options.market_display_count);
+        else
+           ui_helper.initDisplay();
     })();
 });

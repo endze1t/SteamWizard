@@ -11,31 +11,32 @@
  *
  */
 
-define("util/price", ["core/csgozone!market-price", "core/csgozone!market-price-highend", "core/csgozone!market-price-conditional"], 
+define("util/price", ["csgozone!market-price", "csgozone!market-price-highend", "csgozone!market-price-conditional"], 
     function(marketPrice, marketPriceHighend, marketPriceConditional) {
     
     "using strict";
-        
-    var obj = {
-        getItemSteamPrice: function(marketname, skinindex) {
-            var conditional = obj.getItemConditionalPrice(marketname, skinindex);
+    
+    function getItemSteamPrice(marketname, skinindex) {
+        var conditional = getItemConditionalPrice(marketname, skinindex);
 
-            var price = 40000;
+        var price = null;
 
-            if(conditional !== null)
-               price = conditional;
+        if(conditional !== null)
+           price = conditional;
 
-            if(marketPriceHighend[marketname])
-               price = marketPriceHighend[marketname].price;
+        if(marketPriceHighend[marketname])
+           price = marketPriceHighend[marketname].price;
 
-            else if(marketPrice[marketname])
-               price = marketPrice[marketname].price;
+        else if(marketPrice[marketname])
+           price = marketPrice[marketname].price;
 
-            price /= 100;
-            return price;
-        },
+        if(price)
+           price /= 100;
 
-        getItemConditionalPrice: function(marketname, skinindex) {
+        return price;
+    }
+    
+    function getItemConditionalPrice(marketname, skinindex) {
             if(marketPriceConditional[marketname] === undefined)
                return null;
 
@@ -54,7 +55,8 @@ define("util/price", ["core/csgozone!market-price", "core/csgozone!market-price-
 
             return null;
         }
-    };
     
-    return obj;
+    return {
+        getItemSteamPrice: getItemSteamPrice
+    };
 });

@@ -3,7 +3,7 @@
  * Handles all communication with background thread
  * Checks whether or not user is logged in
  */
-define("core/steamwizard", ["core/csgozone", "core/metjm", "util/constants", "util/util",
+define(["csgozone", "core/metjm", "util/constants", "util/util",
        "port!BACKGROUND_GET_TOKEN", 
        "port!BACKGROUND_GET_PLUGIN_STATUS", 
        "port!BACKGROUND_GET_STORAGE, namespace: screenshot",
@@ -188,7 +188,7 @@ define("core/steamwizard", ["core/csgozone", "core/metjm", "util/constants", "ut
         EVENT_STATUS_PROGRESS: 1,
         EVENT_STATUS_DONE: 2,
         EVENT_STATUS_FAIL: 3,
-
+        
         /* JQUERY STYLE */
         ready: function(callback) {
             if(isReady)

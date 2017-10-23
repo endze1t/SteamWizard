@@ -4,78 +4,105 @@
  * and open the template in the editor.
  */
 
-/**
- *
- * @author Ahmed
- * Apr 7, 2017
- *
- */
 
-define("port", ["util/constants"], function(constants) {
-    "use strict";
+define(["util/constants"], function(constants) {
+    var eventListeners = [];
     
-    /* port to backend */
-    var port = chrome.runtime.connect({name: 'loader'});
+    var port = chrome.runtime.connect({name: "content_script_port_" + Date.now()});
         
-    /* backgroudn listener */
-    var localListener = function(response, port) {
-        var request = requests[response.requestid];
-        
-        if(request) {
-            if(request.onload)
-               request.onload(response);
-   
-            delete requests[response.requestid];
-        }
-    };
-    port.onMessage.addListener(localListener);
-    
-    var requests = {};
-    
-    var requestid = 0;
+    port.onMessage.addListener(function(msg) {
+        for(var i = 0; i < eventListeners.length; i++)
+            eventListeners[i](msg);
+    });
 
     return {
-        postMessage: function(request, onload) {
-            request.requestid = requestid;
-            port.postMessage(request);
-            
-            requests[requestid] = {
-                onload: onload
-            }
-            
-            requestid++;
+        addEventListener: function(callback) {
+            if(eventListeners.indexOf(callback) > -1)
+               return;
+
+            eventListeners.push(callback);
         },
         
+        sendMessage: function(msg, callback) {
+            chrome.runtime.sendMessage(msg, callback);
+        },
+    
+        getItemInfo: function(inspect, callback, force, batch) {
+            var msg = {
+                type: constants.msg.BACKGROUND_GET_ITEMINFO,
+                inspect: inspect,
+                force: force,
+                batch: batch
+            };
+
+            this.sendMessage(msg, callback);
+        },
+    
+        getScreenshot: function(inspect) {
+            var msg = {
+                type: constants.msg.BACKGROUND_GET_SCREENSHOT,
+                inspect: inspect,
+            };
+
+            this.sendMessage(msg);
+        },
+    
+        getResource: function(name, url, content, callback) {
+            var msg = {
+                type: constants.msg.BACKGROUND_GET_RESOURCE,
+                name: name,
+                url: url,
+                content: content
+            };
+            
+            this.sendMessage(msg, callback);            
+        },
+        
+        setOption: function(field, value) {
+            var msg = {
+                type: constants.msg.BACKGROUND_SET_OPTIONS,
+                field: field,
+                value: value
+            };
+
+            this.sendMessage(msg);  
+        },
+        
+        addTradeupItem: function(item, callback) {
+            var msg = {
+                type: constants.msg.BACKGROUND_ADD_TRADEUPITEM,
+                item: item
+            };
+
+            this.sendMessage(msg, callback);
+        },
+            
         /**
-         * NAME FORMAT
-         * -----------
+         * requirejs plugin
          * 
-         * MSGID, KEY: VALUE, ....
+         * USAGE
+         * -----
+         * port!MSGID, KEY: VALUE, ....
          * 
          * MSGID must be defined in constants.msg
-         *  
+         * 
          **/
         load: function(name, parentRequire, onload, config) {
             var split = name.split(",");
             
-            var request = {
-                msg: constants.msg[split[0].trim()],
-                requestid: requestid
+            var msg = {
+                type: constants.msg[split[0].trim()]
             };
             
             /* more parameters in form of KEY : VALUE */
             for(var i=1; i < split.length; i++) {
                 var s = split[i].split(":");
-                request[s[0].trim()] = s[1].trim();
+                msg[s[0].trim()] = s[1].trim();
             }
             
-            port.postMessage(request);
-            
-            requests[requestid] = {
-                onload: onload
-            }
-            
-            requestid++;
-        },
-    };
+            chrome.runtime.sendMessage(msg, function(response) {
+                onload(response.data);
+            });
+        }
+    };    
 });

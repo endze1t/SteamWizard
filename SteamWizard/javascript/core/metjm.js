@@ -1,4 +1,4 @@
-define("core/metjm", ["util/constants"], function(constants) {
+define(["util/constants"], function(constants) {
     var metjm = {
             API_URL : "https://metjm.net/shared/extension.php",
             API_REQUEST_NEW : "https://metjm.net/shared/screenshots-v5.php?cmd=request_new_link&inspect_link={0}&user_uuid={1}&user_client=3&token={2}",

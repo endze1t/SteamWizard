@@ -1,108 +1,141 @@
-require(["background/storage", "util/constants"], function(storage, constants) {
-    var inspectStatus = {
-        usage: 0
-    };
-    var timeout;
+/* 
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
-    function updateStatus(data) {
-        inspectStatus = data;
-//        clearTimeout(timeout);
-//        timeout = setTimeout(function() {
-//            /* TODO .. HOW ? */
-//        }, data.reset);
-    }
-
-    var screenshotStatus = {
-        user_has_premium : 0
-    };
+require(["background/data", "background/options", "util/constants"], function(data, options, constants) {
+    var connections = [];
     
-    function updateScreenshotStatus(data){
-            screenshotStatus = data;
-    }
-    
-    var cachedResource = {};
-    
-    var connections = [], pluginEnabled = null, version = null;
-        
+    var MSG = constants.msg;
+ 
     var updateIcon = function(enabled) {
-        var icon = enabled ? "images/icon_128.png" : "images/icon_128_off.png";
-        chrome.browserAction.setIcon({path: icon});
+        //var icon = enabled ? "images/icon_128.png" : "images/icon_128_off.png";
+        //chrome.browserAction.setIcon({path: icon});
     };
+    
+    var windowPort = function(html, width, height) {
+        var This = this;
+        
+        This.tab = null;
 
+        function createWindow(callback) {
+            chrome.windows.create({
+                url: chrome.runtime.getURL(html),
+                type: "popup",
+                width: width,
+                height: height
+            }, function(window) {
+                This.tab = window.tabs[0];
+                callback();
+            });
+        }
+        
+        this.sendMessage = function(msg, callback) {
+            var attempts = 0;
+
+            function trySend() {
+                if(attempts++ >= 100) {
+                    if(callback)
+                        callback({success: false});
+                    return;
+                }
+
+                /* make sure the window exist */
+                if(This.tab === null) {
+                    createWindow(trySend);
+                    return;
+                }
+
+                chrome.tabs.get(This.tab.id, function(tab) {
+                    /* if window is closed */
+                    if(chrome.runtime.lastError) {
+                        createWindow(trySend);
+                    } else {
+                        chrome.tabs.sendMessage(This.tab.id, msg, function(response) {
+                            if(chrome.runtime.lastError) {
+                                console.log(chrome.runtime.lastError);
+                                setTimeout(trySend, attempts * 2);
+                            } else if(callback) {
+                                console.log(This.tab);
+                                chrome.windows.update(This.tab.windowId, {focused: true});
+                                callback(response);
+                            }
+                        });
+                    }
+                });
+            };
+
+            trySend();
+        };
+    }
+    
+    var tradeupPort = (function() {
+        var port = new windowPort("html/background/tradeup.html", 1300, 900);
+
+        return {
+            add: function(item, callback) {
+                port.sendMessage(item, callback);
+            }
+        };
+    })();
+    
+    var screenshotPort = (function() {
+//        var port = new windowPort("html/background/screenshot.html", 600, 600);
+
+        return {
+            open: function(inspect) {
+//                port.sendMessage(inspect);
+            }
+        };
+    })();
+    
+    function appendType(callback, onsuccess, onfailure) {
+        return function(response) {
+            if(response.success)
+               response.type = onsuccess;
+            else if(onfailure)
+               response.type = onfailure;
+            
+            callback(response);
+        };
+    };
+    
     var background = {
-        handleMessage: function(request, port) {
-            var response;
-            switch(request.msg) {                
-                case constants.msg.BACKGROUND_DO_LOGIN:
-                   $.ajax({type: "POST", url: request.PLUGIN_API_URL, data: request.LOGIN_REQUEST, xhrFields: {withCredentials: true}})
-                    .done(function(data) {
-                        port.postMessage({msg: constants.msg.LOGIN_SUCCESS, data: data, requestid : request.requestid});
-                    }).fail(function(jqXHR, textStatus, errorThrown) {
-                        port.postMessage({msg: constants.msg.LOGIN_FAILED, textStatus: textStatus, errorThrown: errorThrown, requestid : request.requestid});
-                    });
+        handleMessage: function(msg, sender, callback) {            
+            switch(msg.type) {
+                case MSG.BACKGROUND_GET_ITEMINFO:
+                    data.getInspect(msg.inspect, msg.force, appendType(callback, MSG.ITEMINFO), msg.batch);
                     break;
-                /* TODO: Expire resource after some time */
-                case constants.msg.BACKGROUND_DO_GET_RESOURCE:
-                    if(cachedResource[request.name])
-                       response = {msg: constants.msg.RESOURCE_SUCCESS, data: cachedResource[request.name]};
-                    else
-                       $.ajax({type: "POST", url: request.PLUGIN_API_URL, data: request.REQUEST})
-                                .done(function (data) {
-                                    cachedResource[request.name] = data;
-                                    port.postMessage({msg: constants.msg.RESOURCE_SUCCESS, data: data, requestid: request.requestid});
-                                }).fail(function (jqXHR, textStatus, errorThrown) {
-                                    port.postMessage({msg: constants.msg.RESOURCE_FAILED, textStatus: textStatus, errorThrown: errorThrown, requestid: request.requestid});
-                                });
+                case MSG.BACKGROUND_GET_SCREENSHOT:
+                    screenshotPort.open(msg.inspect);
                     break;
-                case constants.msg.BACKGROUND_GET_PLUGIN_STATUS:
-                    response = {msg: constants.msg.PLUGIN_STATUS, status: pluginEnabled, version: version};
+                case MSG.BACKGROUND_GET_RESOURCE:
+                    data.getResource(msg.name, msg.url, msg.content, appendType(callback, MSG.RESOURCE_SUCCESS, MSG.RESOURCE_FAILED));
                     break;
-
-                case constants.msg.BACKGROUND_GET_STORAGE:
-                    response = {msg: constants.msg.STORAGE, namespace: request.namespace, value: storage.get(request.namespace)};
+                case MSG.BACKGROUND_GET_PLUGIN_STATUS:
+                    callback({type: MSG.PLUGIN_STATUS, data: {status: options.enabled, version: options.version}});
                     break;
-                    
-                case constants.msg.BACKGROUND_GET_TOKEN:
-                    response = {msg: constants.msg.TOKEN, token: storage.get(constants.namespace.NAMESPACE_CONFIG, 'token')};
+                case MSG.BACKGROUND_GET_OPTIONS:
+                    callback({type: MSG.PLUGIN_OPTIONS, data: options.get()});
                     break;
-                    
-                case constants.msg.BACKGROUND_SET_ITEM:
-                    storage.add(request.namespace, request.key, request.value);
-                    /* notify all listening threads that a new item was added */
-                    background.broadcastMessage({msg: constants.msg.BROADCAST_ITEM, namespace: request.namespace, key: request.key, value: request.value}, port);
+                case MSG.BACKGROUND_SET_OPTIONS:
+                    options.set(msg.field, msg.value);
+                    background.broadcastMessage({type: MSG.PLUGIN_OPTIONS, data: options.get()});
                     break;
-                    
-                case constants.msg.BACKGROUND_SET_INSPECT_STATUS:
-                    updateStatus(request.data);
-                    background.broadcastMessage({msg: constants.msg.BROADCAST_INSPECT_STATUS, data: request.data});
-                    break;
-                    
-		case constants.msg.BACKGROUND_SET_SCREENSHOT_STATUS:
-                    updateScreenshotStatus(request.data);
-                    background.broadcastMessage({msg: constants.msg.BROADCAST_SCREENSHOT_STATUS, data: request.data});
-                    break;
-                    
-                case constants.msg.BACKGROUND_INCREASE_INSPECT_USAGE:
-                    inspectStatus.usage += request.amount;
-                    if(inspectStatus.limit)
-                       background.broadcastMessage({msg: constants.msg.BROADCAST_INSPECT_USAGE, data: inspectStatus.limit - inspectStatus.usage});
-                    break;
-                    
-                case constants.msg.BACKGROUND_SET_TOKEN:
-                    storage.add(constants.namespace.NAMESPACE_CONFIG, 'token', request.token);
-                    background.broadcastMessage({msg: constants.msg.BROADCAST_TOKEN, data: request.token});
-                    break;
-                    
-                case constants.msg.BACKGROUND_REVOKE_TOKEN:
-                    storage.remove(constants.namespace.NAMESPACE_CONFIG, 'token');
-                    background.broadcastMessage({msg: constants.msg.BROADCAST_REVOKE_TOKEN});
+                case MSG.BACKGROUND_ADD_TRADEUPITEM:
+                    tradeupPort.add(msg.item, appendType(callback, MSG.ADD_TRADEUPITEM_RESPONSE));
                     break;
             }
             
-            if(response != null) {
-               response.requestid = request.requestid;
-               port.postMessage(response);
-            }
+            if(callback)
+               return true;
+        },
+        
+        handlePortMessage: function(request, port) {
+            background.handleMessage(request, function(response) {
+                port.postMessage(response);
+            });
         },
 
         handleConnect: function(port) {
@@ -123,13 +156,11 @@ require(["background/storage", "util/constants"], function(storage, constants) {
         },
 
         handleIconClick: function(tab) {
-            pluginEnabled = !pluginEnabled;
-            updateIcon(pluginEnabled);
-            window.localStorage.setItem('steam_wizard_enabled', pluginEnabled);
-
-            background.broadcastMessage({msg: constants.msg.PLUGIN_STATUS, status : pluginEnabled});
-            
-            console.log("message sent");
+//            pluginEnabled = !pluginEnabled;
+//            updateIcon(pluginEnabled);
+//            window.localStorage.setItem('steam_wizard_enabled', pluginEnabled);
+//
+//            background.broadcastMessage({msg: constants.msg.PLUGIN_STATUS, status : pluginEnabled});
         },
         
         broadcastMessage: function(msg, exclude) {
@@ -139,16 +170,16 @@ require(["background/storage", "util/constants"], function(storage, constants) {
            
                 connections[i].postMessage(msg);
             }
-        },
+        }
     };
     
     (function() {
-        pluginEnabled = window.localStorage.getItem('steam_wizard_enabled') === null ? true : window.localStorage.getItem('steam_wizard_enabled');
-        updateIcon(pluginEnabled);
-        chrome.browserAction.onClicked.addListener(background.handleIconClick);
-        chrome.runtime.onConnect.addListener(background.handleConnect);
-        storage.init();
+//        pluginEnabled = window.localStorage.getItem('steam_wizard_enabled') === null ? true : window.localStorage.getItem('steam_wizard_enabled');
+//        updateIcon(pluginEnabled);
         
-        version = chrome.runtime.getManifest().version;
+        chrome.runtime.onConnect.addListener(background.handleConnect);
+        chrome.runtime.onMessage.addListener(background.handleMessage);
+        
+        chrome.browserAction.onClicked.addListener(background.handleIconClick);
     })();
 });

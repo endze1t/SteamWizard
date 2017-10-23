@@ -1,0 +1,329 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Oct 17, 2017, 10:30:53 AM
+    Author     : ahmed
+*/
+
+@ItemRarityDefaultColor: #6a6156;
+@ItemRarityCommonColor: #b0c3d9;
+@ItemRarityUncommonColor: #5e98d9;
+@ItemRarityRareColor: #4b69ff;
+@ItemRarityMythicalColor: #8847ff;
+@ItemRarityLegendaryColor: #d32ce6;
+@ItemRarityAncientColor: #eb4b4b;
+@ItemRarityExceedinglyRareColor: #ffd700;
+@ItemRarityImmortalColor: #e4ae39;
+
+.rarity_color(@property, @opacity: 100%) {
+    &.default {
+      @{property}: fade(@ItemRarityDefaultColor, @opacity);
+    }
+    &.common {
+      @{property}: fade(@ItemRarityCommonColor, @opacity);
+    }
+    &.uncommon {
+      @{property}: fade(@ItemRarityUncommonColor, @opacity);      
+    }
+    &.rare {
+      @{property}: fade(@ItemRarityRareColor, @opacity);
+    }
+    &.mythical {
+      @{property}: fade(@ItemRarityMythicalColor, @opacity);
+    }
+    &.legendary {
+      @{property}: fade(@ItemRarityLegendaryColor, @opacity);
+    }
+    &.ancient {
+      @{property}: fade(@ItemRarityAncientColor, @opacity);
+    }
+    &.exceeding {
+      @{property}: fade(@ItemRarityExceedinglyRareColor, @opacity);
+    }
+    &.immortal {
+      @{property}: fade(@ItemRarityImmortalColor, @opacity);
+    }
+}
+
+html, body {
+    margin: 0px;
+    width: 100%;
+    min-width: 800px;
+}
+
+.template {
+    display: none;
+}
+
+.tabs {
+    width: 100%;
+    text-transform: capitalize;
+    table-layout: fixed;
+    border-collapse: collapse;
+
+    th {
+        .rarity_color(background-color);
+        
+        padding: 5px 0px;
+        
+        &.standard, &.stattrak {
+            font-size: 10px;
+            color: gray;
+            cursor: default;
+            
+            &:not(.active) {
+                background-color: rgb(240, 240, 240);
+            }
+                
+            &.selectable {
+                color: black;
+                cursor: pointer;
+
+                &:hover {
+                    color: #e0af09;
+                }
+            }
+            
+            &.active, &.active:hover {
+                color: black !important;
+            }
+        }
+        
+        &.space {
+            width: 1px;
+        }
+        
+        .count {
+            display: inline-block;
+            font-size: 8px;
+            margin-left: 5px;
+            
+            &:before {
+                content: '(';
+            }
+            
+            &:after {
+                content: ')';
+            }
+            
+            &:empty {
+                margin: 0px;
+                
+                &:before, &:after {
+                    content: '';
+                }
+            }
+        }
+    }
+    
+    tr.space {
+        height: 1px;
+    }
+}
+
+.canvas {
+    display: none;
+    height: 400px;
+    white-space: nowrap;
+    
+    &.active {
+        display: block;
+    }
+    
+    .item-list-scrollpane {
+        margin: 5px;
+        overflow: hidden;
+        height: 150px;
+    }
+    
+    .item-list {
+        white-space: nowrap;
+    }
+    
+    .tradeup-canvas {
+        background-color: #6d6d6c;
+        width: 730px;
+        font-size: 0;
+        margin: 0px 15px;
+        padding: 15px;
+        border-radius: 5px;
+        vertical-align: top;
+        white-space: normal;
+    
+        .tradeup-slot {
+            display: inline-block;
+            vertical-align: top;
+            
+            &:empty {
+                width: 110px;
+                height: 110px;
+                margin: 14px 16px 13px;
+                background-color: rgba(0, 0, 0, 0.5);
+                border: 2px solid #191c1c;
+            }
+        }
+    }
+    
+    .stats {
+        margin: 15px;
+        display: inline-block;
+        
+        .stat {
+            margin: 10px;
+            
+            div {
+                display: inline-block;
+                width: 200px;
+                font-size: 18px;
+                
+                &:nth-child(2) {
+                    font-weight: bold;
+                    font-family: monospace;
+                    width: 100px;
+                }
+            }
+        }
+    }
+    
+    .tradeup-data {
+        display: inline-block;
+        vertical-align: top;
+        margin-top: 10px;
+        text-align: center;
+        
+        textarea {
+            resize: none;
+            width: 413px;
+            height: 170px;
+            display: block;
+            font-size: 12px;
+        }
+        
+        .import, .export {
+            display: inline-block;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            margin: 10px 20px;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    }
+    
+    .results {
+        vertical-align: top;
+        width: 700px;
+        background-color: #6d6d6c;
+        display: inline-block;
+    }
+
+    .canvas-left, .canvas-right {
+        display: inline-block;
+        vertical-align: top;
+    }
+}
+
+.tradeup-item {
+    display: inline-block;
+    padding: 20px 15px 5px 15px;
+    background-color: #292929;
+    position: relative;
+    margin: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    
+    .wear-value {
+        top: 7px;
+        right: 7px;
+        font-size: 10px;
+        color: rgb(253, 203, 7);
+        font-family: sans-serif;
+        position: absolute;
+    }
+    
+    .price {
+        left: 0px;
+        bottom: 3px;
+        color: black;
+        font-size: 12px;
+        padding: 3px 10px 3px 5px;
+        position: absolute;
+
+        background-image: url('chrome-extension://__MSG_@@extension_id__/images/trade/price_icon.png');
+        background-size: 100% 100%;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+    
+    
+    .item-image-container {
+        height: 96px;
+        display: table-cell;
+        vertical-align: middle;
+    }
+    
+    .item-image {
+        width: 96px;        
+    }
+    
+    
+    .collection-image {
+        top: 5px;
+        left: 5px;
+        height: 20px;
+        position: absolute;
+    }
+    
+    .item-location {
+        width: 13px;
+        height: 13px;
+        position: absolute;
+        right: 7px;
+        bottom: 7px;
+        cursor: pointer;
+        
+        background-image: url(chrome-extension://__MSG_@@extension_id__/images/link-icon.png);
+        background-size: 100% 100%;
+        background-position: center;
+        background-repeat: no-repeat;
+        
+        &:hover {
+            background-image: url(chrome-extension://__MSG_@@extension_id__/images/link-icon-hover.png);
+        }
+    }
+}
+
+.tradeup-result {
+    background-color: #232323;
+    margin: 10px;
+    border-radius: 5px;
+    
+    & > * {
+        display: inline-block;
+        vertical-align: middle;
+        font-size: 12px;
+        color: #e6a117;
+        margin: 5px 10px;
+    }
+    
+    .percentage {
+        width: 30px;
+        text-align: center;
+    }
+    
+    .collection-image {
+        height: 25px;
+    }
+    
+    .item-image {
+        height: 50px;
+    }
+    
+    .name {
+        .rarity_color(color);
+    }
+}

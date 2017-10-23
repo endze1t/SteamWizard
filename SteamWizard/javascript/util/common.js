@@ -1,15 +1,5 @@
-define("util/util", function() {
+define(function() {
     "using strict";
-
-    /*http://stackoverflow.com/a/18405800*/
-    if (!String.prototype.format) {
-        String.prototype.format = function () {
-            var args = arguments;
-            return this.replace(/{(\d+)}/g, function (match, number) {
-                return typeof args[number] != 'undefined' ? args[number] : match;
-            });
-        };
-    }
       
     function _extractSticker(input) {
         var sticker = [];
@@ -31,30 +21,6 @@ define("util/util", function() {
     }
 
     var util = {
-
-        getJquerySelector : function(element){
-            var pieces = [];
-            for (;element && element.tagName !== undefined; element = element.parentNode) {
-                if (element.className) {
-                    var classes = element.className.split(' ');
-                    for (var i in classes) {
-                        if (classes.hasOwnProperty(i) && classes[i]) {
-                            pieces.unshift(classes[i]);
-                            pieces.unshift('.');
-                        }
-                    }
-                }
-                if (element.id && !/\s/.test(element.id)) {
-                    pieces.unshift(element.id);
-                    pieces.unshift('#');
-                }
-                pieces.unshift(element.tagName);
-                pieces.unshift(' > ');
-            }
-
-            return pieces.slice(1).join('');
-        },
-
         getAssetID : function(inspectLink){
             var reg = /.*A(\d+).*/;
             var match = reg.exec(inspectLink);
@@ -128,9 +94,12 @@ define("util/util", function() {
             script.textContent = '(' +
                     function(classname, processor) {
                         document.getElementById(classname).onclick = function() {
-                            var var_name = this.getAttribute('variable');
+                            var var_name = this.getAttribute('variable').split(',');
                             
-                            var result = window[var_name];
+                            var result = {};
+
+                            for(var i=0; i < var_name.length; i++)
+                                result[var_name[i]] = window[var_name[i]];
                             
                             if(processor)
                                result = processor(result);
@@ -154,7 +123,7 @@ define("util/util", function() {
             interval = setInterval(function () {
                 $('#'+id)[0].click();
 
-                if (counter-- < 1)
+                if ((counter--) < 1)
                     clearInterval(interval);
             }, 100);
 
@@ -164,17 +133,114 @@ define("util/util", function() {
         getProperties: function(name) {
             var prop = {};
 
-            prop.isKnife        = /^★/.test(name);
-            prop.isSticker      = /^Sticker \|/.test(name);
-            prop.isSouvenir     = /^Souvenir .*?\|/.test(name);
-            prop.isMusic        = /^Music \|/.test(name);
-            prop.isKey          = /Case Key/.test(name) || /eSports Key/.test(name);
-            prop.isStatTrak     = /StatTrak™/.test(name);
-            prop.isGraffiti     = /^Sealed Graffiti/.test(name);
-            prop.isOffer        = /^Offer \|/.test(name);
-            prop.isUsedGraffiti = /^Graffiti \|/.test(name);
+            prop.isKnife          = /^★/.test(name);
+            prop.isSticker        = /^Sticker \|/.test(name);
+            prop.isSouvenir       = /^Souvenir .*?\|/.test(name);
+            prop.isMusic          = /^Music \|/.test(name);
+            prop.isKey            = /Case Key/.test(name) || /eSports Key/.test(name);
+            prop.isVanilla        = /CS:GO Case Key/.test(name);
+            prop.isStatTrak       = /StatTrak™/.test(name);
+            prop.isSealedGraffiti = /^Sealed Graffiti/.test(name);
+            prop.isOffer          = /^Offer \|/.test(name);
+            prop.isGraffiti       = /^Graffiti \|/.test(name);
 
             return prop;
+        },
+        
+        eachDelayed: function(array, method, timeout, batch) {
+            function create(item, method) {
+                return function() {
+                    method(item);
+                };
+            }
+            
+            if(!batch)
+                batch = 1;
+            
+            var time = Date.now();
+            
+            for(var i=0; i < array.length; i++) {
+                setTimeout(create(array[i], method), timeout*(i/batch));
+            }
+            
+            setTimeout(function() {
+                //alert('hi: ' + array[0] + ' ' + (Date.now() - time)/1000);
+            }, timeout * array.length / batch);
+        },
+        
+        chainCall: function(array, method, timeout, callback) {
+            var time = Date.now();
+
+            var index = 0;
+            var batch = 1;
+            
+            (function doNext() {
+                var called = false;
+//                var selftime = Date.now();
+                for(var i=0; i < batch && index < array.length; i++) {
+                    method(array[index++]);
+                    called = true;
+                }
+                
+                if(called)
+                    setTimeout(doNext, timeout);
+                else {
+//                    console.log('done ' + (Date.now() - time));
+                    if(callback)
+                       callback();
+                }
+                
+                //var t = Date.now();
+                //console.log('selftime ' + (t - selftime) + ' ' + selftime + ' ' + t);
+            })();
+        },
+        
+        directCall: function(array, method) {
+            var time = Date.now();
+//            console.log('start ' + time);
+
+            for(var i=0; i < array.length; i++)
+                method(array[i]);
+            
+//            console.log('done ' + (Date.now() - time));
+        },
+        
+        execDelayed: function(methods, delay) {
+            function exec(method) {
+                return function() {
+                    method();
+                };
+            }
+            
+            for(var i=0; i < methods.length; i++) {
+                setTimeout(exec(methods[i]), delay*i);
+            }
+        },
+        
+        hashnameToName: function(hashname) {
+            switch(hashname) {
+                case "ESL One Katowice 2015 Challengers (Holo-Foil)":
+                case "DreamHack 2014 Legends (Holo-Foil)":
+                case "ESL One Katowice 2015 Legends (Holo-Foil)":
+                case "Krakow 2017 Challengers (Holo-Foil)":
+                case "Cologne 2016 Legends (Holo-Foil)":
+                case "Atlanta 2017 Challengers (Holo-Foil)":
+                case "MLG Columbus 2016 Legends (Holo-Foil)":
+                case "Cologne 2016 Challengers (Holo-Foil)":
+                case "Atlanta 2017 Legends (Holo-Foil)":
+                case "MLG Columbus 2016 Challengers (Holo-Foil)":
+                case "Krakow 2017 Legends (Holo-Foil)":
+                    return hashname.replace('-', '/');
+            }
+            
+            return hashname;
+        },
+        
+        keys: {
+            ENTER : 13,
+            SHIFT : 16,
+            CTRL  : 17,
+            ALT   : 18
         }
     }
     

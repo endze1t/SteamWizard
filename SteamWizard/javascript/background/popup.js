@@ -16,7 +16,7 @@ $(document).ready(function(){
 	//checkboxes
 	$(".element div input[type=checkbox]").change(function(checkbox){
 		//todo: load value from storage, save when clicked
-		console.log('checkbox change');
-		console.log(checkbox);
+//		console.log('checkbox change');
+//		console.log(checkbox);
 	});
 });

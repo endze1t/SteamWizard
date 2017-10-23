@@ -11,400 +11,537 @@
  *
  */
 
-require(["core/steamwizard", "util/constants", "util/common_ui", "util/util","util/price", "util/keys"], function(steamwizard, constants, common_ui, util, price, keys) {
-    /* namespace shorthand */
-    var NAMESPACE_SCREENSHOT     = constants.namespace.NAMESPACE_SCREENSHOT;
-    var NAMESPACE_MARKET_INSPECT = constants.namespace.NAMESPACE_MARKET_INSPECT;
+require(["util/common", "util/price", "port", 'util/steam_override', 'util/item',
+         "port!BACKGROUND_GET_OPTIONS",
+         "text!" + chrome.extension.getURL("/html/trade.html")
+        ], function (util, price_engine, port, steam_override, item,
+                     options, trade_template) {
+
+    /* 
+     * store all tradeup items 
+     * gets populated when wear value is loaded
+     **/
+    var loadedItems = {};
     
-    function steamWizardEventListener(request) {
-        switch (request.msg) {
-            case constants.msg.PLUGIN_STATUS:
-                ui_helper.initDisplay();
-                break;
-            case constants.msg.BROADCAST_ITEM:
-                if (request.namespace === NAMESPACE_MARKET_INSPECT && visibleAssets[request.key]) {
-                    var cachedFloatValue = steamwizard.getFloatValueCachedFromAssetid(request.key);
-                    var $getFloatButton = $(visibleAssets[request.key]).find(".steam_wizard_load_button_float");
-                    ui_helper.finishFloatButton($getFloatButton, cachedFloatValue);
-                } else if (request.namespace === NAMESPACE_SCREENSHOT && visibleAssets[request.key]) {
-                    var cachedScreenshot = steamwizard.getScreenshotCachedFromAssetid(request.key);
-                    var $getScreenshotButton = $(visibleAssets[request.key]).find(".steam_wizard_load_button_screenshot");
-                    if (cachedScreenshot != null) {
-                        ui_helper.finishScreenshotButton($getScreenshotButton, request.image_url);
-                    }
-                }
-                break;
-            case constants.msg.BROADCAST_INSPECT_STATUS:
-                $("#steam_wizard_inspects_left_today").text(request.data.limit - request.data.usage + " / " + request.data.limit);
-                $("#steam_wizard_inspects_left_today").removeClass('steam_wizard_rotating');
-                if (request.data.premium == true) {
-                    $("#steam_wizard_csgozone_prem_active").text("Reset in: ").append(util.timer(request.data.reset));
-                    $("#steam_wizard_csgozone_prem_active").addClass('steam_wizard_prem_active');
-                } else {
-                    $("#steam_wizard_csgozone_prem_active").text("- increase quota -");
-                    $("#steam_wizard_csgozone_prem_active").addClass('steam_wizard_prem_inactive');
-                    $("#steam_wizard_csgozone_prem_active").click(function () {
-                        common_ui.showGeneralOverlay("", "", "Ok", function () {
-                            common_ui.removeOverlay();
-                        });
-                        $("#steam_wizard_general_overlay_title").html("You can increase the daily limit to 20,000 by activating the \"Premium\" on <a style='text-decoration: underline;' target='_blank' href='http://csgozone.net/inspect'>csgozone</a>");
-                    });
-                }
-                break;
-            case constants.msg.BROADCAST_INSPECT_USAGE:
-                $("#steam_wizard_inspects_left_today").text(request.data);
-                $("#steam_wizard_inspects_left_today").removeClass('steam_wizard_rotating');
-                break;
-            case constants.msg.BROADCAST_SCREENSHOT_STATUS:
-                $("#steam_wizard_screenshots_premium_queue").removeClass('steam_wizard_rotating');
-                if (request.data.user_has_premium) {
-                    $("#steam_wizard_metjm_prem_active").addClass('steam_wizard_prem_active');
-                    $("#steam_wizard_screenshots_premium_queue").text('true');
-                } else {
-                    $("#steam_wizard_metjm_prem_active").text('- activate -');
-                    $("#steam_wizard_metjm_prem_active").addClass('steam_wizard_prem_inactive');
-                    $("#steam_wizard_metjm_prem_active").click(function () {
-                        common_ui.showGeneralOverlay("", "", "Ok", function () {
-                            common_ui.removeOverlay();
-                        });
-                        $("#steam_wizard_general_overlay_title").html("You can activate priority queue by purchasing premium on <a style='text-decoration: underline;' target='_blank' href='http://metjm.net'>metjm.net</a>");
-                    });
-                    $("#steam_wizard_screenshots_premium_queue").text('false');
-                }
-                break;
-            case constants.msg.USERNAME:
-                ui_helper.displayUsername();
-                break;
-            case constants.msg.BROADCAST_REVOKE_TOKEN:
-                $("#steam_wizard_loggedin_as").text("not logged in");
-                break;
-            case constants.msg.ADVERT:
-                ui_helper.displayAdvert(request.data);
-                break;
-        }
-    }
+    var init = {
+        initDisplay: function () {
+            var $template = $(trade_template);
 
-    var replaceEnsureSufficientTradeSlotsFunction = function(){
-        //extremely ugly solution to skipping the animation
-        var actualCode = '(EnsureSufficientTradeSlots = ' +
-            function( bYourSlots, cSlotsInUse, cCurrencySlotsInUse ) {
-                var elSlotContainer = bYourSlots ? $('your_slots') : $('their_slots');
-                
-                var cTotalSlotsInUse = cSlotsInUse + cCurrencySlotsInUse;
+            var $panel = $template.find('.steam_wizard_trade_status_panel');
+            $(".trade_area .trade_left").before($panel);
 
-                var cDesiredSlots;
-                if ( Economy_UseResponsiveLayout() )
-                    cDesiredSlots = cTotalSlotsInUse + 1;
-                else
-                    cDesiredSlots = Math.max( Math.floor( ( cTotalSlotsInUse + 5 ) / 4 ) * 4, 8 );
+            steam_override.fixSizeWindow();
 
-                var cDesiredItemSlots = cDesiredSlots - cCurrencySlotsInUse;
+            var $wrapper = $('<div>').addClass('steam_wizard_maincontent_wrapper');
 
-                var cCurrentItemSlots = elSlotContainer.childElements().length;
-                var cCurrentSlots = cCurrentItemSlots + cCurrencySlotsInUse;
+            $('#mainContent').children().appendTo($wrapper);
+            $('#mainContent').append($wrapper).width(936 + 170);
 
-                var $ContainerParent = $J( elSlotContainer.parentNode );
-                $ContainerParent.css( 'height', $ContainerParent.height() + 'px' );
-                $ContainerParent.css('overflow','hidden');
+            if (document.body.clientWidth < 976 + 170)
+                window.resizeTo(document.body.clientWidth + 170, window.outerHeight);
 
-                var bElementsChanged = false;
-                var fnOnAnimComplete = null;
-                if ( cDesiredSlots > cCurrentSlots )
-                {
-                    for( var i = cCurrentItemSlots; i < cDesiredItemSlots; i++ )
-                    {
-                        CreateTradeSlot( bYourSlots, i );
-                    }
-                    bElementsChanged = true;
-                }
-                else if ( cDesiredSlots < cCurrentSlots )
-                {
-                    // going to compact
-                    var prefix = bYourSlots ? 'your_slot_' : 'their_slot_';
-                    var rgElementsToRemove = new Array();
-                    for ( var i = cDesiredItemSlots; i < cCurrentItemSlots; i++)
-                    {
-                        var element = $(prefix + i );
-                        element.id='';
-                        $(elSlotContainer.parentNode).appendChild( element.remove() );
-                        rgElementsToRemove.push( element );
-                    }
-                    fnOnAnimComplete = function() { rgElementsToRemove.invoke('remove') };
-                    bElementsChanged = true;
-                }
-                if ( bElementsChanged )
-                {
-                    if ( cCurrentSlots ){
-                        var iNewHeight = $ContainerParent[0].scrollHeight - parseInt( $ContainerParent.css('paddingTop') );
-                        $ContainerParent.css({ height: iNewHeight + 'px' });
-                        $ContainerParent.css( 'height', '' ).css( 'overflow', '' );
-                        fnOnAnimComplete && fnOnAnimComplete();
-                    }else{
-                        $ContainerParent.css( 'height', '' ).css( 'overflow', '' );
-                        fnOnAnimComplete && fnOnAnimComplete();
-                    }
-                }
-                else
-                {
-                    $ContainerParent.css( 'height', '' ).css( 'overflow', '' );
-                }
-            }
-        + ')();';
-        var script = document.createElement('script');
-        script.textContent = actualCode;
-        (document.head||document.documentElement).appendChild(script);
-        script.remove();
-    };
+            var $control = $template.find(".steam_wizard_trade_control_panel");
+            $("#mainContent").append($control);
 
-    var moveItems = function(containerSelector, itemVisibility, direction, filter) {
-        var event = new MouseEvent('dblclick', {
-            'view': window,
-            'bubbles': true,
-            'cancelable': true
-        });
-
-        var items = $(containerSelector).find(".item" + itemVisibility).toArray();
-        
-        if(filter && filter == "keys"){
-            for(var i = items.length -1; i >= 0; i--){
-                var hashname = $(items[i]).prop("data-hashname");
-                var properties = util.getProperties(hashname);
-                if(!properties.isKey)
-                    items.splice(i,1);
-            }
-        }else if (filter){
-            for(var i = items.length -1;i>=0;i--){
-                var hashname = $(items[i]).prop("data-hashname");
-                if(hashname != filter)
-                    items.splice(i,1);
-            }
-        }
-
-        (function doNext() {
-            if(items.length > 0) {
-                for(var i=0; i < 1 && i < items.length; i++) {
-                    var item = direction ? items.shift() : items.pop();
-                    item.dispatchEvent(event);
-                }
-                
-                setTimeout(doNext, 5);
-            }
-        })();
-    }
-
-    var updateTradeStats = function($itemContainer, $statusRow){
-        var numItems = $itemContainer.find(".has_item").length;
-        var val = 0.0;
-        var foundAllPrices = true;
-        $itemContainer.find(".has_item").each(function(index, value){
-            var price = $(value).find(".item").prop("data-price");
-            if(price)
-                val += price;
-            else  
-                foundAllPrices = false;
-        });
-        $statusRow.find(".status_count").text(numItems);
-        $statusRow.find(".status_value").text("$" + val.toFixed(2));
-    }
-    
-    var events = {
-       
-    }
-
-    var cachedInventories = {};
-
-    var getInventory = function(inventoryId, getInvCallback){
-        if(cachedInventories[inventoryId]){
-            //don't callback again, everything should be prepared
-            //getInvCallback(cachedInventories[inventoryId]);
-        }else{
-            util.fetchGlobal('g_ActiveInventory', function(data) {
-                cachedInventories[inventoryId] = data;
-                getInvCallback(data);
-            }, function(input){
-                var output = {};
-
-                output.appid = input.appid;
-                output.contextid = input.contextid;
-                output.elInventoryId = input.elInventory.id;
-                
-                var keys = Object.keys(input.rgInventory);
-                for(var i = 0;i<keys.length;i++){
-                    output[keys[i]] = input.rgInventory[keys[i]].market_hash_name;
-                }
-                return output;
-            });
-        }
-    }
-
-    var updateInventory = function(inventoryId){
-        getInventory(inventoryId, function(inventory){
-            $("#" + inventoryId).find(".item").each(function(index, value){
-                var $item = $(value);
-                var itemId = value.id.split("_")[2];
-                if(inventory[itemId]){
-                    var hashname = inventory[itemId];
-                    $item.prop('data-hashname', hashname);
-                    var itemPrice = price.getItemSteamPrice(hashname);
-                    $item.append($("<p style='position:absolute;top:-14px;left:0px;'>").text("$" + itemPrice));
-                    $item.prop("data-price", itemPrice);
-                    $item.click(function(){
-                        var shift = keys.getKeyPressed(keys.SHIFT);
-                        var alt = keys.getKeyPressed(keys.ALT);
-
-                        var selector = util.getJquerySelector($item.parent().parent().parent()[0]);
-
-                        if(alt && shift){
-                           moveItems(selector, "", false, hashname);
-                        } else if(shift) {
-                           moveItems(selector, ":visible", false, hashname);
-                        }
-                    });
-                }
-            });
-        });
-    }
-    
-    var ui_helper = {
-        displayUsername: function() {
-            var username = steamwizard.getUsername(true);
-
-            var $paragraph = $("#steam_wizard_loggedin_as_paragraph");
-            var $refreshButton = $("#steam_wizard_refresh_login");
-            $refreshButton.off();
-            if (!username || username === "")
-                username = "not logged in.";
-            $paragraph.show();
-            $("#steam_wizard_loggedin_as").text(username);
-            $refreshButton.click(function () {
-                $("#steam_wizard_loggedin_as").text("not logged in");
-                steamwizard.refreshToken(function () {
-
-                });
-            });
-        },
-        
-        initDisplay: function() {
-            /* refresh login to change accounts */
-            ui_helper.displayUsername();
-
-            /* make sure radio buttons are enabled */
-            $(".steam_wizard_radio_panel_numitems").find("input:radio").attr("disabled", false);
-            
-//            if(steamwizard.isEnabled())
-//               ui_helper.displayButtons();
-//            else
-//               ui_helper.removeButtons();
-        }
-    };
-
-    /*
-     * Initialize
-     */
-    (function() {
-        common_ui.buildScreenshotOverlay();
-        common_ui.buildGeneralOverlay();
-        common_ui.buildSteamWizardTradePanel();
-        common_ui.buildLoginOverlay(function (e) {
-            common_ui.removeOverlay();
-
-            /* TODO: LOADING INDICATION */
-            steamwizard.login(function () {
-                ui_helper.initDisplay();
-            });
-        });
-
-
-        replaceEnsureSufficientTradeSlotsFunction();
-
-        {
-            keys.observeKey(keys.ALT);
-            keys.observeKey(keys.SHIFT);
+            steam_override.fixEnsureSufficientTradeSlots();
+            steam_override.fixUpdateSlots();
 
             //table for status
-            var $statusTable = $("<table class='steam_wizard_status_table'><tr><th></th><th>#Items</th><th>Sum Value</th></tr></table>");
-            var $statusTableYours = $("<tr><th>Yours</th><td class='status_count'>0</td><td class='status_value'>$0.00</td></tr>");
-            var $statusTableTheirs = $("<tr><th>Theirs</th><td class='status_count'>0</td><td class='status_value'>$0.00</td></tr>");
-            $statusTable.append($statusTableYours);
-            $statusTable.append($statusTableTheirs);
+            var $statusTable = $(".steam_wizard_trade_status_table");
+            var $statusTableYours = $statusTable.find('.yours');
+            var $statusTableTheirs = $statusTable.find('.theirs');
 
             //trigger for calculating number and value of items
             var $theirSlots = $('#their_slots');
-            var $yourSlots  = $("#your_slots");
-            var observerYours = new MutationObserver(function () {updateTradeStats($yourSlots, $statusTableYours) });
-            var observerTheirs = new MutationObserver(function () {updateTradeStats($theirSlots, $statusTableTheirs) });
+            var $yourSlots = $("#your_slots");
+            var observerYours = new MutationObserver(function () {
+                ui_helper.updateTradeStats($yourSlots, $statusTableYours);
+                ui_helper.updateKeyCounter($(".inventory_ctn:visible"));
+            });
+            var observerTheirs = new MutationObserver(function () {
+                ui_helper.updateTradeStats($theirSlots, $statusTableTheirs);
+                ui_helper.updateKeyCounter($(".inventory_ctn:visible"));
+            });
+
             observerTheirs.observe($theirSlots[0], {childList: true, characterData: false, subtree: true});
             observerYours.observe($yourSlots[0], {childList: true, characterData: false, subtree: true});
 
-            //observe when user changes inventory, then update hashnames
-            var inventoryChangeObserver = new MutationObserver(function () {
-                //only react if the inventory is done loading
-                if($("#trade_inventory_unavailable:visible").length == 0){
-                    //get the id of the currently visible inventory
-                    var inventoryId = $(".inventory_ctn:visible")[0].id;
-                    updateInventory(inventoryId);
+            ui_helper.enableButtons();
+
+            // make sure add keys input is always valid
+            var $addKeysToTradeButton = $('.steam_wizard_trade_keys_button');
+            var keys_input = $('.steam_wizard_trade_keys_input');
+            var val = keys_input.val();
+            keys_input.keyup(function (e) {
+                if(e.keyCode == util.keys.ENTER) {
+                    $addKeysToTradeButton.click();
+                    return;
                 }
+                
+                var cur = keys_input.val();
+
+                var invalid = isNaN(cur) | cur.includes('.') | cur < 0;
+
+                if (invalid)
+                    keys_input.val(val);
+                else if (cur.startsWith('0') && cur.length > 1) {
+                    cur = parseInt(cur);
+                    keys_input.val(cur);
+                    val = cur;
+                } else
+                    val = cur;
+            });
+            
+            // key counter
+            var inventoryChangeObserver = new MutationObserver(function () {
+                ui_helper.updateKeyCounter($('.inventory_ctn:visible'));
             });
             inventoryChangeObserver.observe($("#appselect_activeapp")[0], {childList: true, characterData: false, subtree: false});
             
-            var $container = $(".steam_wizard_status_panel_button_container");
+            $('.steam_wizard_trade_keys_checkbox').change(function() {
+                ui_helper.updateKeyCounter($('.inventory_ctn:visible'));                
+            });
+        },
+        
+        initTradeItem: function ($item, inventory) {
+            var matches = $item.attr('id').match(/^item(\d+)_(\d+)_(\d+)/);
 
-            //button to add current page to trade
-            var $addCurrentPageToTradeButton = common_ui.createGreenSteamButton("Select All");
-            $addCurrentPageToTradeButton.removeClass('steam_wizard_load_button')
-                                        .addClass('steam_wizard_control_button');
-            $addCurrentPageToTradeButton.click(function(){
-                moveItems("#inventories:visible .inventory_ctn:visible", ":visible", true);
+            var itemid = matches[3];
+            var appid = matches[1];
+
+            if (inventory == null || !inventory[itemid])
+                return;
+
+            var marketname = util.hashnameToName(inventory[itemid].markethashname);
+            var itemPrice = price_engine.getItemSteamPrice(marketname);
+
+            $item.attr('data-marketname', marketname);
+            $item.attr('data-itemid', itemid);
+            $item.attr('data-appid', appid);
+            $item.attr("data-price", itemPrice);
+
+            var $price = $('<div>').addClass('steam_wizard_trade_price');
+            $price.text('$' + itemPrice);
+            $item.append($price);
+            $item.click(function (e) {
+                var shift = e.shiftKey;
+                var alt = e.altKey;
+                var ctrl = e.ctrlKey;
+                
+                var selector = $item.parents('.trade_item_box');
+
+                if (alt && shift) {
+                    ui_helper.moveItems(selector, "", false, {name: marketname});
+                } else if (shift) {
+                    ui_helper.moveItems(selector, ":visible", false, {name: marketname});
+                } else if (ctrl) {
+                    local_util.attemptTradeup(itemid);
+                }
             });
 
-             //button for removing items from trade
-            var $removeAllFromTradeButton = common_ui.createGreenSteamButton("Remove All");
-            $removeAllFromTradeButton.removeClass('steam_wizard_load_button')
-                                     .addClass('steam_wizard_control_button');
-            $removeAllFromTradeButton.click(function(){
-                if($("#inventory_select_your_inventory").hasClass("active"))
-                    moveItems("#trade_yours:visible", ":visible", false);
+            var inspect = inventory[itemid].inspect;
+            var image = inventory[itemid].image;
+            
+            /* make sure inspect link belongs to this item */
+            if (local_util.validateInspect(marketname, inspect, itemid)) {
+                $item.append(ui_helper.createInspectButton(({     image : image,
+                                                                inspect : inspect, 
+                                                             marketname : marketname, 
+                                                                steamid : inventory.steamid})));
+                $item.append(ui_helper.createScreenshotButton(inspect));
+                
+//            var $screenshot = $('<div>').addClass('steam_wizard_trade_screenshot');
+//            $item.append($screenshot);
+//            $screenshot.click(function () {
+//
+//            });
+
+            }
+        },
+        
+        initInventory: function(inventory) {
+            /* initialize if loaded */
+            var $inventory = $('#' + inventory.elInventoryId);
+
+            if ($inventory.length > 0) {
+                if ($inventory.children().length > 0) {
+                    var method = function (value) {
+                        init.initTradeItem($(value), inventory);
+                    };
+                    
+                    util.directCall($inventory.find(".item"), method);
+                    ui_helper.updateKeyCounter($('.inventory_ctn:visible'));
+
+                    // remove listener after initialization
+                    if (inventory.inventoryChangeObserver)
+                        inventory.inventoryChangeObserver.disconnect();
+                } else {                
+                    //observe when user changes inventory, then update hashnames
+                    inventory.inventoryChangeObserver = new MutationObserver(function () {
+                        init.initInventory(inventory);
+                    });
+                    inventory.inventoryChangeObserver.observe($inventory[0], {childList: true, characterData: false});
+                }
+            }
+        },
+
+        initTradeSlots: function(inventory, $slotsContainer) {
+            // items that are still loading
+            var unknownItems = $slotsContainer.find('.unknownItem');
+
+            function initItem($item) {
+                var match = $item.attr('id').match(/^item(\d+)_(\d+)_(\d+)/);
+
+                if (match != null && match[1] == inventory.appid) {
+                    init.initTradeItem($item, inventory);
+                }
+            }
+
+            // all items loaded successfully .. just populate stuff
+            if (unknownItems.length === 0) {
+                function method(value) {
+                    initItem($(value));
+                }
+                
+                util.chainCall($slotsContainer.find(".item"), method, 0);
+            } else {
+                //need to create an observer
+                var tradeItemChangeObserver = new MutationObserver(function (mutations) {
+                    for (var i = 0; i < mutations.length; i++) {
+                        var mutation = mutations[i];
+
+                        if (mutation.type !== 'childList')
+                            continue;
+
+                        var addedNodes = mutation.addedNodes;
+
+                        for (var j = 0; j < addedNodes.length; j++) {
+                            var $item = $(addedNodes[i]);
+
+                            if ($item.hasClass('item'))
+                                initItem($item);
+                        }
+                    }
+                });
+                $(".trade_right .trade_item_box").each(function (index, value) {
+                    tradeItemChangeObserver.observe(value, {childList: true, characterData: false, subtree: true});
+                });
+            }
+        }        
+    };
+    
+    var ui_helper = {
+        screenshotWindow: null,
+        
+        updateTradeStats: function ($itemContainer, $statusRow) {
+            var $items = $itemContainer.find(".item");
+
+            var val = 0.0;
+            var keys = 0;
+            var foundAllPrices = true;
+
+            $items.each(function (index, value) {
+                var price = $(value).attr("data-price");
+
+                if (price)
+                    val += parseFloat(price);
                 else
-                    moveItems("#trade_theirs:visible", ":visible", false);
+                    foundAllPrices = false;
+                                
+                var marketname = $(value).attr("data-marketname");
+                var properties = util.getProperties(marketname);
+
+                if (properties.isKey)
+                    keys++;
             });
+            $statusRow.find(".status_keys_value").text(keys);
+            $statusRow.find(".status_count").text($items.length);
+            $statusRow.find(".status_value").text("$" + val.toFixed(2));
+        },
+        
+        updateKeyCounter: function ($itemContainer) {
+            var $items = $itemContainer.find(".item");
+
+            var keys = 0;
+            var vanilla = 0;
+
+            $items.each(function (index, value) {
+                var marketname = $(value).attr("data-marketname");
+                var properties = util.getProperties(marketname);
+
+                if (properties.isKey) {
+                    keys++;
+                    if (properties.isVanilla)
+                        vanilla++;
+                }
+            });
+            
+            if($('.steam_wizard_trade_keys_checkbox').prop('checked'))
+                keys -= vanilla;
+            
+            $('.steam_wizard_trade_keys_count').text(keys);
+
+        },
+        
+        // move items from/to inventories depending on filter used
+        moveItems: function (containerSelector, itemVisibility, direction, filter) {
+            /* check if we are already moving some stuff */
+            if(ui_helper.isButtonsDisabled())
+                return;
+            
+            ui_helper.disableButtons();
+            
+            var event = new MouseEvent('dblclick', {
+                'view': window,
+                'bubbles': true,
+                'cancelable': true
+            });
+
+            var items = $(containerSelector).find(".item" + itemVisibility).toArray();
+
+            if (filter) {
+                if (filter.keys) {
+                    for (var i = items.length - 1; i >= 0; i--) {
+                        var marketname = $(items[i]).attr("data-marketname");
+                        var properties = util.getProperties(marketname);
+                        if (!properties.isKey)
+                            items.splice(i, 1);
+                        else if (!filter.vanilla && properties.isVanilla)
+                            items.splice(i, 1);
+                    }
+
+                    while (items.length > filter.count)
+                        items.splice(i, 1);
+                } else if (filter.name) {
+                    for (var i = items.length - 1; i >= 0; i--) {
+                        var marketname = $(items[i]).attr("data-marketname");
+                        if (marketname !== filter.name)
+                            items.splice(i, 1);
+                    }
+                }
+            }
+
+            if (!direction)
+                items = items.reverse();
+
+            util.chainCall(items, function (item) {
+                item.dispatchEvent(event);
+            }, 0, function() {
+                ui_helper.enableButtons();
+            });
+        },
+        
+        createInspectButton: function(info) {
+            var $button = $('<div>').addClass('steam_wizard_trade_inspect');
+
+            function load(force) {
+                $button.off().addClass('loading');
+                port.getItemInfo(info.inspect, onload, force);
+            }
+
+            function onclick(event) {
+                load(true);
+
+                if (event)
+                    event.stopPropagation();
+            }
+
+            /* onclick for button is set here */
+            function onload(data) {
+                $button.removeClass('loading');
+
+                if (!data || !data.success)
+                    $button.click(onclick);
+                else if (data.iteminfo.paintwear) {
+                    var itemid = data.iteminfo.itemid;
+                    
+                    $button.addClass('loaded').text(data.iteminfo.paintwear.toFixed(10));
+                    loadedItems[itemid] = new item().fromName(info.marketname).fromInspection(data.iteminfo);
+                    loadedItems[itemid].image = info.image;
+                    loadedItems[itemid].steamid = info.steamid;
+                }
+            }
+
+            load(options.autoload_floats);
+
+            return $button;
+        },
+        
+        createScreenshotButton: function(inspect) {
+            var $button = $('<div>').addClass('steam_wizard_trade_screenshot');
+            
+            function onclick(event) {
+                port.getScreenshot(inspect);
+                
+                if (event)
+                    event.stopPropagation();
+            }
+            
+            $button.click(onclick);
+
+            return $button;
+        },
+        
+        disableButtons: function() {
+            // accepts and confirms trade offer in 1 step
+            var $addCurrentPageToTradeButton = $(".steam_wizard_trade_quick_confirm");
+            $addCurrentPageToTradeButton.off().addClass('disabled');
+            
+            //button to add current page to trade
+            var $addCurrentPageToTradeButton = $(".steam_wizard_trade_select_page");
+            $addCurrentPageToTradeButton.off().addClass('disabled');
+
+            //button for removing items from trade
+            var $removeAllFromTradeButton = $(".steam_wizard_trade_clear_all")
+            $removeAllFromTradeButton.off().addClass('disabled');
+            
+            //button for dumping inventory
+            var $dumpInventoryButton = $(".steam_wizard_trade_select_all");
+            $dumpInventoryButton.off().addClass('disabled');
+            
+            //button to add keys
+            var $addKeysToTradeButton = $('.steam_wizard_trade_keys_button');
+            $addKeysToTradeButton.off().addClass('disabled');            
+            
+            $('.steam_wizard_trade_keys_input').attr('disabled', 'disabled');            
+        },
+        
+        isButtonsDisabled: function() {
+            var $addCurrentPageToTradeButton = $(".steam_wizard_trade_quick_confirm");
+            return $addCurrentPageToTradeButton.hasClass('disabled');
+        },
+        
+        enableButtons: function() {
+            // accepts and confirms trade offer in 1 step
+            var $addCurrentPageToTradeButton = $(".steam_wizard_trade_quick_confirm");
+            $addCurrentPageToTradeButton.click(function() {
+                if($('#you_cantready').is(':visible'))
+                    return;
+                
+                if($('#you_notready').is(':visible'))
+                    steam_override.toggleReady();
+                
+                $('#trade_confirmbtn').click();
+            }).removeClass('disabled');
+            
+            //button to add current page to trade
+            var $addCurrentPageToTradeButton = $(".steam_wizard_trade_select_page");
+            $addCurrentPageToTradeButton.click(function () {
+                ui_helper.moveItems("#inventories:visible .inventory_ctn:visible", ":visible", true);
+            }).removeClass('disabled');
+
+            //button for removing items from trade
+            var $removeAllFromTradeButton = $(".steam_wizard_trade_clear_all")
+            $removeAllFromTradeButton.click(function () {
+                if ($("#inventory_select_your_inventory").hasClass("active"))
+                    ui_helper.moveItems("#trade_yours:visible", ":visible", false);
+                else
+                    ui_helper.moveItems("#trade_theirs:visible", ":visible", false);
+            }).removeClass('disabled');
 
             //button for dumping inventory
-            var $dumpInventoryButton = common_ui.createGreenSteamButton("Dump Inventory");
-            $dumpInventoryButton.removeClass('steam_wizard_load_button')
-                                .addClass('steam_wizard_control_button');
-            $dumpInventoryButton.click(function(){
-                moveItems(".inventory_ctn:visible", "", true);
-            });
+            var $dumpInventoryButton = $(".steam_wizard_trade_select_all");
+            $dumpInventoryButton.click(function () {
+                ui_helper.moveItems(".inventory_ctn:visible", "", true);
+            }).removeClass('disabled');
 
-            //button to add current page to trade
-            var $addKeysToTradeButton = common_ui.createGreenSteamButton("Keys");
-            $addKeysToTradeButton.removeClass('steam_wizard_load_button').addClass('steam_wizard_control_button');
-            $addKeysToTradeButton.click(function(){
-                moveItems("#inventories:visible .inventory_ctn:visible", ":visible", true, "keys");
-            });
+            //button to add keys
+            var $addKeysToTradeButton = $('.steam_wizard_trade_keys_button');
+            $addKeysToTradeButton.click(function () {
+                var filter = {};
+                filter.keys = true;
+                filter.vanilla = !$('.steam_wizard_trade_keys_checkbox').prop('checked');
+                filter.count = $('.steam_wizard_trade_keys_input').val();
+                ui_helper.moveItems("#inventories:visible .inventory_ctn:visible", "", true, filter);
+            }).removeClass('disabled');
 
-            $container.append($statusTable);
-            $container.append($addCurrentPageToTradeButton);
-            $container.append($removeAllFromTradeButton);
-            $container.append($dumpInventoryButton);
-            $container.append($addKeysToTradeButton);
+            $('.steam_wizard_trade_keys_input').removeAttr('disabled');     
         }
+    };
 
-        //remove overlay on escape
-        $(document).keyup(function (e) {
-            if (e.keyCode === 27)
-                common_ui.removeOverlay();
-        });
+    var local_util = {
+        validateInspect: function (marketname, inspect, itemid) {
+           if (!inspect)
+                return false;
 
-        steamwizard.addEventListener(steamWizardEventListener);
+            if (util.getAssetID(inspect) != itemid)
+                return false;
+            
+            var prop = util.getProperties(marketname);
+            
+            if (prop.isSticker || prop.isSealedGraffiti || prop.isGraffiti)
+                return false;
+            
+            return true;
+        },
         
-        /* TODO: LOADING INDICATION */
-        steamwizard.ready(function () {
-            if(steamwizard.getMarketDisplayCount() !== 10)
-               changeNumOfDisplayedItems(steamwizard.getMarketDisplayCount());
-            else
-               ui_helper.initDisplay();
+        attemptTradeup: function(itemid) {
+            var item = loadedItems[itemid];
+            
+            if(item && item.canTradeup) {
+                port.addTradeupItem(item, function(response) {
+                    console.log(response);
+                });
+            }
+        }
+    };
+    
+    /*
+     * Initialize
+     */
+    (function () {
+        if($('#error_page_bg:visible').length > 0)
+            return;
 
+        init.initDisplay();
+
+        /* get csgo inventory and steamid for both parties and start loading */
+        util.fetchGlobal(['UserYou', 'UserThem'], function (data) {
+            init.initInventory(data.UserYou);
+            init.initInventory(data.UserThem);
+            init.initTradeSlots(data.UserYou, $('#your_slots'));
+            init.initTradeSlots(data.UserThem, $('#their_slots'));
+        }, function (input) {
+            var output = {};
+
+            for (var i in input) {
+                output[i] = {};
+                output[i].steamid = input[i].strSteamId;
+
+                var inventory = input[i].getInventory(730, 2);
+                output[i].appid = inventory.appid;
+                output[i].contextid = inventory.contextid;
+                output[i].elInventoryId = inventory.elInventory.id;
+                output[i].initialized = inventory.initialized;
+                
+                if(!inventory.rgInventory)
+                    return;
+                
+                var keys = Object.keys(inventory.rgInventory);
+                
+                for (var j = 0; j < keys.length; j++) {
+                    var assetid = keys[j];
+                    var description = inventory.rgInventory[assetid];
+
+                    output[i][assetid] = {};
+                    output[i][assetid].markethashname = description.market_hash_name;
+                    output[i][assetid].image = 'https://steamcommunity-a.akamaihd.net/economy/image/' + description.icon_url + '/150x150f';
+
+                    if (description.actions) {
+                        for (var k = 0; k < description.actions.length; k++) {
+                            var action = description.actions[k];
+                            if (action.name && action.link) {
+                                output[i][assetid].inspect = action.link
+                                        .replace("%assetid%", assetid)
+                                        .replace("%owner_steamid%", output[i].steamid);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            return output;
         });
+
     })();
 });

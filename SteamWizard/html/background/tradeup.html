@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Trade Up Contract Calculator</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="/css/lib/jquery.mCustomScrollbar.css" />
+        <link rel="stylesheet" type="text/css" href="/css/background/tradeup.css" />
+        <script src="/javascript/lib/jquery-3.0.0.min.js"></script>
+        <script src="/javascript/lib/jquery.mCustomScrollbar.concat.min.js"></script>
+        <script src="/javascript/lib/zlib.min.js"></script>
+        <script src="/javascript/lib/require.js"></script>
+        <script src="/javascript/background/tradeup/config.js"></script>
+        <script src="/javascript/background/tradeup/tradeup.js"></script>
+    </head>
+    <body>
+        <table class="tabs">
+            <tr>
+                <td class="logo"></td>
+                <td class="space"></td>
+                <td class="section common">
+                    <div class="name">common</div>
+                    <div class="border common"></div>
+                    <div class="tab-container">
+                        <div class="tab common standard">
+                            <div>standard</div>
+                            <div class="count"></div>
+                        </div>
+                        <div class="tab-split"></div>
+                        <div class="tab common stattrak">
+                            <div>statTrak&#8482;</div>
+                            <div class="count"></div>
+                        </div>                        
+                    </div>
+                </td>
+                <td class="space"></td>
+                <td class="section uncommon">
+                    <div class="name">uncommon</div>
+                    <div class="border uncommon"></div>
+                    <div class="tab-container">
+                        <div class="tab uncommon standard">
+                            <div>standard</div>
+                            <div class="count"></div>
+                        </div>
+                        <div class="tab-split"></div>
+                        <div class="tab uncommon stattrak">
+                            <div>statTrak&#8482;</div>
+                            <div class="count"></div>
+                        </div>                        
+                    </div>
+                </td>
+                <td class="space"></td>
+                <td class="section rare">
+                    <div class="name">rare</div>
+                    <div class="border rare"></div>
+                    <div class="tab-container">
+                        <div class="tab rare standard">
+                            <div>standard</div>
+                            <div class="count"></div>
+                        </div>
+                        <div class="tab-split"></div>
+                        <div class="tab rare stattrak">
+                            <div>statTrak&#8482;</div>
+                            <div class="count"></div>
+                        </div>                        
+                    </div>
+                </td>
+                <td class="space"></td>
+                <td class="section mythical">
+                    <div class="name">mythical</div>
+                    <div class="border mythical"></div>
+                    <div class="tab-container">
+                        <div class="tab mythical standard">
+                            <div>standard</div>
+                            <div class="count"></div>
+                        </div>
+                        <div class="tab-split"></div>
+                        <div class="tab mythical stattrak">
+                            <div>statTrak&#8482;</div>
+                            <div class="count"></div>
+                        </div>                        
+                    </div>
+                </td>
+                <td class="space"></td>
+                <td class="section legendary">
+                    <div class="name">legendary</div>
+                    <div class="border legendary"></div>
+                    <div class="tab-container">
+                        <div class="tab legendary standard">
+                            <div>standard</div>
+                            <div class="count"></div>
+                        </div>
+                        <div class="tab-split"></div>
+                        <div class="tab legendary stattrak">
+                            <div>statTrak&#8482;</div>
+                            <div class="count"></div>
+                        </div>                        
+                    </div>
+                </td>
+                <td class="space"></td>
+            </tr>
+        </table>
+        <div class="container"></div>
+        <div class="template">
+            <div class="canvas">
+                <div class="item-selection-section">
+                    <div class="item-selection-scrollpane">
+                        <div class="item-selection-list"></div>
+                    </div>
+                </div>
+                <div class="main-section">
+                    <div class="top-section">
+                        <div class="tradeup-canvas">
+                            <div class='tradeup-slot' id='tradeup-slot-0'></div>
+                            <div class='tradeup-slot' id='tradeup-slot-1'></div>
+                            <div class='tradeup-slot' id='tradeup-slot-2'></div>
+                            <div class='tradeup-slot' id='tradeup-slot-3'></div>
+                            <div class='tradeup-slot' id='tradeup-slot-4'></div>
+                            <div class='tradeup-slot' id='tradeup-slot-5'></div>
+                            <div class='tradeup-slot' id='tradeup-slot-6'></div>
+                            <div class='tradeup-slot' id='tradeup-slot-7'></div>
+                            <div class='tradeup-slot' id='tradeup-slot-8'></div>
+                            <div class='tradeup-slot' id='tradeup-slot-9'></div>
+                        </div>
+                        <div class="stats">
+                            <div class="title">statistics</div>
+                            <div class="stat">
+                                <div class="current-cost">0</div>
+                                <div>Current Cost</div>
+                            </div>
+                            <div class="stat">
+                                <div class="avg-cost">0</div>
+                                <div>Average Cost</div>
+                            </div>
+                            <div class="stat">
+                                <div class="avg-outcome">0</div>
+                                <div>Average Outcome</div>
+                            </div>
+                            <div class="stat">
+                                <div class="avg-trials">0</div>
+                                <div>Average Trials</div>
+                            </div>
+                            <div class="stat">
+                                <div class="profit-chance">0%</div>
+                                <div>Profit Chance</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tradeup-results">
+                        <div class="title">
+                            <div class="title-pad"></div>
+                            <div class="title-text">trade up results</div>
+                            <div class="title-pad"></div>
+                        </div>
+                        <div class="results-scrollpane">
+                            <div class="results-list"></div>
+                        </div>
+                    </div>
+                    <div class="tradeup-data">
+                        <div class="copy-button">COPY</div>
+                        <div class="data-holder">
+                            <input class="data" readonly />
+                        </div>
+                        <div class="button-holder">
+                            <div class="import">Import</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tradeup-item">
+                <div class="tradeup-item-body">
+                    <div class="collection-image-container">
+                        <img class="collection-image" />
+                    </div>
+                    <div class="wear-value"></div>
+                    <div class="item-image-container">
+                        <img class="item-image" />
+                    </div>
+                    <div class="name"></div>
+                </div>
+                <div class="tradeup-item-footer">
+                    <div class="price"></div>
+                    <a class="item-location" target='_blank'></a>
+                </div>
+            </div>
+            <div class="tradeup-result">
+                <div class="item-image-container">
+                    <img class="item-image" />
+                </div>
+                <div class="name"></div>
+                <div>
+                    <div class="collection-image-container">
+                        <img class="collection-image" />
+                    </div>
+                    <div class="right-side">
+                        <div class="wear"></div>
+                        <div class="bottom">
+                            <div class="percentage"></div>
+                            <div class="price"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

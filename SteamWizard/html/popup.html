@@ -1,44 +1,59 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<link rel="stylesheet" href="../css/popup.css">
-		<script src="../javascript/jquery-3.0.0.min.js"></script>
-		<script src="../javascript/popup.js"></script>
-	</head>
-	<body>
-		<div class='mainContainer'>
-			<div class='navBar'>
-				<a href="#settings"><div>Settings</div></a>
-				<a href="#about"><div>About</div></a>
-			</div>
-			<div class='contentContainer'>
-			
-				<!-- settings -->
-				<div name='settings' id='settings'>
-					<h1>Market</h1>
-					<div class='element'>
-						<div>
-							Enable float button
-						</div>
-						<div>
-							<input type="checkbox" id="market_enableScreenshot">
-						</div>
-					</div>
-					<div class='element'>
-						<div>
-							Enable screenshot button
-						</div>
-						<div>
-							<input type="checkbox" id="market_enableScreenshot">
-						</div>
-					</div>
-				</div>
-				
-				<!-- about -->
-				<div name='about' id='about'>
-					<h1>About</h1>
-				</div>
-			</div>
-		</div>
-	</body>
+    <head>
+        <link rel="stylesheet" href="../css/popup.css">
+        <script src="../javascript/jquery-3.0.0.min.js"></script>
+        <script src="../javascript/popup.js"></script>
+    </head>
+    <body>
+        <div class='mainContainer'>
+            <div class='contentContainer'>
+                <div class="title">Settings</div>
+                <!-- settings -->
+                <div id="settings">
+                    <div>
+                        <h1>General</h1>
+                        <div class="element">
+                            <span class="name">Enable SteamWizard</span>
+                            <span class="value">
+                                <input type="checkbox" id="global_enableSteamWizard">
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+                        <h1>Market</h1>
+                        <div class='element'>
+                            <span class="name">External Markets Section</span>
+                            <span>
+                                <input type="checkbox" id="market_ExternalMarketSection">
+                            </span>
+                        </div>
+                        <div class='element'>
+                            <span class="name">Trading Bots Section</span>
+                            <span>
+                                <input type="checkbox" id="market_TradebotSection">
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+                        <h1>Trade</h1>
+                        <div class='element'>
+                            <span class="name">Autoload Prices</span>
+                            <span>
+                                <input type="checkbox" id="trade_AutoloadPrices">
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+                        <h1></h1>
+                    </div>
+                </div>
+            </div>
+            <div class='contentContainer'>
+                <div class="title">Status</div>
+                <div id="status">
+                </div>
+            </div>
+        </div>
+    </body>
 </html>

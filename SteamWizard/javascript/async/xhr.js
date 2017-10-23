@@ -11,7 +11,7 @@
  *
  */
 
-define("async/xhr", function() {
+define(function() {
     "use strict";
 
     return {

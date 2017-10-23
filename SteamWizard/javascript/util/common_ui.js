@@ -1,4 +1,4 @@
-define("util/common_ui", function() {
+define(function() {
     var ui = {
         /**************************************
         *************** Buttons ***************
@@ -17,74 +17,74 @@ define("util/common_ui", function() {
             return $output;
         },
 
-        createMultipleChoicePanel : function(numChoices, onClickCallback) {
-                var $output = $("<span></span>");
-                $output[0].setButtonChecked = function(enabledButton){
-                        $output.find('.steam_wizard_multiple_choice_button').each(function(index, value){
-                                if (index != enabledButton){
-                                        $(value).removeClass('btn_green_white_innerfade');
-                                        $(value).addClass('btn_grey_white_innerfade');
-                                }else{
-                                        $(value).removeClass('btn_grey_white_innerfade');
-                                        $(value).addClass('btn_green_white_innerfade');
-                                }
-                        });
-                };
-                $output[0].iterateButtons = function(callback){
-                        $output.find(".steam_wizard_multiple_choice_button").each(function(index, value){
-                                callback(index, $(value));
-                        });
-                };
-                for (var i = 0;i<numChoices;i++){
-                        var $newButton = ui.createGreenSteamButton("abc");
-                        $newButton.addClass('steam_wizard_multiple_choice_button');
-                        $newButton.click(function(){
-                                $output[0].setButtonChecked(this);
-                                onClickCallback(this);
-                        }.bind(i));
-                        $output.append($newButton);
-                }
-                return $output;
-        },
-
-        createToggleButton : function(text, onClickCallback) {
-                var $output = ui.createGreenSteamButton(text);
-                $output[0].sw_enabled = true;
-                $output[0].setEnabled = function(enabled){
-                        if (enabled){
-                                $output.removeClass('btn_grey_white_innerfade');
-                                $output.addClass('btn_green_white_innerfade');
-                        }else{
-                                $output.removeClass('btn_green_white_innerfade');
-                                $output.addClass('btn_grey_white_innerfade');
-                        }
-                        $output[0].sw_enabled = enabled;
-                        onClickCallback(enabled);
-                };
-                $output.click(function(){
-                        $output[0].sw_enabled = !$output[0].sw_enabled;
-                        $output[0].setEnabled($output[0].sw_enabled);
+        createMultipleChoicePanel: function (numChoices, onClickCallback) {
+            var $output = $("<span></span>");
+            $output[0].setButtonChecked = function (enabledButton) {
+                $output.find('.steam_wizard_multiple_choice_button').each(function (index, value) {
+                    if (index != enabledButton) {
+                        $(value).removeClass('btn_green_white_innerfade');
+                        $(value).addClass('btn_grey_white_innerfade');
+                    } else {
+                        $(value).removeClass('btn_grey_white_innerfade');
+                        $(value).addClass('btn_green_white_innerfade');
+                    }
                 });
-                return $output;
+            };
+            $output[0].iterateButtons = function (callback) {
+                $output.find(".steam_wizard_multiple_choice_button").each(function (index, value) {
+                    callback(index, $(value));
+                });
+            };
+            for (var i = 0; i < numChoices; i++) {
+                var $newButton = ui.createGreenSteamButton("abc");
+                $newButton.addClass('steam_wizard_multiple_choice_button');
+                $newButton.click(function () {
+                    $output[0].setButtonChecked(this);
+                    onClickCallback(this);
+                }.bind(i));
+                $output.append($newButton);
+            }
+            return $output;
         },
 
-        createRadioPanel : function (choiceArray, onChangeCallback, initial) {
+        createToggleButton: function (text, onClickCallback) {
+            var $output = ui.createGreenSteamButton(text);
+            $output[0].sw_enabled = true;
+            $output[0].setEnabled = function (enabled) {
+                if (enabled) {
+                    $output.removeClass('btn_grey_white_innerfade');
+                    $output.addClass('btn_green_white_innerfade');
+                } else {
+                    $output.removeClass('btn_green_white_innerfade');
+                    $output.addClass('btn_grey_white_innerfade');
+                }
+                $output[0].sw_enabled = enabled;
+                onClickCallback(enabled);
+            };
+            $output.click(function () {
+                $output[0].sw_enabled = !$output[0].sw_enabled;
+                $output[0].setEnabled($output[0].sw_enabled);
+            });
+            return $output;
+        },
+
+        createRadioPanel: function (choiceArray, onChangeCallback, initial) {
             var $output = $("<p>");
-            $output.append("<span>Display more items:</span>");
-            
+            $output.append("<span>Displayed items</span>");
+
             function onchange() {
                 onChangeCallback(this.value);
             }
-                        
+
             for (var i = 0; i < choiceArray.length; i++) {
                 var $newRadio = $("<input type='radio' name='steam_wizard_radio_panel' value=" + choiceArray[i] + "\>");
-                
-                if(choiceArray[i] === initial)
-                   $newRadio.attr("checked", true);
+
+                if (choiceArray[i] === initial)
+                    $newRadio.attr("checked", true);
 
                 $newRadio.change(onchange);
                 $output.append($newRadio);
-                $output.append($("<span>" + choiceArray[i] + "</span>"));
+                $output.append($("<label for="+ +">" + choiceArray[i] + "</label>"));
             }
 
             return $output;
@@ -125,8 +125,7 @@ define("util/common_ui", function() {
         },
 
         showGeneralOverlay : function(title, message, buttontext, onButtonCallback){
-                $(".steam_wizard_general_overlay").show();  
-                console.log( $(".steam_wizard_general_overlay"));
+                $(".steam_wizard_general_overlay").show();
                 $(".steam_wizard_general_overlay_button").off();
                 $(".steam_wizard_general_overlay_button").click(onButtonCallback);
                 $(".steam_wizard_general_overlay_button").text(buttontext);
@@ -139,6 +138,7 @@ define("util/common_ui", function() {
             $(".steam_wizard_general_overlay").hide();
         },
 
+        /* builds an overlay to be used for displaying metjm images */
         buildScreenshotOverlay: function () {
             var $overlay = $('<div>');
             $('<img>').appendTo($overlay);
@@ -150,6 +150,12 @@ define("util/common_ui", function() {
             $overlayContainer.hide();
 
             $('body').append($overlayContainer);
+
+            //remove overlay on escape
+            $(document).keyup(function (e) {
+                if (e.keyCode === 27)
+                    common_ui.removeOverlay();
+            });
         },
 
         buildLoginOverlay: function(on_login) {
@@ -179,6 +185,7 @@ define("util/common_ui", function() {
             $('body').append($loginOverlayContainer);
         },
 
+        /* builds an overlay to be used for alert messages */
         buildGeneralOverlay: function() {
             var $overlay = $('<div>');
             var $loginPopup = $('<div>');
@@ -200,8 +207,8 @@ define("util/common_ui", function() {
             $loginOverlayContainer.click(ui.removeOverlay);
             $loginOverlayContainer.hide();
 
-        $('body').append($loginOverlayContainer);
-    },
+            $('body').append($loginOverlayContainer);
+        },
 
         buildSteamWizardStatusPanel: function() {
             var $panel = $("<div>");
@@ -211,7 +218,7 @@ define("util/common_ui", function() {
             var $inspectsLeftToday = $("<p>Float requests left today: <span id='steam_wizard_inspects_left_today' class='market_commodity_orders_header_promote steam_wizard_rotating'> </span> <span id='steam_wizard_csgozone_prem_active'  class='market_commodity_orders_header_promote'></span></p>");
             var $screenshotPremiumQeue = $("<p>Screenshots priority queue: <span id='steam_wizard_screenshots_premium_queue' class='market_commodity_orders_header_promote steam_wizard_rotating'></span> <span id='steam_wizard_metjm_prem_active' class='market_commodity_orders_header_promote'></span></p>");
 
-            $panel.addClass('steam_wizard_status_panel');
+            $panel.addClass('steam_wizard_main_panel steam_wizard_status_panel');
             $content.addClass('steam_wizard_status_panel_content');
             $buttonsContainer.addClass('steam_wizard_status_panel_button_container');
 
@@ -227,28 +234,14 @@ define("util/common_ui", function() {
             $(".market_listing_filter").after($panel);
         },
         
-        buildSteamWizardTradePanel: function() {
-            var $panel = $("<div>");
-            var $content = $("<div>");
-            var $buttonsContainer = $("<div>");
-            var $loggedInAs = $("<p style='steam_wizard_loggedin_as_paragraph'>Logged in as: <span class='market_commodity_orders_header_promote' id='steam_wizard_loggedin_as'>not logged in.</span> <span id='steam_wizard_refresh_login' class='btn_green_white_innerfade btn_small steam_wizard_load_button'>refresh</span></p>");
-            var $inspectsLeftToday = $("<p>Float requests left today: <span id='steam_wizard_inspects_left_today' class='market_commodity_orders_header_promote steam_wizard_rotating'> </span> <span id='steam_wizard_csgozone_prem_active'  class='market_commodity_orders_header_promote'></span></p>");
-            var $screenshotPremiumQeue = $("<p>Screenshots priority queue: <span id='steam_wizard_screenshots_premium_queue' class='market_commodity_orders_header_promote steam_wizard_rotating'></span> <span id='steam_wizard_metjm_prem_active' class='market_commodity_orders_header_promote'></span></p>");
-
-            $panel.addClass('steam_wizard_status_panel');
-            $content.addClass('steam_wizard_status_panel_content');
-            $buttonsContainer.addClass('steam_wizard_status_panel_button_container');
-
-            $panel.append($content);
-            $content.append($("<p>SteamWizard</p>").css({'font-size':'18px'}).addClass('market_commodity_orders_header_promote'));
-            $content.append($loggedInAs);
-            $content.append($inspectsLeftToday);
-            $content.append($screenshotPremiumQeue);
-            $content.append($buttonsContainer);
-
+        buildSteamWizardTradePage: function() {
+            var $template = $(trade_template);
+            var $panel = $template.find('.steam_wizard_trade_status_panel');
             $(".trade_area .trade_left").before($panel);
+            
+            var $control = $template.find(".steam_wizard_trade_control_panel");
+            $(".trade_area .trade_left").before($control);
         }
-
     }
     
     return ui;

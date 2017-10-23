@@ -11,47 +11,38 @@
  *
  */
 
-define("util/constants", function() {
+define(function() {
     var constants = {};
+    
+    constants.STORAGE_VERSION = "2.0";
     
     constants.namespace = {
         NAMESPACE_CONFIG: "config",
-        NAMESPACE_SCREENSHOT: "screenshot",
-        NAMESPACE_MARKET_INSPECT: "marketinspect",    
+        NAMESPACE_INSPECT: "inspect",
+        NAMESPACE_SCREENSHOT: "screenshot"
     };
     
     constants.msg = {
-        BACKGROUND_DO_LOGIN               : 100,
-        BACKGROUND_GET_PLUGIN_STATUS      : 101,
-        BACKGROUND_GET_STORAGE            : 102,
-        BACKGROUND_GET_ITEM               : 103,
-        BACKGROUND_SET_ITEM               : 104,
-        BACKGROUND_GET_TOKEN              : 105,
-        BACKGROUND_SET_TOKEN              : 106,
-        BACKGROUND_REVOKE_TOKEN           : 107,
-        BACKGROUND_SET_INSPECT_STATUS     : 108,
-        BACKGROUND_SET_SCREENSHOT_STATUS  : 109,
-        BACKGROUND_INCREASE_INSPECT_USAGE : 110,
-        BACKGROUND_DO_GET_RESOURCE        : 111,
+        BACKGROUND_GET_ITEMINFO           : 100,
+        BACKGROUND_GET_SCREENSHOT         : 101,
+        BACKGROUND_GET_PLUGIN_STATUS      : 102,
+        BACKGROUND_GET_OPTIONS            : 103,
+        BACKGROUND_SET_OPTIONS            : 104,
+        BACKGROUND_GET_RESOURCE           : 105,
+        BACKGROUND_ADD_TRADEUPITEM        : 106,
 
-        LOGIN_SUCCESS    : 201,
-        LOGIN_FAILED     : 202,
-        PLUGIN_STATUS    : 203,
-        STORAGE          : 204,
-        ITEM             : 205,
-        TOKEN            : 206,
-        USERNAME         : 207,
+        ITEMINFO         : 200,
+        SCREENSHOT       : 201,
+        PLUGIN_STATUS    : 202,
+        PLUGIN_OPTIONS   : 203,
         ADVERT           : 208,
         RESOURCE_SUCCESS : 209,
         RESOURCE_FAILED  : 210,
+        ADD_TRADEUPITEM_RESPONSE : 211,
 
         /* services status */
-        BROADCAST_ITEM              : 300,
-        BROADCAST_TOKEN             : 301,
-        BROADCAST_REVOKE_TOKEN      : 302,
-        BROADCAST_INSPECT_STATUS    : 303,
-        BROADCAST_SCREENSHOT_STATUS : 304,
-        BROADCAST_INSPECT_USAGE     : 305,
+        BROADCAST_PLUGIN_STATUS     : 302,
+        BROADCASE_PLUTIN_OPTIONS    : 303
     };
     
     return constants;

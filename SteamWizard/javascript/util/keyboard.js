@@ -1,4 +1,4 @@
-define("util/keys", function() {
+define(function() {
     "using strict";
     
     var observedKeys = {};
@@ -14,6 +14,7 @@ define("util/keys", function() {
     });
 
     var keys = {
+        ENTER : 13,
         SHIFT : 16,
         CTRL  : 17,
         ALT   : 18,
@@ -28,7 +29,7 @@ define("util/keys", function() {
             if(observedKeys[keyCode]){
                 return observedKeys[keyCode].pressed;
             }else{
-                throw new Exception("NOT OBSERVING THIS KEY: " + keyCode);
+                throw "NOT OBSERVING THIS KEY: " + keyCode;
             }
         }
     };
