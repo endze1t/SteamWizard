@@ -8,14 +8,6 @@ and open the template in the editor.
     Author     : Ahmed
 */
 
-.steam_wizard_market_cell {
-    margin-top: 21px;
-    line-height: 16px !important;
-    padding-left: 7px;
-    overflow: hidden;
-    white-space: nowrap;
-}
-
 .steam_wizard_load_button {
     padding: 2px 10px !important;
     margin-left: 15px !important;
@@ -257,11 +249,11 @@ form input[type='radio'] {
     margin: 20px 0 5px !important;
     min-width: 60px;
     text-align: center;
-    white-space: none;
 }
 
 .steam_wizard_affiliate_price > span {
     background: rgb(63, 63, 63) !important;
+    white-space: nowrap;
 }
 
 
@@ -359,21 +351,30 @@ form input[type='radio'] {
     }
 }
 
+.steam_wizard_market_cell {
+    margin-top: 24px;
+    line-height: 16px !important;
+    padding-left: 7px;
+    white-space: nowrap;
+}
+
 .steam_wizard_market_screenshot {
-    background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/metjm.png');
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/market/metjmicon.png');
     background-size: 100% auto;
     background-repeat: no-repeat;
     background-position: center;
-    height: 16px;
-    width: 16px;
+    height: 30px;
+    width: 30px;
+    margin-left: 20px;
+    
     z-index: 10;
     cursor: pointer;
     display: inline-block;
     vertical-align: middle;
-    margin-left: 10px;
     
     &:hover {
-        background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/camera_icon.png');
+        background-image: url('chrome-extension://__MSG_@@extension_id__/images/market/camera_icon.png');
+        background-size: 80% auto;
     }
 }
 
@@ -387,32 +388,46 @@ form input[type='radio'] {
     font-weight: bold;
     padding: 3px 10px;
     cursor: pointer;
+    margin-left: 15px;
+    vertical-align: middle;
+}
+
+.steamwizard_market_wear_block {
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    line-height: normal;
     margin-left: 10px;
+    width: 110px;
+    top: 5px;
+}
+
+.steamwizard_market_pattern_index {
+    font-size: 10px;
+    color:  white;
+    position: absolute;
+    display: block;
+    top: -15px;
+    width: 100%;
+    
+    &:before {
+        content: 'pattern index';
+        text-transform: uppercase;
+        font-size: 8px;
+        color: rgb(81, 114, 156);
+        margin-right: 5px;
+    }
 }
 
 .steamwizard_market_wear {
-    font-size: 11px;
-    line-height: 26px;
+    background-image: url(chrome-extension://__MSG_@@extension_id__/images/market/float_border.png);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    display: block;
+    
+    font-size: 10px;
+    padding: 8px;
     cursor: text;
-    color: #e0af09;
-    box-sizing: border-box;
+    color: white;
     text-align: center;
-    display: inline-block;
-    position: relative;
-    background-color: black;
-    width: 126px;
-    margin: 2px;
-    margin-left: 10px;
-
-    &:before {
-        background-image: url(chrome-extension://__MSG_@@extension_id__/images/inventory/button_frame.png);
-        background-size: 100% 100%;
-        background-repeat: no-repeat;
-        width: 129.5px;
-        height: 30px;
-        position: absolute;
-        content: '';
-        top: -2px;
-        left: -2px;
-    }
 }

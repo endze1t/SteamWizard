@@ -1,0 +1,671 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Nov 3, 2017, 10:36:32 PM
+    Author     : ahmed
+*/
+
+@import "common.less";
+
+#inventory_logos {
+    vertical-align: middle !important;
+}
+
+.inventory_ctn.steam_wizard_start_selection {
+    .item {
+        opacity: 0.2 !important;
+    }
+    
+    .item.selectable {
+        opacity: 0.5 !important;
+        background-image: url(chrome-extension://__MSG_@@extension_id__/images/logo_64_off.png) !important;
+        background-size: 3px auto !important;
+        background-repeat: repeat !important;
+        background-position: 0px 0px !important;
+        border-style: dashed !important;
+
+        &:hover {
+            background-image: url(chrome-extension://__MSG_@@extension_id__/images/logo_64_gold.png) !important;
+        }
+
+        &.selected {
+            opacity: 1 !important;
+            background-image: none !important;
+            border-color: rgb(253, 174, 0) !important;
+            border-style: solid !important;
+        }
+    }
+}
+
+.steam_wizard_inventory_frame {
+    margin: 5px 0px 20px 0px;
+
+    .wear {
+        font-size: 10px;
+        cursor: text;
+        color: #e0af09;
+        box-sizing: border-box;
+        text-align: center;
+        display: inline-block;
+        position: relative;
+        background-color: black;
+        padding: 6px 13px;
+        width: 126px;
+        margin: 2px;
+
+        &:before {
+            background-image: url(chrome-extension://__MSG_@@extension_id__/images/inventory/button_frame.png);
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            width: 129.5px;
+            height: 27px;
+            position: absolute;
+            content: '';
+            top: -2px;
+            left: -2px;
+        }
+    }
+
+    .screenshot {
+        height: 20px;
+        width: 25px;
+        vertical-align: middle;
+        margin: 0px 20px;
+        background-image: url(chrome-extension://__MSG_@@extension_id__/images/inventory/camera.png);
+        background-size: 100% auto;
+        background-position: center;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .tradeup-button {
+        display: inline-block;
+        color: black;
+        background-image: url(chrome-extension://__MSG_@@extension_id__/images/inventory/button.png);
+        background-size: 100% 100%;
+        background-position: center;
+        font-size: 10px;
+        font-weight: bold;
+        padding: 6px 15px;
+        cursor: pointer;
+    }
+}
+
+.steam_wizard_inventory_screenshot {
+    position: absolute;
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/metjm.png');
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 16px;
+    width: 16px;
+    z-index: 10;
+    cursor: pointer;
+    right: 0px;
+    bottom: 0px;
+
+    &:hover {
+        background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/camera_icon.png');
+    }
+}
+
+.steam_wizard_inventory_price {
+    left: 0px;
+    bottom: 5px;
+    color: black;
+    font-size: 12px;
+    padding: 1px 6px 1px 4px;
+    position: absolute;
+
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/trade/price_icon.png');
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.steam_wizard_inventory_inspect {
+    top: 3px;
+    border-radius: 10px;
+    border: 1px solid;
+    position: absolute;
+    border-radius: 10px;
+    font-size: 10px;
+    color: rgb(253, 203, 7);
+    font-family: sans-serif;
+    padding: 2px 4px 1px 4px;
+    z-index: 10;
+    right: 3px;
+
+    &:before {
+        content: 'F';
+    }
+
+    &:hover {
+        cursor: pointer;
+        background-color: rgb(253, 203, 7);
+        color: black;
+    }
+
+    &.loading, &.loading:hover {
+        background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/ajax-loader.gif');
+        background-size: 100% auto;
+        border: none;
+        padding: 0px;
+        width: 16px;
+        height: 16px;
+
+        &:before {
+            content: '';
+        }
+    }
+
+    &.loaded, &.loaded:hover {
+        font-size: 9px;
+        padding: 3px 0px;
+        border: none;
+        background-color: transparent;
+        text-decoration: underlined;
+        color: rgb(253, 203, 7);
+
+        &:before {
+            content: '';
+        }
+    }
+}
+
+.steam_wizard_inventory_panel_top {
+    display: inline-block;
+    margin-left: 30px;
+    vertical-align: top;
+    font-family: Oxygen;
+
+    .sort{
+        text-align: center;
+
+        .title {
+            margin: 10px 0px;
+
+            div {
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            div:first-child, div:last-child {
+                width: 50px;
+                height: 1px;
+                background-color: rgb(58, 58, 58);
+            }
+
+            .text {
+                text-transform: uppercase;
+                margin: 0px 10px;
+                font-weight: bold;
+                color: rgb(215, 215, 215);
+                letter-spacing: 1px;
+                font-size: 13px;
+                font-weight: 400;
+            }
+        }
+
+        .buttons {
+            div {
+                display: inline-block;
+                vertical-align: middle;
+                text-transform: capitalize;
+            }
+
+            .steam_wizard_inventory_sort {
+                cursor: pointer;
+                margin-right: 15px;
+
+                &:hover {
+                    color: white;
+                }
+
+                &.asc, &.desc {
+                    font-weight: bold;
+                    color: white;
+                    margin-right: 0px;
+
+                    &:after {
+                        content: '';
+                        display: inline-block;
+                        vertical-align: middle;
+                        width: 10px;
+                        height: 10px;
+                        margin: 0px 10px;
+                        background-image: url(chrome-extension://__MSG_@@extension_id__/images/inventory/bluearrow.png);
+                        background-size: 100% auto;
+                        background-repeat: no-repeat;
+                        background-position: center;
+                    }
+                }
+
+                &.desc {
+                    &:after {
+                        transform: rotate(180deg);
+                    }
+                }
+            }
+
+            .border {
+                width: 2px;
+                height: 10px;
+                margin-right: 15px;
+                vertical-align: sub;
+                background-color: rgb(58, 58, 58);
+            }
+
+            .steam_wizard_inventory_sort_reset {
+                color: rgb(86, 118, 149);
+                cursor: pointer;
+
+                &:hover {
+                    color: rgb(116, 159, 201);
+                }
+            }
+        }
+    }
+}
+
+.steam_wizard_inventory_panel_bottom {
+    font-family: Oxygen;
+    padding: 0px 20px;
+    white-space: nowrap;
+
+    .table {
+        display: table;
+        table-layout: autp;
+        width: 100%;
+        border-top: 1px solid rgb(49, 49, 49);
+        border-bottom: 1px solid rgb(49, 49, 49);
+        padding: 10px 0px;
+
+        & > div {
+            display: table-cell;
+        }
+    }
+
+
+    .seperator {
+        width: 2px;
+        background-color: rgb(58, 58, 58);
+    }
+
+    .steam_wizard_inventory_select {
+        font-size: 13px;
+        text-transform: capitalize;
+        color: rgba(255, 255, 255, 0.7);
+
+        display: inline-block;
+        background-image: url(chrome-extension://__MSG_@@extension_id__/images/inventory/multipleitems.png), url(chrome-extension://__MSG_@@extension_id__/images/inventory/select_bg.png);
+        background-size: 18px auto, 100% 100%;
+        background-position: 15px center, center;
+        background-repeat: no-repeat, no-repeat;
+
+        background-color: rgb(29, 88, 120);
+        border-radius: 5px;
+        min-width: 90px;
+        text-align: center;
+        padding: 6px 8px 6px 20px;
+
+        margin: 0px 5px;
+        position: relative;
+        
+        &:hover {
+            cursor: pointer;
+            background-color: white;
+        }
+        
+        &.active {
+            background-image: url(chrome-extension://__MSG_@@extension_id__/images/inventory/multipleitems_active.png), 
+                              url(chrome-extension://__MSG_@@extension_id__/images/inventory/selectactive2_bg.png);
+        }
+        
+        .count {
+            top: 4px;
+            right: 5px;
+            display: block;
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            font-size: 8px;
+            width: 20px;
+            height: 20px;
+            padding-top: 5px;
+            box-sizing: border-box;
+            
+            &:empty {
+                display: none;
+            }
+        }
+        
+        &.disabled {            
+            padding-left: 8px;
+            border-radius: 5px;
+            background-color: #333333;
+            background-image: none;
+            color: gray;
+            cursor: default;
+        }
+    }
+
+    .steam_wizard_inventory_sell {
+        font-size: 13px;
+        text-transform: capitalize;
+        color: rgba(255, 255, 255, 0.7);
+
+        display: inline-block;
+        background-image: url('chrome-extension://__MSG_@@extension_id__/images/inventory/sellitems.png'), url(chrome-extension://__MSG_@@extension_id__/images/inventory/sell_bg.png);
+        background-size: 18px auto, 100% 100%;
+        background-position: 15px center, center;
+        background-repeat: no-repeat, no-repeat;
+
+        background-color: rgb(99, 124, 4);
+        border-radius: 5px;
+        min-width: 90px;
+        text-align: center;
+        padding: 6px 8px 6px 20px;
+        margin: 0px 5px;
+
+        &:hover {
+            cursor: pointer;
+            background-color: white;
+        }
+        
+        &.disabled {
+            padding-left: 8px;
+            border-radius: 5px;
+            background-color: #333333;
+            background-image: none;
+            color: gray;
+            cursor: default;
+        }
+    }
+
+    .steam_wizard_inventory_loadall {
+        display: inline-block;
+    }
+
+}
+
+.steam_wizard_sell_popup {
+    display: none;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.5);
+    font-family: Oxygen;
+    z-index: 1000;
+
+    &.active {
+        display: block;
+    }
+
+    .container {
+        top: 50%;
+        width: 800px;
+        margin: auto;
+        position: relative;
+        transform: translateY(-50%);
+        border-radius: 2px;
+    }
+    
+    .top-section {
+        background-image: url(chrome-extension://__MSG_@@extension_id__/images/inventory/popup_bg.png);
+        background-repeat: repeat;
+        border-bottom: 1px solid rgb(25, 25, 25);
+        padding: 20px 5px 20px 25px;
+        border-radius: 4px 4px 0px 0px;
+        
+        .title > * {
+            font-size: 20px;
+            display: inline-block;
+            color: rgb(224, 224, 224);
+        }
+        
+        .item_count_container {
+            color: rgb(37, 143, 199);
+            font-weight: bold;
+                    
+            .item_count {
+                margin-left: 3px;
+                display: inline-block;
+            }
+        }
+        
+        
+        .content-container {
+            margin-top: 25px;
+            
+            tr {
+                .image {
+                    width: 100px;
+                }
+                
+                .name {
+                    
+                }
+                
+                .quantity {
+                    width: 120px;
+                }
+                
+                .price {
+                    width: 120px;
+                }
+                
+                .steam_price {
+                    width: 120px;
+                }
+                
+                .status {
+                    width: 50px;
+                }
+            }
+            
+            .mCSB_container {
+                margin-right: 0px;
+            }
+        }
+        
+        .content-headers {
+            width: calc(~"100% - 20px");
+            table-layout: auto;
+            border-spacing: 0px;
+            border-collapse: collapse;
+            
+            th {
+                color: rgb(37, 143, 199);
+                text-align: center;
+                font-size: 10px;
+                text-transform: uppercase;
+                padding-bottom: 15px;
+            }
+        }
+
+        .content-scrollpane {
+            max-height: 400px;
+            overflow-x: visible;
+            overflow-y: hidden;
+        }
+        
+        .content {
+            table {
+                width: calc(~"100% - 20px");
+                table-layout: auto;
+                border-spacing: 0px;
+                border-collapse: collapse;
+            }
+            
+            .popup_row {
+                text-align: center;
+                background-color: rgb(42, 42, 42);
+                
+                .image {
+                    padding: 5px 0px;
+                    img {
+                        height: 60px;
+                    }
+                }
+                
+                .name {
+                    color: rgb(175, 175, 175);
+                    font-size: 10px;
+                }
+                
+                .quantity {
+                    font-size: 16px;
+                    color: rgb(224, 224, 224);
+                }
+                
+                .sell_price {
+                    input {
+                        background-color: rgb(30, 30, 30);
+                        border: 1px solid rgb(19, 19, 19);
+                        text-align: center;
+                        color: rgb(224, 224, 224);
+                        width: 80px;
+                        padding: 5px;
+                        border-radius: 5px;
+                        font-family: Oxygen;
+                        font-weight: bold;
+                        margin-bottom: 5px;
+                        
+                        &:focus {
+                            outline: none;
+                            border-radius: 5px;
+                            border: 1px solid rgb(64, 159, 216);
+                        }
+                    }
+                    
+                    .total-container {
+                        color: rgb(64, 159, 216);
+                        font-size: 10px;
+                        
+                        & > div {
+                            display: inline-block;
+                        }
+                    }
+                }
+                
+                .steam_price {
+                    color: rgb(224, 224, 224);
+                    font-weight: bold;
+                    
+                    .diff {
+                        font-size: 10px;
+/*                        padding-left: 10px;                        
+                        background-image: url(chrome-extension://__MSG_@@extension_id__/images/inventory/sameprice.png);
+                        background-size: 100% auto;
+                        background-repeat: no-repeat;
+                        background-position: left center;*/
+                    }
+                }
+                
+                .status {
+                    .icon {
+                        width: 25px;
+                        height: 25px;
+                        padding-top: 15px;
+                        font-size: 8px;
+                        background-size: 100% auto;
+                        background-repeat: no-repeat;
+                        background-position: center;       
+                        display: inline-block;
+                        color: rgb(64, 159, 216);
+                        vertical-align: middle;
+                    }
+                    
+                    .count {
+                        font-size: 10px;
+                        display: inline-block;
+                        color: rgb(64, 159, 216);
+                    }
+                    
+                    &.loading {
+                        .icon {
+                            background-image: url(chrome-extension://__MSG_@@extension_id__/images/common/ajax-loader-3.gif);
+                        }
+                    }
+                    
+                    &.complete {
+                        .icon {
+                            width: 20px;
+                            height: 20px;
+                            padding-top: 0px;
+                            background-image: url(chrome-extension://__MSG_@@extension_id__/images/common/ready_icon.png);                            
+                        }
+                    }
+                }
+            }
+            
+            .empty_row td {
+                padding: 5px;
+            }
+            
+            .empty_row:first-child td {
+                padding: 0px;
+            }
+        }
+    }
+    
+    .bottom-section {
+        background-color: rgb(38, 38, 38);
+        border-top: 1px solid rgb(62, 62, 62);
+        white-space: nowrap;
+        padding: 20px;
+        border-radius: 0px 0px 4px 4px;
+        
+        .summary {
+            display: table;
+            color: rgb(224, 224, 224);
+            font-size: 11px;
+            text-align: center;
+            width: 100%;
+            table-layout: fixed;
+            
+            & > div {
+                display: table-cell;
+                vertical-align: top;
+            }
+            
+            .sell-button-container {
+                vertical-align: bottom;
+            }
+            
+            .sell-button {
+                background-image: url(chrome-extension://__MSG_@@extension_id__/images/inventory/sell_bg.png);
+                background-size: 100% 100%;
+                display: inline-block;
+                width: 100px;
+                padding: 10px 10px;
+                cursor: pointer;
+                
+                &.dimmed {
+                    border-radius: 5px;
+                    background-color: #333333;
+                    background-image: none;
+                    color: gray;
+                    cursor: default;
+                }
+            }
+            
+            .summary-total, .summary-cut, .summary-net {
+                font-size: 18px;
+                margin-top: 5px;
+                font-weight: bold;
+                color: rgb(224, 224, 224);
+            }
+            
+            .summary-net {
+                color: rgb(64, 159, 216);
+            }
+        }
+    }
+}

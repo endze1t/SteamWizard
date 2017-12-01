@@ -1,10 +1,10 @@
 <div>
     <div class="steam_wizard_trade_status_panel">
-        <div>Trade Summary</div>
+        <div><sw-lang value="TRADE__TRADE_SUMMARY" ></sw-lang></div>
         <table class="steam_wizard_trade_status_table">
             <tbody>
                 <tr class="yours">
-                    <td>Yours</td>
+                    <td><sw-lang value="TRADE__YOURS" ></sw-lang></td>
                     <td class="status_count">0</td>
                     <td class="status_keys" title="keys">
                         <div class="status_keys_value">0</div>
@@ -13,7 +13,7 @@
                     <td class="status_value">$0.00</td>
                 </tr>
                 <tr class="theirs">
-                    <td>Theirs</td>
+                    <td><sw-lang value="TRADE__THEIRS" ></sw-lang></td>
                     <td class="status_count">0</td>
                     <td class="status_keys" title="keys">
                         <div class="status_keys_value">0</div>
@@ -25,34 +25,34 @@
         </table>
     </div>
     <div class="steam_wizard_trade_control_panel">
-        <div class="steam_wizard_trade_button steam_wizard_trade_quick_confirm">Quick Accept</div>
-        <div class="steam_wizard_trade_button steam_wizard_trade_select_page">Select Page</div>
-        <div class="steam_wizard_trade_button steam_wizard_trade_select_all">Select Everything</div>
-        <div class="steam_wizard_trade_button steam_wizard_trade_clear_all">Clear Trade</div>
+        <div class="steam_wizard_trade_button steam_wizard_trade_quick_confirm"><sw-lang value="TRADE__QUICK_ACCEPT" ></sw-lang></div>
+        <div class="steam_wizard_trade_button steam_wizard_trade_select_page"><sw-lang value="TRADE__SELECT_PAGE" ></sw-lang></div>
+        <div class="steam_wizard_trade_button steam_wizard_trade_select_all"><sw-lang value="TRADE__SELECT_EVERYTHING" ></sw-lang></div>
+        <div class="steam_wizard_trade_button steam_wizard_trade_clear_all"><sw-lang value="TRADE__CLEAR_TRADE" ></sw-lang></div>
         <div class="steam_wizard_trade_keys">
             <div class="left">
-                <div>Add Keys</div>
+                <div><sw-lang value="TRADE__ADD_KEYS" ></sw-lang></div>
                 <input class="steam_wizard_trade_keys_input" maxlength="3">
-                <div class="key_count">Keys to select: <div class="steam_wizard_trade_keys_count"></div></div>
+                <div class="key_count"><sw-lang value="TRADE__KEYS_TO_SELECT" ></sw-lang>: <div class="steam_wizard_trade_keys_count"></div></div>
                 <div class="checkbox">
-                    <label><input type="checkbox" name="checkbox" class="steam_wizard_trade_keys_checkbox">Exclude Vanilla</label>
+                    <label><input type="checkbox" name="checkbox" class="steam_wizard_trade_keys_checkbox"><sw-lang value="TRADE__EXCLUDE_VANILLA" ></sw-lang></label>
                 </div>
             </div>
             <div class="steam_wizard_trade_keys_button"></div>
         </div>
         <div class="steam_wizard_trade_hints">
-            <div class="title">Keyboard Shortcuts</div>
+            <div class="title"><sw-lang value="TRADE__KEYBOARD_SHORTCUTS" ></sw-lang></div>
             <div class="steam_wizard_trade_hint">
                 <div class="action">"shift + click"</div>
-                <div class="description">Select similar items in current inventory page</div>
+                <div class="description"><sw-lang value="TRADE__SHIFT_CLICK_HINT" ></sw-lang></div>
             </div>
             <div class="steam_wizard_trade_hint">
                 <div class="action">"alt + shift + click"</div>
-                <div class="description">Select similar items in the whole inventory</div>
+                <div class="description"><sw-lang value="TRADE__ALT_SHIFT_HINT" ></sw-lang></div>
             </div>
             <div class="steam_wizard_trade_hint">
                 <div class="action">"ctrl + click"</div>
-                <div class="description">Add to tradeup contract calculator</div>                
+                <div class="description"><sw-lang value="TRADE__CTRL_SHIFT_HINT" ></sw-lang></div>                
             </div>
         </div>
     </div>

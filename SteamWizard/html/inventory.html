@@ -1,3 +1,133 @@
 <div>
-    
+    <div class="steam_wizard_inventory_panel steam_wizard_inventory_panel_top">
+        <div class="sort">
+            <!--
+            <div class="title">
+                <div></div>
+                <div class="text"><sw-lang value="INVENTORY__SORT_BY"></sw-lang></div>
+                <div></div>
+            </div>
+            <div class="buttons">
+                <div class="steam_wizard_inventory_sort steam_wizard_inventory_sort_price"><sw-lang value="INVENTORY__PRICE"></sw-lang></div>
+                <div class="border"></div>
+                <div class="steam_wizard_inventory_sort steam_wizard_inventory_sort_wear"><sw-lang value="INVENTORY__WEAR"></sw-lang></div>
+                <div class="border"></div>
+                <div class="steam_wizard_inventory_sort_reset"><sw-lang value="INVENTORY__RESET"></sw-lang></div>
+            </div>
+            -->
+        </div>
+    </div>
+    <div class="steam_wizard_inventory_panel steam_wizard_inventory_panel_bottom">
+        <div class="table">
+            <div class="steam_wizard_inventory_buttons">
+                <div class="steam_wizard_inventory_select"><sw-lang value="INVENTORY__SELECT"></sw-lang><div class="count"></div></div>
+                <div class="steam_wizard_inventory_sell"><sw-lang value="INVENTORY__SELL"></sw-lang></div>
+            </div>
+            <!--
+            <div class="seperator"></div>
+            <div>
+                <input type="checkbox" id="steam_wizard_inventory_forceload"/><label for="steam_wizard_inventory_forceload"><sw-lang value="INVENTORY__FORCE_LOAD"></sw-lang></label>
+                <div class="steam_wizard_inventory_loadall"><sw-lang value="INVENTORY__LOAD_ALL"></sw-lang></div>
+            </div>
+            <div class="seperator"></div>
+            <div class="steam_wizard_inventory_statistics">
+                <div>
+                    <div></div>
+                    <div><sw-lang value="INVENTORY__KEYS"></sw-lang></div>
+                </div>
+                <div></div>
+                <div></div>
+            </div>
+            <div class="steam_wizard_inventory_totalvalue_container">
+                <div><sw-lang value="INVENTORY__TOTAL_VALUE"></sw-lang></div>
+                <div class="steam_wizard_inventory_totalvalue"></div>
+            </div>
+            -->
+        </div>
+    </div>
+    <div class="steam_wizard_sell_popup">
+        <div class="container">
+            <div class="top-section">
+                <div class="title">
+                    <sw-lang value="INVENTORY__POPUP_STR1"></sw-lang>
+                    <div class="item_count_container">
+                        <div class="item_count"></div>
+                        <sw-lang value="INVENTORY__POPUP_ITEMS"></sw-lang>
+                    </div>
+                </div>
+                <div class="content-container">
+                    <table class="content-headers">
+                        <thead>
+                            <tr>
+                                <th class="image"><sw-lang value="INVENTORY__POPUP_IMAGE"></sw-lang></th>
+                                <th class="name"><sw-lang value="INVENTORY__POPUP_NAME"></sw-lang></th>
+                                <th class="quantity"><sw-lang value="INVENTORY__POPUP_QUANTITY"></sw-lang></th>
+                                <th class="price"><sw-lang value="INVENTORY__POPUP_YOUR_PRICE"></sw-lang></th>
+                                <th class="steam_price"><sw-lang value="INVENTORY__POPUP_STEAM_PRICE"></sw-lang></th>
+                                <th class="status"></th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <div class="content-scrollpane">
+                        <div class="content">
+                            <table>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-section">
+                <div class="summary">
+                    <div>
+                        <sw-lang value="INVENTORY__POPUP_TOTAL_PRICE"></sw-lang>
+                        <div class="summary-total"></div>
+                    </div>
+                    <div>
+                        <sw-lang value="INVENTORY__POPUP_MARKET_CUT"></sw-lang>
+                        <div class="summary-cut"></div>
+                    </div>
+                    <div>
+                        <sw-lang value="INVENTORY__POPUP_STR2"></sw-lang>
+                        <div class="summary-net"></div>
+                    </div>
+                    <div>
+                        <sw-lang value="INVENTORY__POPUP_STR3"></sw-lang>
+                        <div></div>
+                    </div>
+                    <div class="sell-button-container">
+                        <div class="sell-button">
+                            <sw-lang value="INVENTORY__POPUP_SELL_BUTTON"></sw-lang>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="popup_row_template">
+        <table>
+            <tbody>
+                <tr class="popup_row">
+                    <td class="image"></td>
+                    <td class="name"></td>
+                    <td class="quantity"></td>
+                    <td class="sell_price">
+                        <input maxlength="12" />
+                        <div class="total-container">
+                            <div class="total"></div>
+                            <sw-lang value="INVENTORY__POPUP_TOTAL"></sw-lang>
+                        </div>
+                    </td>
+                    <td class="steam_price">
+                        <div class="price"></div>
+                        <div class="diff"></div>
+                    </td>
+                    <td class="status">
+                        <div class="icon"></div>
+                        <div class="count"></div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

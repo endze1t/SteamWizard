@@ -4,15 +4,78 @@
         <title>Item Screenshot</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="/css/lib/jquery.mCustomScrollbar.css" />
         <link rel="stylesheet" type="text/css" href="/css/background/screenshot.css" />
-        <script src="/javascript/lib/jquery-3.0.0.min.js"></script>            
-        <script src="/javascript/lib/require.js"></script>
-        <script src="/javascript/background/screenshot/config.js"></script>
-        <script src="/javascript/background/screenshot/screenshot.js"></script>
+        <script src="/js/lib/jquery-3.0.0.min.js"></script>           
+        <script src="/js/lib/jquery.mCustomScrollbar.concat.min.js"></script> 
+        <script src="/js/lib/require.js"></script>
+        <script src="/js/background/config.js"></script>
+        <script src="/js/background/screenshot/screenshot.js"></script>
     </head>
     <body>
         <div class="canvas">
-            <div style="font-size: 50px; text-align: center">SOON</div>
+            <div class="side-bar">
+                <div class="logo"></div>
+                    <div class="item-selection-section">
+                        <div class="item-selection-scrollpane">
+                            <div class="item-selection-list"></div>
+                        </div>
+                    </div>
+                </div>
+            <div class="content">
+                <div class="loading-screen">
+                    <div class="loader">
+                        <div class="rotator"></div>
+                        <div class="rotator-rev"></div>
+                        <div class="white-logo"></div>
+                    </div>
+                    <div class="note">
+                        <b><sw-lang value="SCREENSHOT__PLEASE_WAIT" ></sw-lang></b>, <sw-lang value="SCREENSHOT__NOTE_1" ></sw-lang><br/><sw-lang value="SCREENSHOT__NOTE_2" ></sw-lang>.
+                    </div>
+                </div>
+                <div class="screenshot-screen">
+                    <div class="screenshot">
+                        <img/>
+                    </div>
+                    <div class="screenshot-info-table">
+                        <div class="screenshot-info">
+                            <div><sw-lang value="SCREENSHOT__SKIN_NAME" ></sw-lang></div>
+                            <div class="skin-name"></div>
+                        </div>
+                        <div class="screenshot-info">
+                            <div><sw-lang value="SCREENSHOT__FLOAT_VALUE" ></sw-lang></div>
+                            <div class="float-value"></div>                            
+                        </div>
+                        <div class="screenshot-info">
+                            <div><sw-lang value="SCREENSHOT__PATTERN_INDEX" ></sw-lang></div>
+                            <div class="pattern-index"></div>
+                        </div>
+                        <div class="screenshot-info">
+                            <div><sw-lang value="SCREENSHOT__URL" ></sw-lang></div>
+                            <div class="screenshot-url"></div>
+                        </div>
+                    </div>
+                    <div class="screenshot-buttons">
+                        <div class="frontside-button"><sw-lang value="SCREENSHOT__FRONT_SIDE" ></sw-lang></div>
+                        <div class="backside-button"><sw-lang value="SCREENSHOT__BACK_SIDE" ></sw-lang></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="template">
+            <div class="tab-item">
+                <div class="wrapper">
+                    <div class="image">
+                        <img/>
+                    </div>
+                    <div class="name"></div>
+                    <div class="status">
+                        <div class="status-icon"></div>
+                        <div class="status-text"></div>
+                    </div>
+                    <div class="close"></div>
+                </div>
+            </div>
         </div>
     </body>
 </html>

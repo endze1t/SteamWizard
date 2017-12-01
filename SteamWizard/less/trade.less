@@ -8,6 +8,7 @@ and open the template in the editor.
     Author     : Ahmed
 */
 
+@import "common.less";
 
 .steam_wizard_trade_status_panel {
     background-image: url('chrome-extension://__MSG_@@extension_id__/images/trade/header_banner.png');
@@ -235,10 +236,11 @@ and open the template in the editor.
 }    
 
 .steam_wizard_trade_price {
-    bottom: 3px;
+    left: 0px;
+    bottom: 5px;
     color: black;
     font-size: 12px;
-    padding: 3px 10px 3px 5px;
+    padding: 1px 6px 1px 4px;
     position: absolute;
     
     background-image: url('chrome-extension://__MSG_@@extension_id__/images/trade/price_icon.png');
@@ -258,6 +260,8 @@ and open the template in the editor.
     font-family: sans-serif;
     padding: 2px 4px 1px 4px;
     z-index: 10;
+    right: 3px;
+    
 
     &:hover {
         cursor: pointer;
@@ -277,11 +281,6 @@ and open the template in the editor.
             content: '';
         }
     }
-}
-
-.steam_wizard_trade_inspect {
-    right: 3px;
-    
     &:before {
         content: 'F';
     }
@@ -300,7 +299,7 @@ and open the template in the editor.
     }
 }
 
-.steam_wizard_trade_screenshot, .steam_wizard_inventory_screenshot {
+.steam_wizard_trade_screenshot {
     position: absolute;
     background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/metjm.png');
     background-size: 100% auto;
@@ -318,66 +317,7 @@ and open the template in the editor.
     }
 }
 
-.steam_wizard_inventory_screenshot {
-    right: 0px;
-    bottom: 0px;
-}
-
 .steam_wizard_maincontent_wrapper {
     width: 936px;
     display: inline-block;
-}
-
-.steam_wizard_inventory_panel {
-    margin: 5px 0px 20px 0px;
-    
-    .wear {
-        font-size: 10px;
-        cursor: text;
-        color: #e0af09;
-        box-sizing: border-box;
-        text-align: center;
-        display: inline-block;
-        position: relative;
-        background-color: black;
-        padding: 6px 13px;
-        width: 126px;
-        margin: 2px;
-    
-        &:before {
-            background-image: url(chrome-extension://__MSG_@@extension_id__/images/inventory/button_frame.png);
-            background-size: 100% 100%;
-            background-repeat: no-repeat;
-            width: 129.5px;
-            height: 27px;
-            position: absolute;
-            content: '';
-            top: -2px;
-            left: -2px;
-        }
-    }
-    
-    .screenshot {
-        height: 20px;
-        width: 25px;
-        vertical-align: middle;
-        margin: 0px 20px;
-        background-image: url(chrome-extension://__MSG_@@extension_id__/images/inventory/camera.png);
-        background-size: 100% auto;
-        background-position: center;
-        display: inline-block;
-        cursor: pointer;
-    }
-    
-    .tradeup-button {
-        display: inline-block;
-        color: black;
-        background-image: url(chrome-extension://__MSG_@@extension_id__/images/inventory/button.png);
-        background-size: 100% 100%;
-        background-position: center;
-        font-size: 10px;
-        font-weight: bold;
-        padding: 6px 15px;
-        cursor: pointer;
-    }
 }

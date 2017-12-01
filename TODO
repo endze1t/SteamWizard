@@ -51,9 +51,16 @@ Configuration Panel
 Gadgets
 --------
 - Sound notification for new trade offers
-- Tradeups window                                                        -> DONE
+- Tradeup window                                                        -> DONE
+- Tradeup window price change
 
 
 Other
 -----
-- Only override steam functions if they match signature                 
+- Only override steam functions if they match signature     
+
+
+Screenshot Window
+-----------------
+- display images in the side bar for easier selection
+- link to owner            

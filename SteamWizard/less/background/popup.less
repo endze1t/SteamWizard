@@ -1,0 +1,189 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Nov 10, 2017, 2:34:06 PM
+    Author     : ahmed
+*/
+
+/* latin */
+@font-face {
+    font-family: 'Oxygen';
+    font-style: normal;
+    font-weight: 300;
+    src: local('Oxygen Light'), local('Oxygen-Light'), url(chrome-extension://__MSG_@@extension_id__/font/Oxygen-Light.ttf);
+}
+
+/* latin */
+@font-face {
+    font-family: 'Oxygen';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Oxygen Regular'), local('Oxygen-Regular'), url(chrome-extension://__MSG_@@extension_id__/font/Oxygen-Regular.ttf);
+}
+
+/* latin */
+@font-face {
+    font-family: 'Oxygen';
+    font-style: normal;
+    font-weight: 700;
+    src:  local('Oxygen Bold'), local('Oxygen-Bold'), url(chrome-extension://__MSG_@@extension_id__/font/Oxygen-Bold.ttf);
+}
+
+html, body {
+    margin: 0px;
+    padding: 0px;
+    width: 160px;
+    
+    font-family: Oxygen;
+    background-color: rgb(235, 235, 235);
+}
+
+.header {
+    background-color: rgb(0, 156, 255);
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/logo_192_white.png');
+    background-size: auto 40px;
+    background-repeat: no-repeat;
+    background-position: center 20px;
+    height: 70px;
+}
+
+.seperator {
+    height: 15px;
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/popup/separator.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.flag(@val, @img) {
+    &[value='@{val}'] div {
+        background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/flags/@{img}.png');
+    }
+}
+
+.options {
+    text-transform: capitalize;
+    margin: 10px;
+    margin-top: 0px;
+    
+    .option {
+        position: relative;
+        text-align: center;
+        
+        .title {
+            margin-top: 10px;
+            
+            .text {
+                width: 80px;
+                text-align: center;
+                background-color: rgb(235, 235, 235);
+                display: inline-block;
+                color: rgb(52, 151, 202);
+                z-index: 1;
+                position: relative;
+                font-weight: bold;
+            }
+            
+            &:before {
+                content: "";
+                background-color: #c2c2c2;
+                height: 2px;
+                display: block;
+                position: absolute;
+                left: 0px;
+                width: 100%;
+                top: 8px;
+                z-index: 0;
+            }
+        }
+        
+        .menu-holder {
+            height: 32px;
+            overflow: visible;
+            position: relative;
+        }
+        
+        .menu {
+            margin: 10px 0px 15px;
+            border: solid 1px rgb(200, 200, 200);
+            background-color: white;
+            border-radius: 5px;
+            position: relative;
+
+            .item {
+                color: rgb(124, 124, 124);
+                font-weight: bold;
+                cursor: pointer;
+
+                .flag('cn', 'cn');
+                .flag('de', 'de');
+                .flag('en', 'gb');
+                .flag('fr', 'fr');
+                .flag('es', 'es');
+                .flag('pt', 'pt');
+                .flag('ru', 'ru');
+                .flag('sv', 'se');
+                
+                div {
+                    padding: 7px 10px;
+                    margin: 0px 11px;
+                    
+                    background-position: 5px center;
+                    background-size: 16px auto;
+                    background-repeat: no-repeat;
+                }
+            }
+
+            .current {
+                background-image: url('chrome-extension://__MSG_@@extension_id__/images/popup/bluearrow.png');
+                background-position: right 10px center;
+                background-size: 10px auto;
+                background-repeat: no-repeat;
+
+                cursor: pointer;
+            }
+
+            .list {
+                display: none;
+                z-index: 10;
+
+                .item {
+                    div {
+                        border-top: 1px solid rgb(223, 223, 223);
+                    }
+                    
+                    &:hover {
+                        color: white;
+                        background-color: rgb(183, 183, 183);
+                        
+                        div {
+                            border-top: 1px solid rgb(183, 183, 183);
+                        }
+                    }
+                    
+                    &:hover + .item {
+                        div {
+                            border-top: 1px solid white;
+                        }
+                    }
+                }
+            }
+            
+            &.active {
+                z-index: 10;
+                
+                .current {
+                    background-image: none;
+                }
+                
+                .list {
+                    display: block;
+                }
+            }
+        }
+    }
+    
+}

@@ -51,19 +51,19 @@ and open the template in the editor.
 
 @font-face {
     font-family: quantify;
-    src: url('/font/QUANTIFY BOLD V2.6.ttf');
+    src: url('chrome-extension://__MSG_@@extension_id__/font/QUANTIFY BOLD V2.6.ttf');
     font-weight: bold;
 }
 
 @font-face {
     font-family: nexa;
-    src: url('/font/NEXA BOLD.otf');
+    src: url('chrome-extension://__MSG_@@extension_id__/font/NEXA BOLD.otf');
     font-weight: bold;
 }
 
 @font-face {
     font-family: nexa;
-    src: url('/font/NEXA LIGHT.otf');
+    src: url('chrome-extension://__MSG_@@extension_id__/font/NEXA LIGHT.otf');
     font-weight: light;
 }
 
@@ -72,6 +72,12 @@ html, body {
     width: 100%;
     min-width: 800px;
     height: 100%;
+    
+    background-color: #262729;    
+}
+
+#lang {
+    display: none;
 }
 
 .template {
@@ -381,10 +387,10 @@ html, body {
             width: 45px;
             display: table-cell;
             padding: 15px;
-            padding-right: 0px;
             background-color: #8c8c8c;
             font-weight: bold;
             cursor: pointer;
+            text-align: center;
         }
         
         .data-holder {

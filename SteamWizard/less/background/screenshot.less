@@ -8,3 +8,328 @@ and open the template in the editor.
     Author     : ahmed
 */
 
+/* latin */
+@font-face {
+    font-family: 'Oxygen';
+    font-style: normal;
+    font-weight: 300;
+    src: local('Oxygen Light'), local('Oxygen-Light'), url(chrome-extension://__MSG_@@extension_id__/font/Oxygen-Light.ttf);
+}
+
+/* latin */
+@font-face {
+    font-family: 'Oxygen';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Oxygen Regular'), local('Oxygen-Regular'), url(chrome-extension://__MSG_@@extension_id__/font/Oxygen-Regular.ttf);
+}
+
+/* latin */
+@font-face {
+    font-family: 'Oxygen';
+    font-style: normal;
+    font-weight: 700;
+    src:  local('Oxygen Bold'), local('Oxygen-Bold'), url(chrome-extension://__MSG_@@extension_id__/font/Oxygen-Bold.ttf);
+}
+
+@keyframes globesprite {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(180deg);}
+}
+
+html, body {
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+}
+
+#lang {
+    display: none;
+}
+
+.template {
+    display: none;
+}
+
+.canvas {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+
+    font-family: Oxygen;
+    color: white;
+    height: 100%;
+}
+
+.side-bar {
+    display: table-cell;
+    width: 305px;
+    vertical-align: top;
+    background-color: rgb(34, 35, 37);
+
+    .logo {
+        width: 100%;
+        height: 160px;
+        background-image: url('chrome-extension://__MSG_@@extension_id__/images/logo_512.png');
+        background-size: auto 50%;
+        background-repeat: no-repeat;
+        background-position: center;
+        padding: 0px;
+        vertical-align: top;
+        cursor: pointer;
+        border-bottom: 1px solid #565656;
+    }
+
+    .item-selection-section {
+        height: calc(~"100% - 161px");
+        position: fixed;
+        width: 325px;
+        padding-bottom: 10px;
+        box-sizing: border-box;    
+    }
+    
+    .item-selection-scrollpane {
+        height: 100%;
+        overflow-y: hidden;
+        width: inherit;
+        
+        .item-selection-list {
+            margin-right: 20px;
+        }
+    
+        .mCSB_inside > .mCSB_container {
+            margin-right: 0px;
+        }
+    }
+}
+
+.content {
+    display: table-cell;
+    vertical-align: top;
+    background-color: rgb(38, 39, 41);
+}
+
+.loading-screen {
+    text-align: center;
+    padding-top: 50px;
+    display: none;
+
+    .loader {
+        width: 400px;
+        height: 400px;
+        position: relative;
+        display: inline-block;
+    }
+
+    .rotator {
+        width: 100%;
+        height: 100%;
+        background-image: url('chrome-extension://__MSG_@@extension_id__/images/screenshot/arrow_vector.png');
+        background-size: 100% auto;
+        background-repeat: no-repeat;
+        background-position: center;
+
+        animation: globesprite 1.5s infinite;
+    }
+
+    .white-logo {
+        width: 100px;
+        height: 100px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        position: absolute;
+
+        background-image: url('chrome-extension://__MSG_@@extension_id__/images/logo_192_white.png');
+        background-size: auto 100%;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    .note {
+        margin-top: 15px;
+        font-size: 32px;
+    }
+}
+
+.tab-item {
+    padding: 10px 10px 0px 10px;
+    cursor: pointer;
+
+    .wrapper {
+        position: relative;
+        border-bottom: 1px solid rgb(47, 49, 53);
+        min-height: 90px;
+    }
+
+    .image {
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 10px;
+        img {
+            width: 100px;
+        }
+    }
+
+    .name {
+        display: inline-block;
+        margin-left: 15px;
+        vertical-align: middle;
+        font-size: 14px;
+        max-width: 100px;
+
+        b {
+            display: block;
+        }
+    }
+
+    .status {
+        display: inline-block;
+        vertical-align: middle;    
+        float: right;
+        margin-top: 35px;
+        margin-right: 10px;
+        text-align: right;
+    }
+
+    .status-icon {
+        width: 30px;
+        height: 25px;
+        background-image: url('chrome-extension://__MSG_@@extension_id__/images/screenshot/queue_icon.png');
+        background-size: auto 100%;
+        background-repeat: no-repeat;
+        background-position: center; 
+        display: inline-block;
+    }
+
+    .status-text {
+        color: rgb(245, 35, 79);
+        text-transform: uppercase;
+        margin-top: 5px;
+        font-size: 10px;
+    }
+
+    .close {
+        top: 0px;
+        right: 15px;
+        height: 20px;
+        width: 20px;
+        background-image: url('chrome-extension://__MSG_@@extension_id__/images/screenshot/remove_icon.png');
+        background-size: 100% auto;
+        background-repeat: no-repeat;
+        background-position: center;       
+        position: absolute;
+        
+        &:hover {
+            background-image: url('chrome-extension://__MSG_@@extension_id__/images/screenshot/remove_icon_hover.png');            
+        }
+    }
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    &.ready {
+        .status-icon {
+            width: 30px;
+            height: 25px;
+            background-image: url(chrome-extension://__MSG_@@extension_id__/images/screenshot/ready_icon.png);
+            background-size: auto 100%;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .status-text {
+            color: rgb(129, 171, 49);
+        }
+    }
+    
+    &.active, &.active:hover {
+        background-color: rgba(2, 138, 249, 0.1);
+    }
+}
+
+.screenshot-screen {
+    display: none;
+    text-align: center;
+    width: 80%;
+    margin: auto;
+
+    .screenshot {
+        position: relative;
+        padding-bottom: 56.25%;
+        overflow: hidden;
+
+        img {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+
+            &.bottom {
+                top: auto;
+                bottom: 0px;
+            }
+        }
+    }
+
+    .screenshot-info-table {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+
+        .screenshot-info {
+            display: table-cell;
+            padding: 20px 10px;
+            text-align: left;
+
+            div:first-child {
+                color: rgb(1, 137, 249);
+                font-size: 10px;
+                text-transform: uppercase;
+                margin-bottom: 10px;
+            }
+
+            div:last-child {
+                color: white;
+                font-size: 16px;
+                font-weight: bold;
+            }
+
+            .skin-name {
+
+            }
+            .float-value {
+
+            }   
+            .pattern-index {
+
+            }
+
+            .screenshot-url {
+                font-size: 12px !important;
+            }
+        }
+    }
+
+    .screenshot-buttons {
+        margin-top: 20px;
+
+        .frontside-button, .backside-button {
+            display: inline-block;
+            margin: 10px 15px;
+            background-color: rgb(53, 54, 58);
+            border-radius: 20px;
+            padding: 20px;
+            font-size: 12px;
+            text-transform: uppercase;
+            padding: 15px 15%;
+            font-size: 13px;   
+            cursor: pointer;
+
+            &.active {
+                background-color: rgb(1, 137, 249);
+            }
+        }
+    }
+}

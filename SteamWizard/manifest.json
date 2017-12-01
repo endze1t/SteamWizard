@@ -4,49 +4,60 @@
 	"name": "SteamWizard",
         "short_name": "SW",
 	"description": "SteamWizard is a browser extension that helps loading additional information for CS:GO items on the steam community market.",
-	"version": "2.1.0",
+	"version": "2.3.2",
 	
-	"icons": {	"16": "images/logo_64.png",
-			"48": "images/logo_192.png",
-			"128": "images/logo_512.png" },
+	"icons": {	
+            "16": "images/logo_64.png",
+            "48": "images/logo_192.png",
+            "128": "images/logo_512.png" 
+        },
 
 	"browser_action": {
-		"default_icon": "images/logo_192.png"
+            "default_icon": "images/logo_192.png",
+            "default_title": "Options",
+            "default_popup": "html/background/popup.html"
 	},
         
 	"permissions": [
-		"*://steamcommunity.com/*"
+            "*://steamcommunity.com/*"
 	],
         
 	"background": {
-		"scripts": ["javascript/lib/jquery-3.0.0.min.js",
-                            "javascript/lib/require.js",      
-                            
-                            "javascript/background/config.js",
-                            "javascript/background/background.js"],
-                "presistant": false
+            "scripts": [
+                "js/lib/jquery-3.0.0.min.js",
+                "js/lib/require.js",      
+    
+                "js/background/config.js",
+                "js/background/background.js"
+            ],
+            
+            "persistant": false
 	},
 	
         "content_scripts": [
             {
                 "matches": ["*://steamcommunity.com/tradeoffer/*"],
                 "run_at": "document_end",
-                "js": [ "javascript/lib/jquery-3.0.0.min.js",
-                        "javascript/lib/require.js",
+                "js": [
+                    "js/lib/jquery-3.0.0.min.js",
+                    "js/lib/require.js",
 
-                        "javascript/content_script/config.js",
-                        "javascript/content_script/trade.js"],
+                    "js/content_script/config.js",
+                    "js/content_script/trade.js"
+                    ],
                   "css" : ["css/trade.css"]
             },
             
             {
                 "matches": ["*://steamcommunity.com/market/listings/730/*"],
                 "run_at": "document_end",
-                "js": ["javascript/lib/jquery-3.0.0.min.js",
-                       "javascript/lib/require.js",
+                "js": [
+                    "js/lib/jquery-3.0.0.min.js",
+                    "js/lib/require.js",
 
-                       "javascript/content_script/config.js",
-                       "javascript/content_script/market.js"],
+                    "js/content_script/config.js",
+                    "js/content_script/market.js"
+                    ],
                 "css" : ["css/market.css"]
             },
             
@@ -62,10 +73,10 @@
                             "*://steamcommunity.com/profiles/*/tradeoffers/sent/"],
 
                 "run_at": "document_end",
-                "js": [ "javascript/lib/jquery-3.0.0.min.js",
-                         "javascript/lib/require.js"
+                "js": [ "js/lib/jquery-3.0.0.min.js",
+                        "js/lib/require.js"
  
-                         ],
+                        ],
                   "css" : ["css/trade.css"]
             },
             
@@ -74,16 +85,18 @@
                             "*://steamcommunity.com/profiles/*/inventory*"],
                         
                 "run_at": "document_end",
-                "js": ["javascript/lib/jquery-3.0.0.min.js", 
-                       "javascript/lib/require.js",
+                "js": ["js/lib/jquery-3.0.0.min.js", 
+                       "js/lib/jquery.mCustomScrollbar.concat.min.js",
+                       "js/lib/require.js",
 
-                       "javascript/content_script/config.js",
-                       "javascript/content_script/inventory.js"],
-                "css" : ["css/trade.css"]
+                       "js/content_script/config.js",
+                       "js/content_script/inventory.js"],
+                "css" : ["css/lib/jquery.mCustomScrollbar.css", "css/inventory.css"]
             }
-	  ],
+	],
+        
 	 "web_accessible_resources": [
-		"javascript/*",
+		"js/*",
 		"images/*",
 		"css/*",
                 "html/*",

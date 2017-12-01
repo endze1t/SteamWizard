@@ -1,0 +1,46 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Nov 20, 2017, 12:51:53 AM
+    Author     : ahmed
+*/
+
+/* latin */
+@font-face {
+    font-family: 'Oxygen';
+    font-style: normal;
+    font-weight: 300;
+    src: local('Oxygen Light'), local('Oxygen-Light'), url(chrome-extension://__MSG_@@extension_id__/font/Oxygen-Light.ttf);
+}
+
+/* latin */
+@font-face {
+    font-family: 'Oxygen';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Oxygen Regular'), local('Oxygen-Regular'), url(chrome-extension://__MSG_@@extension_id__/font/Oxygen-Regular.ttf);
+}
+
+/* latin */
+@font-face {
+    font-family: 'Oxygen';
+    font-style: normal;
+    font-weight: 700;
+    src:  local('Oxygen Bold'), local('Oxygen-Bold'), url(chrome-extension://__MSG_@@extension_id__/font/Oxygen-Bold.ttf);
+}
+
+sw-price {
+    &[data-currency-before] {
+        &:before {
+            content: attr(data-symbol);
+        }
+    }
+    &[data-currency-after] {
+        &:before {
+            content: attr(data-symbol);
+        }
+    }
+}
