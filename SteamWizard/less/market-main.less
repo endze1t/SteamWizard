@@ -1,0 +1,47 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Dec 2, 2017, 8:08:38 PM
+    Author     : ahmed
+*/
+
+.steam_wizard_remove_all_buttom {
+    cursor: pointer;
+    
+    &:hover {
+        color: rgb(64, 159, 216);
+    }
+    
+    &.disabled {
+        color: gray;
+    }
+}
+
+.market_listing_row {
+    &.loading {
+        background-image: url(chrome-extension://__MSG_@@extension_id__/images/common/ajax-loader-3.gif);
+        background-size: 20px;
+        background-repeat: no-repeat;
+        background-position: right 30px top 15px;
+        
+        &:after {
+            content: attr(data-sw-index);
+            color: rgb(64, 159, 216);
+            position: absolute;
+            right: 10px;
+            bottom: 18px;
+            font-size: 10px;
+        }
+    }
+    
+    &.failed {
+        background-image: url(chrome-extension://__MSG_@@extension_id__/images/common/error_icon.png);
+        background-size: 20px;
+        background-repeat: no-repeat;
+        background-position: right 30px top 15px;
+    }
+}
+

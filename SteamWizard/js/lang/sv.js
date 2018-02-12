@@ -7,6 +7,8 @@
 
 define(function() {
     return {
+        SW_LANG_CODE  : "sv",
+        
         /* trade */
         TRADE__TRADE_SUMMARY     : "Köpsammanfattning",
         TRADE__YOURS             : "Din",
@@ -19,9 +21,9 @@ define(function() {
         TRADE__KEYBOARD_SHORTCUTS: "Tangentgenvägar",
         TRADE__ADD_KEYS          : "Lägg till tangenter",
         TRADE__EXCLUDE_VANILLA   : "Uteslut vanilj",
-        TRADE__SHIFT_CLICK_HINT  : "Välj liknande föremål på aktuell inventariesida",
-        TRADE__ALT_SHIFT_HINT    : "Välj liknande föremål i hela inventarier",
-        TRADE__CTRL_SHIFT_HINT   : "Lägg till för köpkontraktkalkylator",
+        TRADE__SELECT_PAGE_HINT  : "Välj liknande föremål på aktuell inventariesida",
+        TRADE__SELECT_ALL_HINT   : "Välj liknande föremål i hela inventarier",
+        TRADE__TRADEUP_HINT      : "Lägg till för köpkontraktkalkylator",
 
         /* inventory */
         INVENTORY__SORT_BY           : "sortera efter",

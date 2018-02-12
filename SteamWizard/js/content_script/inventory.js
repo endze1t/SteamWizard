@@ -170,7 +170,7 @@ require(["util/common", "port", "util/price", "util/item", "util/lang", 'util/st
             if(price_engine.canConvert(currency)) {
                 steam_price.setPriceUSD(data.price);
                 
-                var converted = price_engine.convert(data.price);
+                var converted = price_engine.convert(data.price, currency);
                 
                 row.find('.sell_price input').val(converted);
                 total_price.setPrice(converted * quantity);
@@ -201,6 +201,19 @@ require(["util/common", "port", "util/price", "util/item", "util/lang", 'util/st
                 total_price.setPrice(val * quantity);
                 
                 massActions.updatePopupSummary();
+                
+                var ref_price = steam_price.getPrice();
+                
+                if(!isNaN(ref_price)) {
+                    var diff = Math.abs(val - ref_price);
+                    var $diff = row.find('.steam_price .diff');
+                    
+                    var text = val == ref_price ? '' : price_engine.format(diff, currency);
+                    var addClass = val > ref_price ? 'pos' : val < ref_price ? 'neg' : '';
+                    var rmvClass = val > ref_price ? 'neg' : val < ref_price ? 'pos' : 'pos neg';
+                    
+                    $diff.text(text).addClass(addClass).removeClass(rmvClass);
+                }
             });
             
             return row;
@@ -215,6 +228,12 @@ require(["util/common", "port", "util/price", "util/item", "util/lang", 'util/st
             var quantity = $row[0].dataset.quantity;
             status.addClass('loading').attr('data-loading', quantity);
             status.find('.icon').text(quantity);
+        },
+        
+        failPopupRow: function($row) {
+            var status = $row.find('.status');            
+            status.removeClass('loading').addClass('failed');
+            status.find('.icon').text('');
         },
         
         completePopupRow: function($row) {
@@ -283,16 +302,21 @@ require(["util/common", "port", "util/price", "util/item", "util/lang", 'util/st
                 $panels.find('.steam_wizard_inventory_sell').addClass('disabled');
             }
             
-            $template.find('.steam_wizard_sell_popup').appendTo(document.body)
-                     .find('.content-scrollpane').mCustomScrollbar({
-                        axis: 'y'
-                    });
-                     
+            $template.find('.steam_wizard_sell_popup').appendTo(document.body);
+            
+            $('.steam_wizard_sell_popup .content-scrollpane').mCustomScrollbar({
+                axis: 'y'
+            });
+            
+            $('.steam_wizard_sell_popup .close').click(function() {
+                massActions.closePopup();
+            });
+            
             //remove overlay on escape
             $(document).keyup(function (e) {
-                    if (e.keyCode === 27)
-                        massActions.closePopup();
-                });
+                if (e.keyCode === 27)
+                    massActions.closePopup();
+            });
         },
         
         inventoryData: null,
@@ -376,9 +400,9 @@ require(["util/common", "port", "util/price", "util/item", "util/lang", 'util/st
             var $price = $(price_engine.create().setItem(marketname).node).addClass('steam_wizard_inventory_price');
             $item.append($price);
             $item.click(function (e) {
-                var ctrl = e.ctrlKey;
+                var alt = e.altKey;
                 
-                if (ctrl) {
+                if (alt) {
                     local_util.attemptTradeup(itemid);
                 }
             });
@@ -666,7 +690,7 @@ require(["util/common", "port", "util/price", "util/item", "util/lang", 'util/st
         },
         
         sellButtonClick: function() {
-            if(!events.selectionEnabled || massActions.selection.length === 0)
+            if(!events.selectionEnabled || massActions.count === 0)
                 return;
             
             massActions.initPopup();
@@ -773,17 +797,15 @@ require(["util/common", "port", "util/price", "util/item", "util/lang", 'util/st
                         xhrFields: {withCredentials: true}
                     }).done(function (data) {
                         doNext();
-//                        SellItemDialog.OnSuccess({responseJSON: data});
+                        ui_helper.completePopupRow(obj.row);
                     }).fail(function (jqxhr) {
-                        // jquery doesn't parse json on fail
                         var data = $.parseJSON(jqxhr.responseText);
                         
-                        if(data.message && data.message.includes("Please confirm or cancel the existing listing"))
+                        if(data.message && data.message.includes("Please confirm or cancel the existing listing")) {
                             doNext();
-//                        else
-//                            SellItemDialog.OnFailure({responseJSON: data});
-                    }).always(function() {
-                        ui_helper.completePopupRow(obj.row);
+                            ui_helper.completePopupRow(obj.row);
+                        } else
+                            ui_helper.failPopupRow(obj.row);
                     });
                 })();
             });
@@ -867,7 +889,6 @@ require(["util/common", "port", "util/price", "util/item", "util/lang", 'util/st
      */
     (function() {
         local_util.getUserData(function(currency, logged_user, active_user) {
-            console.log(arguments);
             userCurrency = currency;
             init.initDisplay(logged_user, active_user);
         });

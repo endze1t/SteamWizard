@@ -32,6 +32,10 @@ define(["port!BACKGROUND_GET_OPTIONS", "port", "util/constants",
             return this;
         },
         
+        getPrice: function() {
+            return this.node.dataset.price;
+        },
+        
         setPriceUSD: function(priceUSD) {
             this.priceUSD = priceUSD;
             this.node.setAttribute('data-price-usd', priceUSD);
@@ -289,6 +293,10 @@ define(["port!BACKGROUND_GET_OPTIONS", "port", "util/constants",
         
         installNew: function() {
             return priceEngine.installNew.apply(priceEngine, arguments);
+        },
+        
+        format: function() {
+            return priceEngine.format.apply(priceEngine, arguments);            
         },
         
         getItemSteamPrice: local_util.getItemSteamPrice,

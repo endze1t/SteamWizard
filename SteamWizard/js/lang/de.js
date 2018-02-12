@@ -7,6 +7,8 @@
 
 define(function() {
     return {
+        SW_LANG_CODE  : "de",
+        
         /* trade */
         TRADE__TRADE_SUMMARY     : "﻿Zusammenfassung des Handels",
         TRADE__YOURS             : "Dein",
@@ -19,9 +21,9 @@ define(function() {
         TRADE__KEYBOARD_SHORTCUTS: "Tastenkombinationen",
         TRADE__ADD_KEYS          : "Schlüssel hinzufügen",
         TRADE__EXCLUDE_VANILLA   : "Vanille ausschließen",
-        TRADE__SHIFT_CLICK_HINT  : "Ähnliche Artikel auf momentaner Inventarseite auswählen",
-        TRADE__ALT_SHIFT_HINT    : "Ähnliche Artikel aus dem gesamten Inventar auswählen",
-        TRADE__CTRL_SHIFT_HINT   : "Zum TradeUP-Vertragsrechner hinzufügen",
+        TRADE__SELECT_PAGE_HINT  : "Ähnliche Artikel auf momentaner Inventarseite auswählen",
+        TRADE__SELECT_ALL_HINT    : "Ähnliche Artikel aus dem gesamten Inventar auswählen",
+        TRADE__TRADEUP_HINT   : "Zum TradeUP-Vertragsrechner hinzufügen",
 
         /* inventory */
         INVENTORY__SORT_BY           : "sortieren nach",

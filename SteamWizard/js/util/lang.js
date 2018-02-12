@@ -4,11 +4,13 @@
  * and open the template in the editor.
  */
 define(["port!BACKGROUND_GET_OPTIONS", "port", "util/constants", 
-        "lang/en", "lang/de", "lang/cn", "lang/es", "lang/fr", "lang/pt", "lang/ru","lang/sv"], function(options, port, constants, en, de, cn, es, fr, pt, ru, sv) {
+        "lang/cn", "lang/cs", "lang/de", "lang/en", "lang/es", "lang/fr", "lang/pl", "lang/pt", "lang/ru", "lang/sv"], 
+    function(options, port, constants, cn, cs, de, en, es, fr, pl, pt, ru, sv) {
 
     "using strict";
         
     var allElements = [];
+    var languages = {};
     var currentLanguage = options.language;
 
     port.addEventListener(function(msg) {
@@ -25,26 +27,10 @@ define(["port!BACKGROUND_GET_OPTIONS", "port", "util/constants",
             if(!lang)
                 lang = currentLanguage;
             
-            switch(lang) {
-                case "en":
-                    return en;
-                case "de":
-                    return de;
-                case "cn":
-                    return cn;
-                case "es":
-                    return es;
-                case "fr":
-                    return fr;
-                case "pt":
-                    return pt;
-                case "ru":
-                    return ru;
-                case "sv":
-                    return sv;
-                default:
-                    return en;
-           }
+            if(!languages[lang])
+                return en;
+            
+            return languages[lang];
         },
        
         add: function(element) {
@@ -76,11 +62,26 @@ define(["port!BACKGROUND_GET_OPTIONS", "port", "util/constants",
                 elements[i].textContent = language[value] ? language[value] : en[value];
                 elements[i].setAttribute('lang',  language === en ? 'en' : lang);
             }
+        },
+        
+        translate: function(index) {
+            var language = this.get(lang);
+            return language[index] ? language[index] : en[index];
         }
     };
 
+    var args = arguments;
+    
     /* init */
     (function() {
+        debugger;
+        for(var i in args) {
+            if(!args[i].SW_LANG_CODE)
+                continue;
+            
+            languages[args[i].SW_LANG_CODE] = args[i];
+        }
+        
         /* check for all sw-lang nodes */
         var nodes = document.getElementsByTagName('sw-lang');
 
@@ -111,6 +112,10 @@ define(["port!BACKGROUND_GET_OPTIONS", "port", "util/constants",
             for(var i=0; i < elements.length; i++) {
                 lang.add(elements[i]);
             }            
+        },
+        
+        translate: function(index) {
+            return lang.translate(index);
         }
     };
 });

@@ -7,6 +7,8 @@
 
 define(function() {
     return {
+        SW_LANG_CODE  : "pt",
+        
         /* trade */
         TRADE__TRADE_SUMMARY     : "Resumo da Transação",
         TRADE__YOURS             : "Seu",
@@ -19,9 +21,9 @@ define(function() {
         TRADE__KEYBOARD_SHORTCUTS: "Atalhos de Teclado",
         TRADE__ADD_KEYS          : "Adicionar Teclas",
         TRADE__EXCLUDE_VANILLA   : "Excluir Baunilha",
-        TRADE__SHIFT_CLICK_HINT  : "Selecionar itens similares na página atual do inventário",
-        TRADE__ALT_SHIFT_HINT    : "Selecionar itens similares em todo o inventário",
-        TRADE__CTRL_SHIFT_HINT   : "Adicionar à calculadora de contrato de transação ",
+        TRADE__SELECT_PAGE_HINT  : "Selecionar itens similares na página atual do inventário",
+        TRADE__SELECT_ALL_HINT    : "Selecionar itens similares em todo o inventário",
+        TRADE__TRADEUP_HINT   : "Adicionar à calculadora de contrato de transação ",
 
         /* inventory */
         INVENTORY__SORT_BY           : "classificar por",

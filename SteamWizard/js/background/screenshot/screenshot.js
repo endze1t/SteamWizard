@@ -11,6 +11,7 @@ require(["util/lang"], function(lang) {
     var screenshotEngine = {
         REQUEST_NEW: "https://www.steamwizard.net/screenshot?type=new&param={0}",
         REQUEST_STATUS: "https://www.steamwizard.net/screenshot?type=status&param={0}",
+
         STATUS_QUEUE: 1,
         STATUS_DONE: 2,
         STATUS_FAILED: 3,
@@ -80,7 +81,7 @@ require(["util/lang"], function(lang) {
             }
             
             var $tab = ui_helper.createTabItem(item);
-            $tab.find('.status-text').text(lang.SCREENSHOT__LOADING);
+            $tab.find('.status-text').text(lang.translate("SCREENSHOT__LOADING"));
             $tab.click(function() {
                 ui_helper.tabSelect(item);
             });
@@ -102,19 +103,19 @@ require(["util/lang"], function(lang) {
                 } else {
                     switch(data.status) {
                         case screenshotEngine.STATUS_QUEUE:
-                            $tab.find('.status-text').text(lang.SCREENSHOT__QUEUE + ': ' + data.place_in_queue);
+                            $tab.find('.status-text').text(lang.translate("SCREENSHOT__QUEUE") + ': ' + data.place_in_queue);
                             break;
                         case screenshotEngine.STATUS_DONE:
                             itemPool[itemid].ready = true;
                             itemPool[itemid].screenshot_data = data;
-                            $tab.find('.status-text').text(lang.SCREENSHOT__READY);
+                            $tab.find('.status-text').text(lang.translate("SCREENSHOT__READY"));
                             $tab.addClass('ready');
                             ui_helper.openScreenshot(item);
                             break;
                         case screenshotEngine.STATUS_FAILED:
                             itemPool[itemid].ready = true;
                             itemPool[itemid].failed = true;
-                            $tab.find('.status-text').text(lang.SCREENSHOT__FAILED);
+                            $tab.find('.status-text').text(lang.translate("SCREENSHOT__FAILED"));
                             break;
                     }
                 }

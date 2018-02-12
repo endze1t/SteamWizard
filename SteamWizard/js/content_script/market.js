@@ -38,6 +38,10 @@ require(["util/constants", "util/common_ui", "util/common", 'util/steam_override
                }
             }
             
+            list.sort(function(a, b) {
+                return a.position - b.position;
+            });
+            
             for(var i=0; i < list.length; i++) {
                 if(list[i].type === 'tradebot')
                     $tradebots.append(init.buildAffiliate(list[i], itemname));
@@ -45,6 +49,7 @@ require(["util/constants", "util/common_ui", "util/common", 'util/steam_override
                     $markets.append(init.buildAffiliate(list[i], itemname));
             }
             
+            /* fill in empty slots */
             $affiliates.each(function(index, value) {
                 for(var i=$(value).children().length; i < 3; i++) {
                     $(value).append($('<div>'));
@@ -77,6 +82,9 @@ require(["util/constants", "util/common_ui", "util/common", 'util/steam_override
 
                     if(data.price) {
                         var $span = $('<span>').text('$' + data.price.toFixed(2) + ' USD');
+                        $priceButton.removeClass('btn_grey_white_innerfade').append($span);
+                    } else if(data.priceText) {
+                        var $span = $('<span>').text(data.priceText);
                         $priceButton.removeClass('btn_grey_white_innerfade').append($span);
                     } else {
                         $priceButton.append($('<span>').text('-'));                        

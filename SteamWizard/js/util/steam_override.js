@@ -493,7 +493,7 @@ define(function() {
         setTimeout(repeat, 25);
     };
     
-    var fetchGlobal = function(variable, callback, processor) {
+    var fetchGlobal = function(variable, callback, processor, param) {
         var interval = null;
 
         var id = 'SteamWizard_Message_' + Date.now() + "_" + Math.floor(Math.random() * 100000);
@@ -518,7 +518,7 @@ define(function() {
         var script = document.createElement('script');
         //appending text to a function to convert it's src to string only works in Chrome
         script.textContent = '(' +
-                function(classname, processor) {
+                function(classname, processor, param) {
                     document.getElementById(classname).onclick = function() {
                         var var_name = this.getAttribute('variable').split(',');
 
@@ -528,14 +528,14 @@ define(function() {
                             result[var_name[i]] = window[var_name[i]];
 
                         if(processor)
-                           result = processor(result);
+                           result = processor(result, param);
 
                         document.dispatchEvent(new CustomEvent(classname, {
                             detail: result
                         }));
                     };
                 }
-            + ')("{0}", {1});'.format(id, processor ? processor : 'undefined');
+            + ')("{0}", {1}, {2});'.format(id, processor ? processor : 'undefined', param ? JSON.stringify(param) : 'undefined');
 
         //cram that sucker in 
         (document.head || document.documentElement).appendChild(script);

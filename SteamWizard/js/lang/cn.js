@@ -7,6 +7,8 @@
 
 define(function() {
     return {
+        SW_LANG_CODE  : "cn",
+        
         /* trade */
         TRADE__TRADE_SUMMARY     : "交易总结",
         TRADE__YOURS             : "您的",
@@ -19,9 +21,9 @@ define(function() {
         TRADE__KEYBOARD_SHORTCUTS: "键盘快捷键",
         TRADE__ADD_KEYS          : "添加键",
         TRADE__EXCLUDE_VANILLA   : "排除香草",
-        TRADE__SHIFT_CLICK_HINT  : "在当前目录页面选择类似的项",
-        TRADE__ALT_SHIFT_HINT    : "在整个目录中选择类似的项",
-        TRADE__CTRL_SHIFT_HINT   : "添加到贸易合同计算器",
+        TRADE__SELECT_PAGE_HINT  : "在当前目录页面选择类似的项",
+        TRADE__SELECT_ALL_HINT    : "在整个目录中选择类似的项",
+        TRADE__TRADEUP_HINT   : "添加到贸易合同计算器",
 
         /* inventory */
         INVENTORY__SORT_BY           : "排序方式",

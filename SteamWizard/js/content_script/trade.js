@@ -23,7 +23,292 @@ require(["util/common", "util/price", "port", 'util/steam_override', 'util/item'
      **/
     var loadedItems = {};
     
-    var init = {
+    var inventoryManager = function(user, steamid) {
+        var This = this;
+        
+        this.data = {};
+
+        this.user = user;
+        this.steamid = steamid;
+        this.unintialized = {};
+        this.itemChangeObserver = new MutationObserver(function(mutations){            
+            for(var i=0; i < mutations.length; i++) {
+                var $item = $(mutations[i].target);
+                
+                if(!This.initItem($item))
+                    This.unintialized[$item.attr('id')] = $item;
+            }
+            
+            This.getAndInitItems();
+        });
+        this.pageChangeObserver = new MutationObserver(function(mutations){
+            for(var i=0; i < mutations.length; i++) {
+                This.initInventoryPage($(mutations[i].target));
+            }
+        });
+        this.inventoryChangeObserver = new MutationObserver(function(mutations) {
+            if(mutations[0])
+                This.initInventory($(mutations[0].target));
+        });
+    };
+    
+    inventoryManager.prototype.initItem = function($item) {
+        var matches = $item.attr('id').match(/^item(\d+)_(\d+)_(\d+)/);
+
+        var appid = matches[1];
+        var contextid = matches[2];
+        var itemid = matches[3];
+
+        if (!this.data[appid] || !this.data[appid][contextid] || !this.data[appid][contextid][itemid])
+            return false;
+        
+        var itemData = this.data[appid][contextid][itemid];
+        
+        var marketname = util.hashnameToName(itemData.markethashname);
+
+        $item.attr('data-marketname', marketname);
+        $item.attr('data-itemid', itemid);
+        $item.attr('data-appid', appid);
+        $item.click(function (e) {
+            var shift = e.shiftKey;
+            var alt = e.altKey;
+            var ctrl = e.ctrlKey;
+
+            var selector = $item.parents('.trade_item_box');
+
+            if (ctrl) {
+                ui_helper.moveItems(selector, "", false, {name: marketname});
+            } else if (shift) {
+                ui_helper.moveItems(selector, ":visible", false, {name: marketname});
+            } else if (alt) {
+                local_util.attemptTradeup(itemid);
+            }
+        });
+
+        if(appid != 730)
+            return true;
+
+        var itemPrice = price_engine.getItemSteamPrice(marketname);
+        $item.attr("data-price", itemPrice);
+
+        var $price = $(price_engine.create().setItem(marketname).node).addClass('steam_wizard_trade_price');
+
+        $item.append($price);
+
+        var inspect = itemData.inspect;
+        var image = itemData.image;
+
+        /* make sure inspect link belongs to this item */
+        if (local_util.validateInspect(marketname, inspect, itemid)) {
+            var info = {  
+                itemid: itemid,
+                image : image,
+                inspect : inspect, 
+                marketname : marketname, 
+                steamid : this.steamid};
+
+            $item.append(ui_helper.createInspectButton(info));
+            $item.append(ui_helper.createScreenshotButton(info));
+        }
+        
+        return true;
+    };
+    inventoryManager.prototype.initItemLater = function($item) {
+        init.itemChangeObserver.observe($item[0], {attributes: true, attributeFilter: ['class']});            
+    };
+    inventoryManager.prototype.initPage = function($page) {
+        var This = this;
+        
+        $page.find('.item').each(function (index, value) {
+            var $item = $(value);
+
+            if ($item.hasClass('pendingItem'))
+                This.initItemLater($item);
+            else if(!This.initItem($item)) {
+                This.unintialized[$item.attr('id')] = $item;
+            }
+        });
+    };
+    inventoryManager.prototype.initPageLater = function($page) {
+        this.pageChangeObserver.observe($page[0], {childList: true});
+    };
+    inventoryManager.prototype.initInventory = function($inventory) {
+        var This = this;
+        
+        function doInit() {
+            $inventory.find('.inventory_page').each(function(index, value) {
+                var $page = $(value);
+
+                if($page.hasClass('missing_item_holders')) {
+                    This.initPageLater($page);
+                } else {
+                    This.initPage($page);
+                }
+            });
+        };
+        
+        var matches = $inventory.attr('id').match(/^inventory_(\d+)_(\d+)_(\d+)/);
+            
+        var appid = matches[2];
+        var contextid = matches[3];
+        
+        if(!This.data[appid])
+            This.data[appid] = {};
+
+        if(!This.data[appid][contextid])
+            local_util.getInventory(This.user, appid, contextid, function(data) {
+                This.data[appid][contextid] = data;
+                doInit();
+            });
+        else
+            doInit();
+
+    };
+    inventoryManager.prototype.initInventoryLater = function($inventory) {
+        this.inventoryChangeObserver.observe($inventory[0], {childList: true});
+    };
+    inventoryManager.prototype.initAllInventory = function() {
+        var inventories = $('.inventory_ctn');
+        var This = this;
+            
+        function doInit(inventory) {
+            var $inventory = $(inventory);
+            
+            var matches = $inventory.attr('id').match(/^inventory_(\d+)_(\d+)_(\d+)/);
+            
+            if(!matches || matches[1] != This.steamid)
+                return;
+            
+            if ($inventory.children().length > 0) {
+                This.initInventory($inventory);
+            } else {
+                This.initInventoryLater($inventory);
+            }            
+        }
+        
+        for(var i=0; i < inventories.length; i++) {
+            doInit(inventories[i]);
+        }
+        
+        /* setup observer for inventories that are added later */
+        this.inventoryCanvasChangeObserver = new MutationObserver(function(mutations) {
+            for(var m=0; m < mutations.length; m++) {
+                var mutation = mutations[m];
+                
+                if(mutation.type !== 'childList')
+                    continue;
+                
+                for(var i=0; i < mutations[m].addedNodes.length; i++)
+                    doInit(mutations[m].addedNodes[i]);
+                }
+        });
+        this.inventoryCanvasChangeObserver.observe($('#inventories')[0], {childList: true});
+    };
+    inventoryManager.prototype.initTradeSlots = function($slotsContainer) {
+        // items that are still loading
+        var unknownItems = $slotsContainer.find('.unknownItem');
+        
+        var This = this;
+        
+        function initItem($item) {
+            var matches = $item.attr('id').match(/^item(\d+)_(\d+)_(\d+)/);
+
+            if(matches == null)
+                return;
+
+            return This.initItem($item);
+        }
+
+        // all items loaded successfully .. just populate stuff
+        if (unknownItems.length === 0) {
+            util.chainCall($slotsContainer.find(".item"), function(value) {
+                var $value = $(value);
+                
+                if(!initItem($value)) {
+                    This.unintialized[$value.attr('id')] = $value;
+                }
+            }, 0);
+        } else {
+            //need to create an observer
+            var tradeItemChangeObserver = new MutationObserver(function (mutations) {
+                for (var i = 0; i < mutations.length; i++) {
+                    var mutation = mutations[i];
+
+                    if (mutation.type !== 'childList')
+                        continue;
+
+                    var addedNodes = mutation.addedNodes;
+
+                    for (var j = 0; j < addedNodes.length; j++) {
+                        var $item = $(addedNodes[j]);
+                        
+                        if($item.attr('id') == null)
+                            continue;
+                        
+                        var matches = $item.attr('id').match(/^item(\d+)_(\d+)_(\d+)/);
+
+                        if(matches == null)
+                            continue;
+                        
+                        if ($item.hasClass('item') && !This.initItem($item))
+                            This.unintialized[$item.attr('id')] = $item;
+                    }
+                }
+                
+                This.getAndInitItems();
+            });
+            
+            tradeItemChangeObserver.observe($slotsContainer[0], {childList: true, characterData: false, subtree: true});
+        }
+    };
+    inventoryManager.prototype.getAndInitItems = function() {        
+        var This = this;
+        var items = this.unintialized;
+        
+        if(Object.keys(items).length === 0)
+            return;
+        
+        function initItemGroup($itemGroup, appid, contextid) {
+            local_util.getInventory(This.user, appid, contextid, function(data) {
+                if(!This.data[appid])
+                    This.data[appid] = {};
+
+                This.data[appid][contextid] = data;
+                
+                for(var i=0; i < $itemGroup.length; i++)
+                    This.initItem($itemGroup[i]);
+            });
+        }
+        
+        var groups = {};
+        
+        for(var i in items) {
+            var $item = items[i];
+
+            var matches = $item.attr('id').match(/^item(\d+)_(\d+)_(\d+)/);
+
+            var appid = matches[1];
+            var contextid = matches[2];
+            
+            var id = appid + "_" + contextid;
+            
+            if(!groups[id]) {
+                groups[id] = {};
+                groups[id].appid = appid;
+                groups[id].contextid = contextid;
+                groups[id].items = [];
+            }
+            
+            groups[id].items.push($item);
+        };
+        
+        this.unintialized = {};
+        
+        for(var i in groups)
+            initItemGroup(groups[i].items, groups[i].appid, groups[i].contextid);
+    };
+    
+    var init = {        
         initDisplay: function () {
             var $template = $(trade_template);
             lang.processNode($template[0]);
@@ -104,128 +389,28 @@ require(["util/common", "util/price", "port", 'util/steam_override', 'util/item'
             });
         },
         
-        initTradeItem: function ($item, inventory) {
-            var matches = $item.attr('id').match(/^item(\d+)_(\d+)_(\d+)/);
-
-            var itemid = matches[3];
-            var appid = matches[1];
-
-            if (inventory == null || !inventory[itemid])
-                return;
-
-            var marketname = util.hashnameToName(inventory[itemid].markethashname);
-            var itemPrice = price_engine.getItemSteamPrice(marketname);
-
-            $item.attr('data-marketname', marketname);
-            $item.attr('data-itemid', itemid);
-            $item.attr('data-appid', appid);
-            $item.attr("data-price", itemPrice);
+        initAllInventories: function(data) {
+            var inventories = $('.inventory_ctn');
             
-            var $price = $(price_engine.create().setItem(marketname).node).addClass('steam_wizard_trade_price');
-//            var $price = $('<div>').addClass('steam_wizard_trade_price');
-//            $price.text('$' + itemPrice);
-            $item.append($price);
-            $item.click(function (e) {
-                var shift = e.shiftKey;
-                var alt = e.altKey;
-                var ctrl = e.ctrlKey;
+            inventoryManager.setData(data);
+            
+            for(var i=0; i < inventories.length; i++) {
+                var $inventory = $(inventories[i]);
                 
-                var selector = $item.parents('.trade_item_box');
-
-                if (alt && shift) {
-                    ui_helper.moveItems(selector, "", false, {name: marketname});
-                } else if (shift) {
-                    ui_helper.moveItems(selector, ":visible", false, {name: marketname});
-                } else if (ctrl) {
-                    local_util.attemptTradeup(itemid);
-                }
-            });
-
-            var inspect = inventory[itemid].inspect;
-            var image = inventory[itemid].image;
-            
-            /* make sure inspect link belongs to this item */
-            if (local_util.validateInspect(marketname, inspect, itemid)) {
-                var info = {  
-                    itemid: itemid,
-                    image : image,
-                    inspect : inspect, 
-                    marketname : marketname, 
-                    steamid : inventory.steamid};
-                $item.append(ui_helper.createInspectButton(info));
-                $item.append(ui_helper.createScreenshotButton(info));
-            }
-        },
-        
-        initInventory: function(inventory) {
-            /* initialize if loaded */
-            var $inventory = $('#' + inventory.elInventoryId);
-
-            if ($inventory.length > 0) {
                 if ($inventory.children().length > 0) {
-                    var method = function (value) {
-                        init.initTradeItem($(value), inventory);
-                    };
-                    
-                    util.directCall($inventory.find(".item"), method);
-                    ui_helper.updateKeyCounter($('.inventory_ctn:visible'));
-
-                    // remove listener after initialization
-                    if (inventory.inventoryChangeObserver)
-                        inventory.inventoryChangeObserver.disconnect();
-                } else {                
-                    //observe when user changes inventory, then update hashnames
-                    inventory.inventoryChangeObserver = new MutationObserver(function () {
-                        init.initInventory(inventory);
-                    });
-                    inventory.inventoryChangeObserver.observe($inventory[0], {childList: true, characterData: false});
+                    inventoryManager.initInventory($inventory);
+                } else {
+                    inventoryManager.initInventoryLater($inventory);
                 }
             }
         },
 
-        initTradeSlots: function(inventory, $slotsContainer) {
-            // items that are still loading
-            var unknownItems = $slotsContainer.find('.unknownItem');
-
-            function initItem($item) {
-                var match = $item.attr('id').match(/^item(\d+)_(\d+)_(\d+)/);
-
-                if (match != null && match[1] == inventory.appid) {
-                    init.initTradeItem($item, inventory);
-                }
-            }
-
-            // all items loaded successfully .. just populate stuff
-            if (unknownItems.length === 0) {
-                function method(value) {
-                    initItem($(value));
-                }
-                
-                util.chainCall($slotsContainer.find(".item"), method, 0);
-            } else {
-                //need to create an observer
-                var tradeItemChangeObserver = new MutationObserver(function (mutations) {
-                    for (var i = 0; i < mutations.length; i++) {
-                        var mutation = mutations[i];
-
-                        if (mutation.type !== 'childList')
-                            continue;
-
-                        var addedNodes = mutation.addedNodes;
-
-                        for (var j = 0; j < addedNodes.length; j++) {
-                            var $item = $(addedNodes[i]);
-
-                            if ($item.hasClass('item'))
-                                initItem($item);
-                        }
-                    }
-                });
-                $(".trade_right .trade_item_box").each(function (index, value) {
-                    tradeItemChangeObserver.observe(value, {childList: true, characterData: false, subtree: true});
-                });
-            }
-        }        
+        initUser: function(user, steamid, $tradeslots) {
+            var manager = new inventoryManager(user, steamid);
+            manager.initAllInventory();
+            manager.initTradeSlots($tradeslots);
+            manager.getAndInitItems();
+        },
     };
     
     var ui_helper = {
@@ -415,8 +600,8 @@ require(["util/common", "util/price", "port", 'util/steam_override', 'util/item'
         
         enableButtons: function() {
             // accepts and confirms trade offer in 1 step
-            var $addCurrentPageToTradeButton = $(".steam_wizard_trade_quick_confirm");
-            $addCurrentPageToTradeButton.click(function() {
+            var $quickAcceptTradeButton = $(".steam_wizard_trade_quick_confirm");
+            $quickAcceptTradeButton.click(function() {
                 if($('#you_cantready').is(':visible'))
                     return;
                 
@@ -488,6 +673,53 @@ require(["util/common", "util/price", "port", 'util/steam_override', 'util/item'
                     console.log(response);
                 });
             }
+        },
+        
+        getInventory: function(user, appid, contextid, callback) {
+            steam_override.fetchGlobal(user, function(data) {
+                callback(data);
+            }, function(input, param) {
+                input = input[Object.keys(input)[0]];
+                
+                console.log(input);
+                
+                var output = {};
+
+                var inventory = input.getInventory(param.appid, param.contextid);
+                output.appid = param.appid;
+                output.steamid = input.strSteamId;
+                output.contextid = param.contextid;
+                output.initialized = inventory.initialized;
+                output.elInventoryId = inventory.elInventory.id;
+
+                if(!inventory.rgInventory)
+                    return output;
+
+                var keys = Object.keys(inventory.rgInventory);
+
+                for (var j = 0; j < keys.length; j++) {
+                    var assetid = keys[j];
+                    var description = inventory.rgInventory[assetid];
+
+                    output[assetid] = {};
+                    output[assetid].markethashname = description.market_hash_name;
+                    output[assetid].image = 'https://steamcommunity-a.akamaihd.net/economy/image/' + description.icon_url + '/150x150f';
+
+                    if (description.actions) {
+                        for (var k = 0; k < description.actions.length; k++) {
+                            var action = description.actions[k];
+                            if (action.name && action.link) {
+                                output[assetid].inspect = action.link
+                                        .replace("%assetid%", assetid)
+                                        .replace("%owner_steamid%", input.strSteamId);
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                return output;
+            }, {appid: appid, contextid: contextid});
         }
     };
     
@@ -500,51 +732,16 @@ require(["util/common", "util/price", "port", 'util/steam_override', 'util/item'
 
         init.initDisplay();
 
-        /* get csgo inventory and steamid for both parties and start loading */
+        /* get steamid for both parties and start loading */
         steam_override.fetchGlobal(['UserYou', 'UserThem'], function (data) {
-            init.initInventory(data.UserYou);
-            init.initInventory(data.UserThem);
-            init.initTradeSlots(data.UserYou, $('#your_slots'));
-            init.initTradeSlots(data.UserThem, $('#their_slots'));
+            init.initUser("UserYou", data.UserYou, $('#your_slots'));
+            init.initUser("UserThem", data.UserThem, $('#their_slots'));
         }, function (input) {
             var output = {};
-
-            for (var i in input) {
-                output[i] = {};
-                output[i].steamid = input[i].strSteamId;
-
-                var inventory = input[i].getInventory(730, 2);
-                output[i].appid = inventory.appid;
-                output[i].contextid = inventory.contextid;
-                output[i].elInventoryId = inventory.elInventory.id;
-                output[i].initialized = inventory.initialized;
-                
-                if(!inventory.rgInventory)
-                    return;
-                
-                var keys = Object.keys(inventory.rgInventory);
-                
-                for (var j = 0; j < keys.length; j++) {
-                    var assetid = keys[j];
-                    var description = inventory.rgInventory[assetid];
-
-                    output[i][assetid] = {};
-                    output[i][assetid].markethashname = description.market_hash_name;
-                    output[i][assetid].image = 'https://steamcommunity-a.akamaihd.net/economy/image/' + description.icon_url + '/150x150f';
-
-                    if (description.actions) {
-                        for (var k = 0; k < description.actions.length; k++) {
-                            var action = description.actions[k];
-                            if (action.name && action.link) {
-                                output[i][assetid].inspect = action.link
-                                        .replace("%assetid%", assetid)
-                                        .replace("%owner_steamid%", output[i].steamid);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
+            
+            for(var user in input)
+                output[user] = input[user].strSteamId;
+            
             return output;
         });
 

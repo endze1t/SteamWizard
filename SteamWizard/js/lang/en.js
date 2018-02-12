@@ -7,6 +7,8 @@
 
 define(function() {
     return {
+        SW_LANG_CODE  : "en",
+        
         /* trade */
         TRADE__TRADE_SUMMARY     : "Trade Summary",
         TRADE__YOURS             : "Yours",
@@ -19,9 +21,9 @@ define(function() {
         TRADE__KEYBOARD_SHORTCUTS: "Keyboard Shortcuts",
         TRADE__ADD_KEYS          : "Add Keys",
         TRADE__EXCLUDE_VANILLA   : "Exclude Vanilla",
-        TRADE__SHIFT_CLICK_HINT  : "Select similar items in current inventory page",
-        TRADE__ALT_SHIFT_HINT    : "Select similar items in the whole inventory",
-        TRADE__CTRL_SHIFT_HINT   : "Add to tradeup contract calculator",
+        TRADE__SELECT_PAGE_HINT  : "Select similar items in current inventory page",
+        TRADE__SELECT_ALL_HINT   : "Select similar items in the whole inventory",
+        TRADE__TRADEUP_HINT      : "Add to tradeup contract calculator",
 
         /* inventory */
         INVENTORY__SORT_BY           : "sort by",
@@ -34,7 +36,7 @@ define(function() {
         INVENTORY__LOAD_ALL          : "load all",
         INVENTORY__KEYS              : "keys",
         INVENTORY__TOTAL_VALUE       : "total value",
-        INVENTORY__POPUP_STR1        : "Your have selected",
+        INVENTORY__POPUP_STR1        : "You have selected",
         INVENTORY__POPUP_ITEMS       : "items",
         INVENTORY__POPUP_IMAGE       : "image",
         INVENTORY__POPUP_NAME        : "item name",

@@ -7,6 +7,8 @@
 
 define(function() {
     return {
+        SW_LANG_CODE  : "fr",
+        
         /* trade */
         TRADE__TRADE_SUMMARY     : "Résumé du commerce",
         TRADE__YOURS             : "Le tien",
@@ -19,9 +21,9 @@ define(function() {
         TRADE__KEYBOARD_SHORTCUTS: "Raccourcis clavier",
         TRADE__ADD_KEYS          : "Ajouter des clés",
         TRADE__EXCLUDE_VANILLA   : "Exclure la vanille",
-        TRADE__SHIFT_CLICK_HINT  : "Sélectionnez des éléments similaires dans la page d'inventaire en cours",
-        TRADE__ALT_SHIFT_HINT    : "Sélectionnez des articles similaires dans l'ensemble de l'inventaire",
-        TRADE__CTRL_SHIFT_HINT   : "Ajouter au calculateur de contrat de reprise",
+        TRADE__SELECT_PAGE_HINT  : "Sélectionnez des éléments similaires dans la page d'inventaire en cours",
+        TRADE__SELECT_ALL_HINT    : "Sélectionnez des articles similaires dans l'ensemble de l'inventaire",
+        TRADE__TRADEUP_HINT   : "Ajouter au calculateur de contrat de reprise",
 
         /* inventory */
         INVENTORY__SORT_BY           : "Trier par",

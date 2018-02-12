@@ -7,6 +7,8 @@
 
 define(function() {
     return {
+        SW_LANG_CODE  : "es",
+        
         /* trade */
         TRADE__TRADE_SUMMARY     : "Resumen de intercambio comercial",
         TRADE__YOURS             : "Tuya",
@@ -19,9 +21,9 @@ define(function() {
         TRADE__KEYBOARD_SHORTCUTS: "Atajos de teclado",
         TRADE__ADD_KEYS          : "Añadir teclas",
         TRADE__EXCLUDE_VANILLA   : "Excluir vainilla",
-        TRADE__SHIFT_CLICK_HINT  : "Selecciona elementos similares en la página de inventario actual",
-        TRADE__ALT_SHIFT_HINT    : "Selecciona artículos similares en todo el inventario",
-        TRADE__CTRL_SHIFT_HINT   : "Agregar a la calculadora de contrato de intercambio",
+        TRADE__SELECT_PAGE_HINT  : "Selecciona elementos similares en la página de inventario actual",
+        TRADE__SELECT_ALL_HINT   : "Selecciona artículos similares en todo el inventario",
+        TRADE__TRADEUP_HINT      : "Agregar a la calculadora de contrato de intercambio",
 
         /* inventory */
         INVENTORY__SORT_BY           : "ordenar por",

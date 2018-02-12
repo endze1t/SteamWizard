@@ -7,6 +7,8 @@
 
 define(function() {
     return {
+        SW_LANG_CODE  : "ru",
+        
         /* trade */
         TRADE__TRADE_SUMMARY     : "﻿Сводка по сделке",
         TRADE__YOURS             : "Ваши",
@@ -19,9 +21,9 @@ define(function() {
         TRADE__KEYBOARD_SHORTCUTS: "Сочетания клавиш",
         TRADE__ADD_KEYS          : "Добавить клавиши",
         TRADE__EXCLUDE_VANILLA   : "Удалить лишнее",
-        TRADE__SHIFT_CLICK_HINT  : "Выбрать похожие пункты на текущей странице описи",
-        TRADE__ALT_SHIFT_HINT    : "Выбрать похожие пункты во всей описи",
-        TRADE__CTRL_SHIFT_HINT   : "Добавить в калькулятор контракта сделки с наценкой",
+        TRADE__SELECT_PAGE_HINT  : "Выбрать похожие пункты на текущей странице описи",
+        TRADE__SELECT_ALL_HINT    : "Выбрать похожие пункты во всей описи",
+        TRADE__TRADEUP_HINT   : "Добавить в калькулятор контракта сделки с наценкой",
 
         /* inventory */
         INVENTORY__SORT_BY           : "сортировка по",

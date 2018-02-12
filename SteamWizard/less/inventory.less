@@ -108,6 +108,8 @@ and open the template in the editor.
     bottom: 0px;
 
     &:hover {
+        right: 2px;
+        width: 14px;
         background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/camera_icon.png');
     }
 }
@@ -422,6 +424,7 @@ and open the template in the editor.
         border-bottom: 1px solid rgb(25, 25, 25);
         padding: 20px 5px 20px 25px;
         border-radius: 4px 4px 0px 0px;
+        position: relative;
         
         .title > * {
             font-size: 20px;
@@ -438,7 +441,6 @@ and open the template in the editor.
                 display: inline-block;
             }
         }
-        
         
         .content-container {
             margin-top: 25px;
@@ -559,12 +561,33 @@ and open the template in the editor.
                     font-weight: bold;
                     
                     .diff {
-                        font-size: 10px;
-/*                        padding-left: 10px;                        
-                        background-image: url(chrome-extension://__MSG_@@extension_id__/images/inventory/sameprice.png);
+                        font-size: 11px;
+                        margin-top: 5px;
+                        display: inline-block;
                         background-size: 100% auto;
                         background-repeat: no-repeat;
-                        background-position: left center;*/
+                        background-size: 10px auto;
+                        padding-left: 15px;
+
+                        &.pos {
+                            color: rgb(126, 156, 60);
+                            background-position: left 5px;
+                            background-image: url(chrome-extension://__MSG_@@extension_id__/images/inventory/arrowup.png);
+                            
+                            &:before {
+                                content: '+'
+                            }
+                        }
+                        
+                        &.neg {
+                            color: rgb(208, 22, 44);
+                            background-position: left 5px;
+                            background-image: url(chrome-extension://__MSG_@@extension_id__/images/inventory/arrowdown.png);
+
+                            &:before {
+                                content: '-'
+                            }
+                        }
                     }
                 }
                 
@@ -602,6 +625,15 @@ and open the template in the editor.
                             background-image: url(chrome-extension://__MSG_@@extension_id__/images/common/ready_icon.png);                            
                         }
                     }
+                    
+                    &.failed {
+                        .icon {
+                            width: 20px;
+                            height: 20px;
+                            padding-top: 0px;
+                            background-image: url(chrome-extension://__MSG_@@extension_id__/images/common/error_icon.png);      
+                        }
+                    }
                 }
             }
             
@@ -611,6 +643,23 @@ and open the template in the editor.
             
             .empty_row:first-child td {
                 padding: 0px;
+            }
+        }
+        
+        .close {
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            background-image: url(chrome-extension://__MSG_@@extension_id__/images/common/remove_icon.png);
+            background-repeat: no-repeat;
+            background-size: 100% auto;
+            background-position: center;       
+            position: absolute;
+            cursor: pointer;
+
+            &:hover {
+                background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/remove_icon_hover.png');            
             }
         }
     }
