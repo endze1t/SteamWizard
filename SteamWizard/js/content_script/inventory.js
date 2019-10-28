@@ -340,6 +340,13 @@ require(["util/common", "port", "util/price", "util/item", "util/lang", 'util/st
             }
         }),
         
+        pageAddObserver: new MutationObserver(function(mutations) {
+            console.log(mutations);
+            for(var i=0; i < mutations.length; i++) {
+                init.initInventoryPage($(mutations[i].target));
+            }
+        }),
+        
         inventoryChangeObserver: new MutationObserver(function(mutations) {
             for(var i=0; i < mutations.length; i++) {
                 init.initInventory($(mutations[i].target));
@@ -375,8 +382,9 @@ require(["util/common", "port", "util/price", "util/item", "util/lang", 'util/st
             
             /* cash data for later use */
             itemData[itemid] = inventory[itemid];
-            
+
             var marketname = util.hashnameToName(inventory[itemid].markethashname);
+            itemData[itemid].marketname = marketname;
             $item.attr('data-marketname', marketname);
             $item.attr('data-itemid', itemid);
             $item.attr('data-appid', appid);
@@ -451,6 +459,8 @@ require(["util/common", "port", "util/price", "util/item", "util/lang", 'util/st
                     init.initInventoryPage($page);
                 }
             });
+            
+            init.pageAddObserver.observe($inventory[0], {childList: true});
             
             ui_helper.initSortButtons($inventory);
         },
@@ -713,7 +723,7 @@ require(["util/common", "port", "util/price", "util/item", "util/lang", 'util/st
                     items: [],
                     appid: data.appid,
                     contextid: data.contextid,
-                    price: price_engine.getItemSteamPrice(data.markethashname)
+                    price: price_engine.getItemSteamPrice(data.marketname)
                 };
             
             var items = this.selection[data.markethashname].items;

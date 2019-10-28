@@ -44,7 +44,7 @@ define(["port!BACKGROUND_GET_OPTIONS", "port", "util/constants",
             var language = this.get(lang);
             var value = element.getAttribute('value');
 
-            element.textContent = language[value] ? language[value] : en[value];
+            element.innerHTML = language[value] ? language[value] : en[value];
             element.setAttribute('lang', language === en ? 'en' : lang);
         },
         
@@ -59,7 +59,7 @@ define(["port!BACKGROUND_GET_OPTIONS", "port", "util/constants",
            
                 var value = elements[i].getAttribute('value');
                 
-                elements[i].textContent = language[value] ? language[value] : en[value];
+                elements[i].innerHTML = language[value] ? language[value] : en[value];
                 elements[i].setAttribute('lang',  language === en ? 'en' : lang);
             }
         },
@@ -74,7 +74,6 @@ define(["port!BACKGROUND_GET_OPTIONS", "port", "util/constants",
     
     /* init */
     (function() {
-        debugger;
         for(var i in args) {
             if(!args[i].SW_LANG_CODE)
                 continue;

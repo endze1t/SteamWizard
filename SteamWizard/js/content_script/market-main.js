@@ -74,7 +74,7 @@ require(["util/constants", "port", "util/lang", 'util/steam_override'], function
                     $(row).addClass('loading');
                     $(row).removeClass('failed');
 
-                    $.ajax( 'http://steamcommunity.com/market/removelisting/' + listingid, {
+                    $.ajax( '//steamcommunity.com/market/removelisting/' + listingid, {
                             method: 'post',
                             data: {
                                 sessionid: g_sessionID

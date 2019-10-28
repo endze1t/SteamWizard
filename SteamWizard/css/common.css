@@ -1,1 +1,349 @@
-@font-face{font-family:'Oxygen';font-style:normal;font-weight:300;src:local('Oxygen Light'),local('Oxygen-Light'),url(chrome-extension://__MSG_@@extension_id__/font/Oxygen-Light.ttf)}@font-face{font-family:'Oxygen';font-style:normal;font-weight:400;src:local('Oxygen Regular'),local('Oxygen-Regular'),url(chrome-extension://__MSG_@@extension_id__/font/Oxygen-Regular.ttf)}@font-face{font-family:'Oxygen';font-style:normal;font-weight:700;src:local('Oxygen Bold'),local('Oxygen-Bold'),url(chrome-extension://__MSG_@@extension_id__/font/Oxygen-Bold.ttf)}sw-price[data-currency-before]:before{content:attr(data-symbol)}sw-price[data-currency-after]:before{content:attr(data-symbol)}
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Nov 20, 2017, 12:51:53 AM
+    Author     : ahmed
+*/
+/* latin */
+@font-face {
+  font-family: 'Oxygen';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Oxygen Light'), local('Oxygen-Light'), url(chrome-extension://__MSG_@@extension_id__/font/Oxygen-Light.ttf);
+}
+/* latin */
+@font-face {
+  font-family: 'Oxygen';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Oxygen Regular'), local('Oxygen-Regular'), url(chrome-extension://__MSG_@@extension_id__/font/Oxygen-Regular.ttf);
+}
+/* latin */
+@font-face {
+  font-family: 'Oxygen';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Oxygen Bold'), local('Oxygen-Bold'), url(chrome-extension://__MSG_@@extension_id__/font/Oxygen-Bold.ttf);
+}
+sw-price[data-currency-before]:before {
+  content: attr(data-symbol);
+}
+sw-price[data-currency-after]:before {
+  content: attr(data-symbol);
+}
+.steam_wizard_donation_panel {
+  margin-top: 20px;
+  background-color: #313740;
+  position: relative;
+  background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/donate_background.png');
+  background-size: auto 100%;
+  background-position: center left;
+  background-repeat: no-repeat;
+  border-radius: 3px;
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_header {
+  color: white;
+  background-color: #425775;
+  position: absolute;
+  height: auto;
+  border-radius: 3px;
+  z-index: 10;
+  top: 0px;
+  left: 50%;
+  padding: 5px 10px;
+  transform: translate(-50%, -51%);
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: bold;
+  font-family: 'Oxygen';
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content {
+  text-align: right;
+  white-space: nowrap;
+  padding: 5px 0px;
+  height: auto;
+  font-size: 0px;
+  font-family: Oxygen;
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content > div {
+  display: inline-block;
+  text-align: center;
+  font-size: 10px;
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .padding {
+  width: 20%;
+  vertical-align: middle;
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .donation_amount {
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  font-size: 12px;
+  padding: 10px 20px;
+  font-family: Arial;
+  color: white;
+  display: inline-block;
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .donation_bar {
+  width: 60%;
+  margin-top: 20px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .button_holder {
+  display: inline-block;
+  width: 20%;
+  vertical-align: middle;
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .meter {
+  background-color: #1e232d;
+  vertical-align: middle;
+  width: 80%;
+  margin: auto;
+  margin-bottom: 5px;
+  box-shadow: #151515 0px 0px 25px inset;
+  position: relative;
+  padding: 5px;
+  height: 14px;
+  font-size: 0px;
+  border-radius: 20px;
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .meter .meter_bar {
+  height: 15px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  border-radius: 10px;
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .meter .meter_node {
+  top: 2px;
+  width: 20px;
+  height: 20px;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+  background-size: auto 100%;
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .meter[value="0"] .meter_bar {
+  width: 3%;
+  background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/1mbar.png');
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .meter[value="0"] .meter_node {
+  left: calc(3% - 10px);
+  background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/1mcircle.png');
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .meter[value="1"] .meter_bar {
+  width: 10%;
+  background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/1mbar.png');
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .meter[value="1"] .meter_node {
+  left: calc(10% - 8px);
+  background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/1mcircle.png');
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .meter[value="3"] .meter_bar {
+  width: 30%;
+  background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/3mbar.png');
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .meter[value="3"] .meter_node {
+  left: calc(30% - 10px);
+  background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/3mcircle.png');
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .meter[value="6"] .meter_bar {
+  width: 50%;
+  background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/6mbar.png');
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .meter[value="6"] .meter_node {
+  left: calc(50% - 12px);
+  background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/6mcircle.png');
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .meter[value="12"] .meter_bar {
+  width: 70%;
+  background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/1ybar.png');
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .meter[value="12"] .meter_node {
+  left: calc(70% - 14px);
+  background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/1ycircle.png');
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .meter[value="36"] .meter_bar {
+  width: 90%;
+  background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/2ybar.png');
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .meter[value="36"] .meter_node {
+  left: calc(90% - 16px);
+  background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/2ycircle.png');
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .meter[value="48"] .meter_bar {
+  width: 100%;
+  background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/2ybar.png');
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .meter[value="48"] .meter_node {
+  left: calc(100% - 22px);
+  background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/2ycircle.png');
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .scale {
+  width: 80%;
+  margin: auto;
+  color: white;
+  font-size: 10px;
+  text-transform: capitalize;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  display: table;
+  table-layout: fixed;
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .scale > div {
+  display: table-cell;
+}
+.steam_wizard_donation_panel .steam_wizard_donation_panel_content .steam_wizard_donation_button {
+  background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/donate_button.png');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  text-transform: capitalize;
+  width: 150px;
+  padding: 10px 0px;
+  color: white;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: auto;
+}
+.steam_wizard_donation_popup {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 100;
+}
+.steam_wizard_donation_popup .content {
+  width: 900px;
+  height: 600px;
+  font-size: 0px;
+  white-space: nowrap;
+  margin: auto;
+  top: 50%;
+  transform: translateY(-50%);
+  position: relative;
+}
+.steam_wizard_donation_popup .content .left_section {
+  vertical-align: top;
+  width: 35%;
+  height: 100%;
+  display: inline-block;
+  background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/popup bg.png');
+}
+.steam_wizard_donation_popup .content .logo {
+  width: 120px;
+  height: 120px;
+  margin: auto;
+  margin-top: 50px;
+  background-size: 100% 100%;
+  background-image: url('chrome-extension://__MSG_@@extension_id__/images/logo_192_white.png');
+}
+.steam_wizard_donation_popup .content .support_image {
+  background-size: 100% 100%;
+  background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/support.png');
+  background-size: auto 100%;
+  background-repeat: no-repeat;
+  margin: 140px auto;
+  height: 140px;
+  display: block;
+  background-position: center;
+}
+.steam_wizard_donation_popup .content .right_section {
+  vertical-align: top;
+  width: 65%;
+  height: 100%;
+  display: inline-block;
+  background-color: #e2e2e2;
+  padding: 50px;
+  box-sizing: border-box;
+  font-size: 12px;
+}
+.steam_wizard_donation_popup .content .donation_text {
+  font-size: 20px;
+  white-space: normal;
+  line-height: 50px;
+  color: #505050;
+  letter-spacing: 1px;
+}
+.steam_wizard_donation_popup .content .donation_btc_text {
+  background-size: auto 100%;
+  background-repeat: no-repeat;
+  padding: 3px 0px 3px 40px;
+  display: inline-block;
+  font-size: 16px;
+  color: #505050;
+  font-family: Oxygen;
+  font-weight: bold;
+  margin-top: 50px;
+  background-position: left;
+  background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/bitcoin_logo.png');
+}
+.steam_wizard_donation_popup .content .donation_paypal_text {
+  background-size: auto 100%;
+  background-repeat: no-repeat;
+  padding: 3px 0px 3px 40px;
+  display: inline-block;
+  font-size: 16px;
+  color: #505050;
+  font-family: Oxygen;
+  font-weight: bold;
+  margin-top: 30px;
+  background-position: left;
+  background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/paypal_logo.png');
+}
+.steam_wizard_donation_popup .content .donation {
+  display: table;
+  width: 100%;
+  margin-top: 15px;
+}
+.steam_wizard_donation_popup .content .donation_address {
+  display: table-cell;
+  border: 1px solid #a0a0a0;
+  border-right: none;
+  border-radius: 10px 0px 0px 10px;
+  color: #6e6e6e;
+  padding-left: 15px;
+  font-size: 14px;
+  font-weight: bold;
+  color: black;
+}
+.steam_wizard_donation_popup .content .copy_address,
+.steam_wizard_donation_popup .content .open_link {
+  width: 120px;
+  display: table-cell;
+  padding: 10px;
+  background-color: #0eadff;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+  border-radius: 0px 10px 10px 0px;
+  color: white;
+}
+.steam_wizard_donation_popup .content .steam_wizard_donation_btc_address,
+.steam_wizard_donation_popup .content .steam_wizard_donation_paypal_link {
+  width: 90%;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  font-weight: bold;
+}
+.steam_wizard_donation_popup .content .steam_wizard_popup_close {
+  background-size: 100%;
+  background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/donation_close.png');
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  width: 30px;
+  height: 30px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  border-radius: 30px;
+}
+.steam_wizard_donation_popup .content .steam_wizard_popup_close:hover {
+  background-color: white;
+}

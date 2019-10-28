@@ -13,7 +13,18 @@ require(["background/data", "background/options", "util/constants"], function(da
         //var icon = enabled ? "images/icon_128.png" : "images/icon_128_off.png";
         //chrome.browserAction.setIcon({path: icon});
     };
-    
+
+//    var notificationOptions = {
+//        type: 'basic',
+//        iconUrl: 'images/logo_192.png', 
+//        title: 'hello',
+//        message: 'world',
+//    };
+//    
+//    chrome.notifications.create(notificationOptions, function () {
+//        console.log(arguments);
+//    });
+
     var windowPort = function(html, width, height) {
         var This = this;
         

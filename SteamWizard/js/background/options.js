@@ -47,7 +47,12 @@ define(["background/storage", "util/constants"], function(storage, constants) {
         /*
          * default item pricing
          */
-        pricing: 'steam'
+        pricing: 'steam',
+        
+        /*
+         * default on
+         */
+        offline: 'on'
     };
     
     /* initialize */

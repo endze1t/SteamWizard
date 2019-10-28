@@ -5,7 +5,8 @@
  */
 
 
-define(["background/storage", "util/common", "util/constants"], function(storage, util, constants) {
+define(["background/storage", "util/common", "util/constants", "background/options", "background/offline"], 
+    function(storage, util, constants, options, offline) {
     "use strict";
     
     var NAMESPACE_INSPECT = constants.namespace.NAMESPACE_INSPECT;
@@ -25,7 +26,7 @@ define(["background/storage", "util/common", "util/constants"], function(storage
                     if(data.success && data[assetid]) {
                        callback({success: true, iteminfo: data[assetid]});
                     } else
-                       callback({success: false, error: 'Failed to load item info'});
+                       callback(data);
                 }).fail(function (jqXHR, textStatus, errorThrown) {
                     callback({success: false, error: textStatus});
                 });
@@ -76,11 +77,11 @@ define(["background/storage", "util/common", "util/constants"], function(storage
             
             steamwizard.getAllItemInfo(inspect, function(data) {
                 for(var i in callbacks) {
-                    if(data[i]) {
+                    if(data.success && data[i]) {
                         storage.set(NAMESPACE_INSPECT, i, data[i]);
                         callbacks[i]({success: true, iteminfo: data[i]});
                     } else {
-                        callbacks[i]({success: false});
+                        callbacks[i](data);
                     }
                 }
             });
@@ -137,6 +138,13 @@ define(["background/storage", "util/common", "util/constants"], function(storage
         },
         
         getResource: function(name, url, content, callback) {
+            var isOffline = options.get().offline === 'on';
+
+            if(isOffline) {
+                callback({success: true, resource: {data: offline.get(name)}});
+                return;
+            }
+            
             var cached = resourceCache.get(name);
             
             if (cached)

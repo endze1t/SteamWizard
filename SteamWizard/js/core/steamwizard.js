@@ -337,6 +337,7 @@ define(["csgozone", "core/metjm", "util/constants", "util/util",
         },
         
         getMarketAffiliates: function(callback) {
+//            csgozone.affiliates(callback);
             csgozone.affiliates(callback);
         },
     };        

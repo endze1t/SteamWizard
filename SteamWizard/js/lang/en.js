@@ -54,6 +54,7 @@ define(function() {
         MARKET__EXTERNAL_MARKETS: "External Markets",
         MARKET__TRADING_BOTS    : "Trading Bots",
         MARKET__CONTROL_PANEL   : "Control Panel",
+        MARKET_SPONSORS         : "Sponsors",
         MARKET__SORT_BY_FLOAT   : "Sort by Float",
         MARKET__DISPLAYED_ITEMS : "Displayed Items",
         MARKET__BATCH_REQUESTS  : "Batch Requests",
@@ -64,6 +65,8 @@ define(function() {
         MARKET__LOADING         : "loading...",
         MARKET__FAILED          : "Failed",
         MARKET__TRADEUP         : "Tradeup",
+        MARKET__LOGIN           : "Login",
+        MARKET__SUBSCRIBE       : "Subscribe",
 
         /* tradeup */
         TRADEUP__COMMON         : "common",
@@ -100,6 +103,22 @@ define(function() {
         /* popup */
         POPUP__LANGUAGE         : "Language",
         POPUP__CURRENCY         : "Currency",
-        POPUP__ITEM_PRICE       : "Item Pricing"
+        POPUP__ITEM_PRICE       : "Item Pricing",
+        POPUP__OFFLINE          : "Offline Mode",
+        
+        /* donation */
+        DONATE__HEADER          : "Costs are covered for",
+        DONATE__SCALE_1         : "1 month",
+        DONATE__SCALE_2         : "3 month",
+        DONATE__SCALE_3         : "6 month",
+        DONATE__SCALE_4         : "1 year",
+        DONATE__SCALE_5         : "+1 year",
+        DONATE__BUTTON          : "donate",
+        DONATE__TEXT            : "Due to the recent decline in the trading scene "
+                                + "we are unable to attract many sponsors.\n"
+                                + "Running costs of <b>SteamWizard</b> has become a great liability, "
+                                + "in order to keep <b>SteamWizard</b> running for free please consider donating.",
+        DONATE__COPY_ADDRESS    : "Copy Address",
+        DONATE__OPEN_LINK       : "Open Link"
     };
 });

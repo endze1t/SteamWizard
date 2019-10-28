@@ -4,7 +4,7 @@
 	"name": "SteamWizard",
         "short_name": "SW",
 	"description": "SteamWizard is a browser extension that helps loading additional information for CS:GO items on the steam community market.",
-	"version": "2.4.0",
+	"version": "2.4.8",
 	
 	"icons": {	
             "16": "images/logo_64.png",
@@ -19,12 +19,14 @@
 	},
         
 	"permissions": [
-            "*://steamcommunity.com/*"
+            "*://steamcommunity.com/*",
+            "notifications"
 	],
         
 	"background": {
             "scripts": [
                 "js/lib/jquery-3.0.0.min.js",
+                "js/lib/zlib.min.js",
                 "js/lib/require.js",      
     
                 "js/background/config.js",
@@ -99,7 +101,7 @@
                             "*://steamcommunity.com/profiles/*/inventory*"],
                         
                 "run_at": "document_end",
-                "js": ["js/lib/jquery-3.0.0.min.js", 
+                "js": ["js/lib/jquery-3.0.0.min.js",
                        "js/lib/jquery.mCustomScrollbar.concat.min.js",
                        "js/lib/require.js",
 

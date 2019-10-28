@@ -44,3 +44,313 @@ sw-price {
         }
     }
 }
+
+.steam_wizard_donation_panel {
+    margin-top: 20px;
+    background-color: rgb(49, 55, 64);
+    position: relative;
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/donate_background.png');
+    background-size: auto 100%;
+    background-position: center left;
+    background-repeat: no-repeat;
+    border-radius: 3px;
+            
+    .steam_wizard_donation_panel_header {
+        color: white;
+        background-color: rgb(66, 87, 117);
+        position: absolute;
+        height: auto;
+        border-radius: 3px;
+
+        z-index: 10;
+        top: 0px;
+        left: 50%;
+        padding: 5px 10px;
+        transform: translate(-50%, -51%);
+        text-transform: uppercase;
+        font-size: 10px;
+        font-weight: bold;
+        font-family: 'Oxygen';
+    }
+    
+
+    ._meter(@attr, @bckg, @width, @left) {
+        &[value="@{attr}"] {
+            .meter_bar {
+               width: @width;
+               background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/@{bckg}bar.png');
+            }
+            
+            .meter_node {
+                left: @left;
+                background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/@{bckg}circle.png');     
+            }
+        }
+    }
+    
+    .steam_wizard_donation_panel_content {
+        text-align: right;
+        white-space: nowrap;
+        padding: 5px 0px;
+        height: auto;
+        font-size: 0px;
+        font-family: Oxygen;
+        
+        & > div {
+            display: inline-block;
+            text-align: center;
+            font-size: 10px
+        }
+        
+        .padding {
+            width: 20%;
+            vertical-align: middle;
+        }
+        
+        .donation_amount {
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            font-size: 12px;
+            padding: 10px 20px;
+            font-family: Arial;
+            color: white;
+            display: inline-block;
+        }
+        
+        .donation_bar {
+            width: 60%;            
+            margin-top: 20px;
+            display: inline-block;
+            vertical-align: middle;            
+        }
+
+        .button_holder {
+            display: inline-block;
+            width: 20%;
+            vertical-align: middle;            
+        }
+        
+        .meter {
+            background-color: #1e232d;
+            vertical-align: middle;
+            width: 80%;
+            margin: auto;
+            margin-bottom: 5px;
+            box-shadow: #151515 0px 0px 25px inset;
+            position: relative;
+            padding: 5px;
+            height: 14px;
+            font-size: 0px;
+            border-radius: 20px;
+            
+            .meter_bar {
+                height: 15px;
+                background-repeat: no-repeat;
+                background-size: 100% 100%;
+                border-radius: 10px;
+            }
+            
+            .meter_node {
+                top: 2px;
+                width: 20px;
+                height: 20px;
+                background-size: 100% 100%;
+                background-repeat: no-repeat;
+                position: absolute;
+                background-size: auto 100%;           
+            }
+            
+            ._meter("0",  "1m",   3%, calc(~"3% - 10px"));
+            ._meter("1",  "1m",  10%, calc(~"10% - 8px"));
+            ._meter("3",  "3m",  30%, calc(~"30% - 10px"));
+            ._meter("6",  "6m",  50%, calc(~"50% - 12px"));
+            ._meter("12", "1y",  70%, calc(~"70% - 14px"));
+            ._meter("36", "2y",  90%, calc(~"90% - 16px"));
+            ._meter("48", "2y", 100%, calc(~"100% - 22px"));
+        }
+
+        .scale {
+            width: 80%;
+            margin: auto;
+            color: white;
+            font-size: 10px;
+            text-transform: capitalize;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            display: table;
+            table-layout: fixed;
+            
+            & > div {
+                display: table-cell;
+            }
+        }
+        
+        .steam_wizard_donation_button {
+            background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/donate_button.png');
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            text-transform: capitalize;
+
+            width: 150px;
+            padding: 10px 0px;
+            color: white;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: auto;            
+        }
+    }
+}
+
+.steam_wizard_donation_popup {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 100;
+    
+    .content {
+        width: 900px;
+        height: 600px;
+        font-size: 0px;
+        white-space: nowrap;
+        margin: auto;
+        top: 50%;
+        transform: translateY(-50%);
+        position: relative;
+
+        .left_section {
+            vertical-align: top;
+            width: 35%;
+            height: 100%;
+            display: inline-block;
+            background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/popup bg.png');
+        }
+        
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: auto;
+            margin-top: 50px;
+            background-size: 100% 100%;
+            background-image: url('chrome-extension://__MSG_@@extension_id__/images/logo_192_white.png');
+        }
+        
+        .support_image {
+            background-size: 100% 100%;
+            background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/support.png');
+            background-size: auto 100%;
+            background-repeat: no-repeat;
+            margin: 140px auto;
+            height: 140px;
+            display: block;
+            background-position: center;            
+        }
+        
+        .right_section {
+            vertical-align: top;
+            width: 65%;
+            height: 100%;
+            display: inline-block;
+            background-color: rgb(226, 226, 226);
+            padding: 50px;
+            box-sizing: border-box;
+            font-size: 12px;
+        }
+        
+        .donation_text {
+            font-size: 20px;
+            white-space: normal;
+            line-height: 50px;            
+            color: rgb(80, 80, 80);
+            letter-spacing: 1px;
+        }
+        
+        .donation_btc_text {
+            background-size: auto 100%;
+            background-repeat: no-repeat;
+            padding: 3px 0px 3px 40px;
+            display: inline-block;
+            font-size: 16px;
+            color: rgb(80, 80, 80);
+            font-family: Oxygen;
+            font-weight: bold;
+            margin-top: 50px;
+            background-position: left;
+            background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/bitcoin_logo.png');
+        }
+
+        .donation_paypal_text {
+            background-size: auto 100%;
+            background-repeat: no-repeat;
+            padding: 3px 0px 3px 40px;
+            display: inline-block;
+            font-size: 16px;
+            color: rgb(80, 80, 80);
+            font-family: Oxygen;
+            font-weight: bold;
+            margin-top: 30px;
+            background-position: left;
+            background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/paypal_logo.png');            
+        }
+        
+        .donation {
+            display: table;
+            width: 100%;
+            margin-top: 15px;
+        }
+        
+        .donation_address {
+            display: table-cell;
+            border: 1px solid rgb(160, 160, 160);
+            border-right: none;
+            border-radius: 10px 0px 0px 10px;
+            color: rgb(110, 110, 110);
+            padding-left: 15px;
+            font-size: 14px;
+            font-weight: bold;
+            color: black;
+        }
+        
+        .copy_address, .open_link {
+            width: 120px;
+            display: table-cell;
+            padding: 10px;
+            background-color: rgb(14, 173, 255);
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            border-radius: 0px 10px 10px 0px;
+            color: white;            
+        }
+        
+        .steam_wizard_donation_btc_address, .steam_wizard_donation_paypal_link {
+            width: 90%;
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        
+        .steam_wizard_popup_close {
+            background-size: 100%;
+            background-image: url('chrome-extension://__MSG_@@extension_id__/images/common/donation_close.png');       
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            width: 30px;
+            height: 30px;
+            background-repeat: no-repeat;
+            cursor: pointer;           
+            border-radius: 30px;
+            
+            &:hover {
+                background-color: white;
+            }
+        }
+    }
+}

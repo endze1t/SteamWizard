@@ -39,7 +39,7 @@ define(["util/constants", "port"], function(constants, port) {
             var handler = function(result) {
                 if(result.type === constants.msg.RESOURCE_SUCCESS)
                    onload(result.resource.data);
-                else
+                else if(onload.onerror)
                    onload.onerror();
             };
             

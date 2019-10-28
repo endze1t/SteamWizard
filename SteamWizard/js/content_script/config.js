@@ -18,7 +18,7 @@ require.config({
     paths: {
             "text": "lib/require.text",
             "port": "async/port",
-        "csgozone": "core/csgozone"
+        "csgozone": "core/csgozone",
     }
 });
 

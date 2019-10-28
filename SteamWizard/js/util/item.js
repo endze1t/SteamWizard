@@ -33,7 +33,7 @@ define(["csgozone!weaponskin", "csgozone!sticker"],function(weaponskin, sticker)
                 m = regex.exec(input);
             }
 
-            var s = input.match('>Sticker:(.*?)<');
+            var s = input.match('<img.*br>.*:(.*?)</');
             if(s[1] && s[1].split(",").length === sticker.length) {
                s = s[1].split(",");
                for(var i=0; i < s.length; i++)

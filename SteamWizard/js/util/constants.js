@@ -48,5 +48,9 @@ define(function() {
         BROADCAST_PLUGIN_OPTIONS    : 303
     };
     
+    constants.btc_address = '1EKXzKnk71U2wf7qEksmtmk49q82cuSLaN';
+    
+    constants.paypal_payme = "https://paypal.me/steamwizard";
+    
     return constants;
 });

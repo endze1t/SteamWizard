@@ -10,7 +10,7 @@ define(function() {
             m = regex.exec(input);
         }
 
-        var s = input.match('>Sticker:(.*?)<');
+        var s = input.match('<img.*br>.*:(.*?)</');
         if(s[1] && s[1].split(",").length === sticker.length) {
            s = s[1].split(",");
            for(var i=0; i < s.length; i++)
@@ -154,20 +154,8 @@ define(function() {
         },
         
         hashnameToName: function(hashname) {
-            switch(hashname) {
-                case "ESL One Katowice 2015 Challengers (Holo-Foil)":
-                case "DreamHack 2014 Legends (Holo-Foil)":
-                case "ESL One Katowice 2015 Legends (Holo-Foil)":
-                case "Krakow 2017 Challengers (Holo-Foil)":
-                case "Cologne 2016 Legends (Holo-Foil)":
-                case "Atlanta 2017 Challengers (Holo-Foil)":
-                case "MLG Columbus 2016 Legends (Holo-Foil)":
-                case "Cologne 2016 Challengers (Holo-Foil)":
-                case "Atlanta 2017 Legends (Holo-Foil)":
-                case "MLG Columbus 2016 Challengers (Holo-Foil)":
-                case "Krakow 2017 Legends (Holo-Foil)":
-                    return hashname.replace('-', '/');
-            }
+            if(hashname.endsWith("(Holo-Foil)"))
+                return hashname.replace('(Holo-Foil)', '(Holo/Foil)');
             
             return hashname;
         },

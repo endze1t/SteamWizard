@@ -1,9 +1,10 @@
 require(["util/constants", "util/common_ui", "util/common", 'util/steam_override', "csgozone", "port", "util/item", "util/lang",
          "port!BACKGROUND_GET_OPTIONS",
-         "csgozone!market-affiliates", "csgozone!skinindex",
-         "text!" + chrome.extension.getURL("/html/market.html")],
+         "csgozone!market-affiliates", "csgozone!skinindex", "csgozone!donations",
+         "text!" + chrome.extension.getURL("/html/market.html"),
+         "text!" + chrome.extension.getURL("/html/common.html")],
          function(constants, common_ui, util, steam_override, csgozone, port, item, lang,
-                  options, affiliates, skinindex, market_template) {
+                  options, affiliates, skinindex, donations, market_template, common_template) {
     "using strict";
     
     /* 
@@ -17,14 +18,18 @@ require(["util/constants", "util/common_ui", "util/common", 'util/steam_override
     var $template = $(market_template);
     lang.processNode($template[0]);
     
+    var $common_template = $(common_template);
+    lang.processNode($common_template[0]);
+    
     /* namespace shorthand */    
     var init = {
         buildAffiliatePanel: function(list, g_rgAssets) {
             var $panel = $template.find('.steam_wizard_market_affiliates_panel');
             var $affiliates = $panel.find('.steam_wizard_market_affiliates');
             
-            var $markets = $($affiliates[0]);
-            var $tradebots = $($affiliates[1]);
+//            var $markets = $($affiliates[0]).parent().remove();
+//            var $tradebots = $($affiliates[1]).parent().remove();
+            var $sponsors = $affiliates;//$($affiliates[0]);
             
             /* this doesnt work for other languages */
             var itemname = $('.market_listing_nav a')[1].textContent;
@@ -43,20 +48,24 @@ require(["util/constants", "util/common_ui", "util/common", 'util/steam_override
             });
             
             for(var i=0; i < list.length; i++) {
-                if(list[i].type === 'tradebot')
-                    $tradebots.append(init.buildAffiliate(list[i], itemname));
-                else
-                    $markets.append(init.buildAffiliate(list[i], itemname));
+                $sponsors.append(init.buildAffiliate(list[i], itemname));
+//                if(list[i].type === 'tradebot')
+//                    $tradebots.append(init.buildAffiliate(list[i], itemname));
+//                else
+//                    $markets.append(init.buildAffiliate(list[i], itemname));
             }
             
             /* fill in empty slots */
             $affiliates.each(function(index, value) {
-                for(var i=$(value).children().length; i < 3; i++) {
+                for(var i=$(value).children().length; i < 6; i++) {
                     $(value).append($('<div>'));
                 }
             });
-
-            $("#market_buyorder_info").after($panel);
+            
+            if($("#market_buyorder_info").length > 0)
+                $("#market_buyorder_info").after($panel);
+            else
+                $('#market_activity_section').after($panel);
         },
         
         buildAffiliate: function(affiliate, itemname) {
@@ -88,7 +97,7 @@ require(["util/constants", "util/common_ui", "util/common", 'util/steam_override
                         $priceButton.removeClass('btn_grey_white_innerfade').append($span);
                     } else {
                         $priceButton.append($('<span>').text('-'));                        
-                    }                        
+                    }
                     
                     if(data.href) {
                         $priceButton.click(function() {
@@ -120,6 +129,50 @@ require(["util/constants", "util/common_ui", "util/common", 'util/steam_override
             var batch = options.batch_requests ? 'on' : 'off';
             $('#steam_wizard_radio_batch_' + batch).prop('checked', true);
             $('.steam_wizard_radio_batch input').change(events.radioBatchChanged);
+        },
+        
+        buildDonationPanel: function() {
+            var $panel = $common_template.find('.steam_wizard_donation_panel');
+            
+            if($("#market_buyorder_info").length > 0)
+                $("#market_buyorder_info").after($panel);
+            else
+                $('#market_activity_section').after($panel);
+
+            var $popup = $common_template.find('.steam_wizard_donation_popup');
+            $popup.find('.steam_wizard_donation_btc_address').val(constants.btc_address)
+                  .click(function() { 
+                        this.select(); 
+                   });
+            $popup.find('.copy_address').click(events.copyBitcoinAddress);
+
+            $popup.find('.steam_wizard_donation_paypal_link').val(constants.paypal_payme)
+                  .click(function() { 
+                        this.select(); 
+                   });
+            $popup.find('.open_link').click(function() {
+                window.open(constants.paypal_payme);
+            });
+            
+            $("body").append($popup);
+            $popup.hide();            
+            
+            $popup.find('.steam_wizard_popup_close').click(function() {
+                $popup.hide();
+            });
+            
+            $panel.find('.steam_wizard_donation_button').click(function() {
+                $popup.show();
+            });
+
+            $(document).keydown(function (event) {
+                if (event.keyCode == 27) { 
+                    $popup.hide();
+                }
+            });
+
+            $panel.find('.donation_bar .meter').attr('value', donations.months);
+            $panel.find('.donation_amount').text('$' + donations.total.toFixed(2) + ' USD');
         }
     }
     
@@ -279,11 +332,27 @@ require(["util/constants", "util/common_ui", "util/common", 'util/steam_override
                 if (event)
                     event.stopPropagation();
             }
+            
+            function login(event) {
+                if (event)
+                    event.stopPropagation();
+            }
 
+            function subscribe(event) {
+                if (event)
+                    event.stopPropagation();
+            }
+            
             function onload(data) {
                 if (!data || !data.success) {
                     $button.click(onclick);
-                    $button.addClass('steam_wizard_load_button_failed').append(lang.createField("MARKET__FAILED"));                    
+                    $button.addClass('steam_wizard_load_button_failed').empty().append(lang.createField("MARKET__FAILED"));
+//                } else if(data.login) {
+//                    $button.click(login);
+//                    $button.addClass('steam_wizard_load_button_login').empty().append(lang.createField("MARKET__LOGIN"));
+//                } else if(data.subscribe) {
+//                    $button.click(subscribe);
+//                    $button.addClass('steam_wizard_load_button_subscribe').empty().append(lang.createField("MARKET__SUBSCRIBE"));                    
                 } else if (data.iteminfo.paintwear) {
                     var iteminfo = data.iteminfo;
                     $button.off().empty().attr('class', 'steamwizard_market_wear_block');
@@ -375,7 +444,21 @@ require(["util/constants", "util/common_ui", "util/common", 'util/steam_override
                     options = msg.data;
                     break;
             }
-        }
+        },
+        
+        copyBitcoinAddress: function() {
+            $('.steam_wizard_donation_btc_address').select();
+
+            try {
+                var successful = document.execCommand('copy');
+                if(successful) {
+                    alert('Date was copied to clip board');
+                } else
+                    alert('Press CTRL+C for copy');
+            } catch (err) {
+                alert('Press CTRL+C for copy');
+            }
+        }        
     };
         
     var local_util = {
@@ -465,6 +548,8 @@ require(["util/constants", "util/common_ui", "util/common", 'util/steam_override
         steam_override.fetchGlobal('g_rgAssets', function(data) {
             init.buildAffiliatePanel(affiliates, data.g_rgAssets);
         });
+        
+        init.buildDonationPanel();
                 
         if ($("#searchResultsRows").find(".market_listing_row").length === 0)
             return;

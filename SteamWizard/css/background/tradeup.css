@@ -1,1 +1,586 @@
-@font-face{font-family:quantify;src:url('chrome-extension://__MSG_@@extension_id__/font/QUANTIFY BOLD V2.6.ttf');font-weight:bold}@font-face{font-family:nexa;src:url('chrome-extension://__MSG_@@extension_id__/font/NEXA BOLD.otf');font-weight:bold}@font-face{font-family:nexa;src:url('chrome-extension://__MSG_@@extension_id__/font/NEXA LIGHT.otf');font-weight:light}html,body{margin:0px;width:100%;min-width:800px;height:100%;background-color:#262729}#lang{display:none}.template{display:none}.tabs{width:100%;table-layout:fixed;border-collapse:collapse;border-bottom:solid 1px #3c3d41;background-color:#232427}.tabs .logo{width:200px;height:100px;background-image:url('chrome-extension://__MSG_@@extension_id__/images/logo_512.png');background-size:auto 80%;background-repeat:no-repeat;background-position:center;padding:0px;vertical-align:top;cursor:pointer}.tabs .section{width:160px;color:gray;padding:0px;vertical-align:top;transition:all 1s}.tabs .section .name{text-transform:uppercase;font-family:nexa;text-align:left;font-weight:bold;font-size:10px;letter-spacing:2px;margin:25px 13px 0px 13px}.tabs .section .border{height:7px;margin:13px 13px 0px 13px;background-color:gray}.tabs .section .tab-container{white-space:nowrap;font-size:0px}.tabs .section .tab{display:inline-block;text-transform:capitalize;vertical-align:middle;font-family:nexa;width:80px;color:gray;font-size:12px;cursor:default;padding:15px 0px 5px 0px;text-align:center}.tabs .section .tab-split{height:8px;border-left:1px solid gray;display:inline-block;vertical-align:middle;width:0px;vertical-align:top;margin-top:18px}.tabs .section .count{display:block;height:10px;font-size:10px;text-align:center}.tabs .section.selectable.default{color:#6a6156}.tabs .section.selectable.common{color:#b0c3d9}.tabs .section.selectable.uncommon{color:#5e98d9}.tabs .section.selectable.rare{color:#4b69ff}.tabs .section.selectable.mythical{color:#8847ff}.tabs .section.selectable.legendary{color:#d32ce6}.tabs .section.selectable.ancient{color:#eb4b4b}.tabs .section.selectable.exceeding{color:#ffd700}.tabs .section.selectable.immortal{color:#e4ae39}.tabs .section.selectable .border.default{background-color:#6a6156}.tabs .section.selectable .border.common{background-color:#b0c3d9}.tabs .section.selectable .border.uncommon{background-color:#5e98d9}.tabs .section.selectable .border.rare{background-color:#4b69ff}.tabs .section.selectable .border.mythical{background-color:#8847ff}.tabs .section.selectable .border.legendary{background-color:#d32ce6}.tabs .section.selectable .border.ancient{background-color:#eb4b4b}.tabs .section.selectable .border.exceeding{background-color:#ffd700}.tabs .section.selectable .border.immortal{background-color:#e4ae39}.tabs .tab.selectable.default{color:#6a6156}.tabs .tab.selectable.common{color:#b0c3d9}.tabs .tab.selectable.uncommon{color:#5e98d9}.tabs .tab.selectable.rare{color:#4b69ff}.tabs .tab.selectable.mythical{color:#8847ff}.tabs .tab.selectable.legendary{color:#d32ce6}.tabs .tab.selectable.ancient{color:#eb4b4b}.tabs .tab.selectable.exceeding{color:#ffd700}.tabs .tab.selectable.immortal{color:#e4ae39}.tabs .tab.selectable:hover:not(.active){color:#faa819;cursor:pointer}.tabs .section.active.default{background-color:#6a6156}.tabs .section.active.common{background-color:#b0c3d9}.tabs .section.active.uncommon{background-color:#5e98d9}.tabs .section.active.rare{background-color:#4b69ff}.tabs .section.active.mythical{background-color:#8847ff}.tabs .section.active.legendary{background-color:#d32ce6}.tabs .section.active.ancient{background-color:#eb4b4b}.tabs .section.active.exceeding{background-color:#ffd700}.tabs .section.active.immortal{background-color:#e4ae39}.tabs .section.active .name{color:white;text-align:center}.tabs .section.active .tab.selectable{color:white !important;text-align:center !important}.tabs .section.active .tab.selectable.active{background-color:rgba(0,0,0,0.3)}.tabs .section.active .tab.selectable.active:first-child{border-radius:0px 5px 0px 0px}.tabs .section.active .tab.selectable.active:last-child{border-radius:5px 0px 0px 0px}.tabs .section.active .tab-split{height:0px}.container{height:calc(100% - 103px)}.canvas{width:100%;display:none;table-layout:fixed;height:100%}.canvas.active{display:table}.canvas .item-selection-section{display:table-cell;width:220px;border-right:1px solid #3c3d41;background-color:#181819;padding:20px 20px;box-sizing:border-box;vertical-align:top;text-align:left}.canvas .item-selection-section .tradeup-item{margin:15px 0px}.canvas .item-selection-scrollpane{height:calc(100% - 170px);overflow:hidden;position:fixed;margin-top:20px;width:165px;margin-left:20px}.canvas .item-selection-scrollpane .mCSB_inside>.mCSB_container{margin-right:10px}.canvas .item-selection-scrollpane .mCSB_scrollTools .mCSB_draggerRail{background-color:#3c3d41;width:1px}.canvas .main-section{display:table-cell;background-color:#262729;padding:40px;padding-bottom:20px}.canvas .top-section{white-space:nowrap}.canvas .tradeup-canvas{width:774px;padding:15px;white-space:normal;display:inline-block;vertical-align:top}.canvas .tradeup-canvas .tradeup-slot{display:inline-block;vertical-align:top;margin:11px}.canvas .tradeup-canvas .tradeup-slot:empty{width:110px;height:110px;margin:20px;background-color:#2b2c2e;border:1px solid #494a4c}.canvas .stats{margin:5px 20px;padding-left:30px;vertical-align:top;display:inline-block;border-left:1px solid #3c3d41}.canvas .stats .title{color:#4580c2;text-transform:uppercase;font-size:20px;font-family:quantify;font-weight:bold;letter-spacing:4px;margin-bottom:20px}.canvas .stats .stat{margin:14px 0px}.canvas .stats .stat div{font-family:nexa}.canvas .stats .stat div:first-child{color:#faa71a;font-size:20px;font-weight:bold}.canvas .stats .stat div:last-child{color:#d8d8d8;font-size:16px}.canvas .tradeup-results{border:solid 2px #1d7cc0;background-color:#222224;position:relative;margin-top:30px;padding:30px 20px;box-sizing:border-box;min-height:214px}.canvas .tradeup-results .title{top:0px;left:50%;position:absolute;transform:translate(-50%, -50%);font-size:0px}.canvas .tradeup-results .title .title-pad{width:15px;height:4px;background-color:#262729;display:inline-block;vertical-align:middle;position:relative;top:-1.5px}.canvas .tradeup-results .title .title-text{display:inline-block;vertical-align:middle;color:white;padding:8px 25px;background-color:#1d7cc0;text-transform:uppercase;font-family:quantify;letter-spacing:3px;font-size:14px}.canvas .tradeup-results .results-scrollpane{white-space:nowrap;overflow:hidden}.canvas .tradeup-data{display:table;width:100%;margin-top:20px;table-layout:fixed}.canvas .tradeup-data .copy-button{width:45px;display:table-cell;padding:15px;background-color:#8c8c8c;font-weight:bold;cursor:pointer;text-align:center}.canvas .tradeup-data .data-holder{display:table-cell;vertical-align:top}.canvas .tradeup-data .data-holder .data{border:solid 1px #494a4c;background-color:#36373a;padding:17px;font-size:8px;font-family:nexa;font-weight:bold;width:100%;color:white;letter-spacing:2px;cursor:pointer;overflow:hidden;text-overflow:ellipsis}.canvas .tradeup-data .button-holder{width:280px;text-align:right;display:table-cell;vertical-align:top}.canvas .tradeup-data .import{background-color:#169fc7;font-size:10px;padding:14px 75px;color:white;text-transform:uppercase;font-family:quantify;display:inline-block;font-size:16px;letter-spacing:3px;cursor:pointer}.canvas .tradeup-data .import:hover{box-shadow:0px 0px 0px 1px white}.tradeup-item{width:130px;position:relative;display:inline-block;text-align:left;cursor:pointer}.tradeup-item .tradeup-item-body{padding:5px 10px;box-sizing:border-box;background-color:#2b2c2f;height:105px}.tradeup-item .collection-image-container{top:-10px;right:-10px;position:absolute;background-color:#333538;border-radius:5px;padding:2px}.tradeup-item .collection-image-container img{width:30px}.tradeup-item .wear-value{font-family:nexa;font-size:10px;font-weight:bold;color:#afb0b1}.tradeup-item .item-image-container{text-align:center}.tradeup-item .item-image-container img{width:96px}.tradeup-item .tradeup-item-footer{display:table;width:100%;table-layout:fixed}.tradeup-item .price{display:table-cell;background-color:#faa819;padding:5px;text-align:center;font-weight:bold;font-family:nexa}.tradeup-item .item-location{display:table-cell;width:40px;background-color:#1d1e21;background-image:url(chrome-extension://__MSG_@@extension_id__/images/tradeup/link-icon.png);background-size:12px auto;background-position:center;background-repeat:no-repeat}.tradeup-item .item-location:hover{background-image:url(chrome-extension://__MSG_@@extension_id__/images/tradeup/link-icon-hover.png)}.tradeup-result{position:relative;display:inline-block;text-align:left;cursor:default;width:200px;overflow:hidden;white-space:nowrap;padding:0px 10px;box-sizing:border-box;border-right:solid 1px #303134}.tradeup-result:last-child{border-right:none}.tradeup-result .collection-image-container{display:inline-block;vertical-align:bottom;margin-right:10px}.tradeup-result .collection-image-container img{width:35px}.tradeup-result .right-side{display:inline-block;vertical-align:bottom;margin-top:10px}.tradeup-result .item-image-container{text-align:center}.tradeup-result .item-image-container img{width:96px}.tradeup-result .name{text-align:center;overflow:hidden;width:90%;margin:0 auto}.tradeup-result .name.default{color:#6a6156}.tradeup-result .name.common{color:#b0c3d9}.tradeup-result .name.uncommon{color:#5e98d9}.tradeup-result .name.rare{color:#4b69ff}.tradeup-result .name.mythical{color:#8847ff}.tradeup-result .name.legendary{color:#d32ce6}.tradeup-result .name.ancient{color:#eb4b4b}.tradeup-result .name.exceeding{color:#ffd700}.tradeup-result .name.immortal{color:#e4ae39}.tradeup-result .wear{color:#d38e1d;margin-top:5px}.tradeup-result .bottom{font-size:0px}.tradeup-result .percentage{display:inline-block;color:#faa714;padding-right:10px;border-right:1px solid #333437;font-weight:bold;font-family:nexa;margin-top:10px;font-size:12px}.tradeup-result .price{margin-left:9px;display:inline-block;color:white;font-weight:bold;font-family:nexa;font-size:12px}
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Oct 22, 2017, 7:37:59 PM
+    Author     : ahmed
+*/
+@font-face {
+  font-family: quantify;
+  src: url('chrome-extension://__MSG_@@extension_id__/font/QUANTIFY BOLD V2.6.ttf');
+  font-weight: bold;
+}
+@font-face {
+  font-family: nexa;
+  src: url('chrome-extension://__MSG_@@extension_id__/font/NEXA BOLD.otf');
+  font-weight: bold;
+}
+@font-face {
+  font-family: nexa;
+  src: url('chrome-extension://__MSG_@@extension_id__/font/NEXA LIGHT.otf');
+  font-weight: light;
+}
+html,
+body {
+  margin: 0px;
+  width: 100%;
+  min-width: 800px;
+  height: 100%;
+  background-color: #262729;
+}
+#lang {
+  display: none;
+}
+.template {
+  display: none;
+}
+.tabs {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  border-bottom: solid 1px #3c3d41;
+  background-color: #232427;
+}
+.tabs .logo {
+  width: 200px;
+  height: 100px;
+  background-image: url('chrome-extension://__MSG_@@extension_id__/images/logo_512.png');
+  background-size: auto 80%;
+  background-repeat: no-repeat;
+  background-position: center;
+  padding: 0px;
+  vertical-align: top;
+  cursor: pointer;
+}
+.tabs .section {
+  width: 160px;
+  color: gray;
+  padding: 0px;
+  vertical-align: top;
+  transition: all 1s;
+}
+.tabs .section .name {
+  text-transform: uppercase;
+  font-family: nexa;
+  text-align: left;
+  font-weight: bold;
+  font-size: 10px;
+  letter-spacing: 2px;
+  margin: 25px 13px 0px 13px;
+}
+.tabs .section .border {
+  height: 7px;
+  margin: 13px 13px 0px 13px;
+  background-color: gray;
+}
+.tabs .section .tab-container {
+  white-space: nowrap;
+  font-size: 0px;
+}
+.tabs .section .tab {
+  display: inline-block;
+  text-transform: capitalize;
+  vertical-align: middle;
+  font-family: nexa;
+  width: 80px;
+  color: gray;
+  font-size: 12px;
+  cursor: default;
+  padding: 15px 0px 5px 0px;
+  text-align: center;
+}
+.tabs .section .tab-split {
+  height: 8px;
+  border-left: 1px solid gray;
+  display: inline-block;
+  vertical-align: middle;
+  width: 0px;
+  vertical-align: top;
+  margin-top: 18px;
+}
+.tabs .section .count {
+  display: block;
+  height: 10px;
+  font-size: 10px;
+  text-align: center;
+}
+.tabs .section.selectable.default {
+  color: #6a6156;
+}
+.tabs .section.selectable.common {
+  color: #b0c3d9;
+}
+.tabs .section.selectable.uncommon {
+  color: #5e98d9;
+}
+.tabs .section.selectable.rare {
+  color: #4b69ff;
+}
+.tabs .section.selectable.mythical {
+  color: #8847ff;
+}
+.tabs .section.selectable.legendary {
+  color: #d32ce6;
+}
+.tabs .section.selectable.ancient {
+  color: #eb4b4b;
+}
+.tabs .section.selectable.exceeding {
+  color: #ffd700;
+}
+.tabs .section.selectable.immortal {
+  color: #e4ae39;
+}
+.tabs .section.selectable .border.default {
+  background-color: #6a6156;
+}
+.tabs .section.selectable .border.common {
+  background-color: #b0c3d9;
+}
+.tabs .section.selectable .border.uncommon {
+  background-color: #5e98d9;
+}
+.tabs .section.selectable .border.rare {
+  background-color: #4b69ff;
+}
+.tabs .section.selectable .border.mythical {
+  background-color: #8847ff;
+}
+.tabs .section.selectable .border.legendary {
+  background-color: #d32ce6;
+}
+.tabs .section.selectable .border.ancient {
+  background-color: #eb4b4b;
+}
+.tabs .section.selectable .border.exceeding {
+  background-color: #ffd700;
+}
+.tabs .section.selectable .border.immortal {
+  background-color: #e4ae39;
+}
+.tabs .tab.selectable.default {
+  color: #6a6156;
+}
+.tabs .tab.selectable.common {
+  color: #b0c3d9;
+}
+.tabs .tab.selectable.uncommon {
+  color: #5e98d9;
+}
+.tabs .tab.selectable.rare {
+  color: #4b69ff;
+}
+.tabs .tab.selectable.mythical {
+  color: #8847ff;
+}
+.tabs .tab.selectable.legendary {
+  color: #d32ce6;
+}
+.tabs .tab.selectable.ancient {
+  color: #eb4b4b;
+}
+.tabs .tab.selectable.exceeding {
+  color: #ffd700;
+}
+.tabs .tab.selectable.immortal {
+  color: #e4ae39;
+}
+.tabs .tab.selectable:hover:not(.active) {
+  color: #faa819;
+  cursor: pointer;
+}
+.tabs .section.active.default {
+  background-color: #6a6156;
+}
+.tabs .section.active.common {
+  background-color: #b0c3d9;
+}
+.tabs .section.active.uncommon {
+  background-color: #5e98d9;
+}
+.tabs .section.active.rare {
+  background-color: #4b69ff;
+}
+.tabs .section.active.mythical {
+  background-color: #8847ff;
+}
+.tabs .section.active.legendary {
+  background-color: #d32ce6;
+}
+.tabs .section.active.ancient {
+  background-color: #eb4b4b;
+}
+.tabs .section.active.exceeding {
+  background-color: #ffd700;
+}
+.tabs .section.active.immortal {
+  background-color: #e4ae39;
+}
+.tabs .section.active .name {
+  color: white;
+  text-align: center;
+}
+.tabs .section.active .tab.selectable {
+  color: white !important;
+  text-align: center !important;
+}
+.tabs .section.active .tab.selectable.active {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+.tabs .section.active .tab.selectable.active:first-child {
+  border-radius: 0px 5px 0px 0px;
+}
+.tabs .section.active .tab.selectable.active:last-child {
+  border-radius: 5px 0px 0px 0px;
+}
+.tabs .section.active .tab-split {
+  height: 0px;
+}
+.container {
+  height: calc(100% - 103px);
+}
+.canvas {
+  width: 100%;
+  display: none;
+  table-layout: fixed;
+  height: 100%;
+}
+.canvas.active {
+  display: table;
+}
+.canvas .item-selection-section {
+  display: table-cell;
+  width: 220px;
+  border-right: 1px solid #3c3d41;
+  background-color: #181819;
+  padding: 20px 20px;
+  box-sizing: border-box;
+  vertical-align: top;
+  text-align: left;
+}
+.canvas .item-selection-section .tradeup-item {
+  margin: 15px 0px;
+}
+.canvas .item-selection-scrollpane {
+  height: calc(100% - 170px);
+  overflow: hidden;
+  position: fixed;
+  margin-top: 20px;
+  width: 165px;
+  margin-left: 20px;
+}
+.canvas .item-selection-scrollpane .mCSB_inside > .mCSB_container {
+  margin-right: 10px;
+}
+.canvas .item-selection-scrollpane .mCSB_scrollTools .mCSB_draggerRail {
+  background-color: #3c3d41;
+  width: 1px;
+}
+.canvas .main-section {
+  display: table-cell;
+  background-color: #262729;
+  padding: 40px;
+  padding-bottom: 20px;
+}
+.canvas .top-section {
+  white-space: nowrap;
+}
+.canvas .tradeup-canvas {
+  width: 774px;
+  padding: 15px;
+  white-space: normal;
+  display: inline-block;
+  vertical-align: top;
+}
+.canvas .tradeup-canvas .tradeup-slot {
+  display: inline-block;
+  vertical-align: top;
+  margin: 11px;
+}
+.canvas .tradeup-canvas .tradeup-slot:empty {
+  width: 110px;
+  height: 110px;
+  margin: 20px;
+  background-color: #2b2c2e;
+  border: 1px solid #494a4c;
+}
+.canvas .stats {
+  margin: 5px 20px;
+  padding-left: 30px;
+  vertical-align: top;
+  display: inline-block;
+  border-left: 1px solid #3c3d41;
+}
+.canvas .stats .title {
+  color: #4580c2;
+  text-transform: uppercase;
+  font-size: 20px;
+  font-family: quantify;
+  font-weight: bold;
+  letter-spacing: 4px;
+  margin-bottom: 20px;
+}
+.canvas .stats .stat {
+  margin: 14px 0px;
+}
+.canvas .stats .stat div {
+  font-family: nexa;
+}
+.canvas .stats .stat div:first-child {
+  color: #faa71a;
+  font-size: 20px;
+  font-weight: bold;
+}
+.canvas .stats .stat div:last-child {
+  color: #d8d8d8;
+  font-size: 16px;
+}
+.canvas .tradeup-results {
+  border: solid 2px #1d7cc0;
+  background-color: #222224;
+  position: relative;
+  margin-top: 30px;
+  padding: 30px 20px;
+  box-sizing: border-box;
+  min-height: 214px;
+}
+.canvas .tradeup-results .title {
+  top: 0px;
+  left: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: 0px;
+}
+.canvas .tradeup-results .title .title-pad {
+  width: 15px;
+  height: 4px;
+  background-color: #262729;
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  top: -1.5px;
+}
+.canvas .tradeup-results .title .title-text {
+  display: inline-block;
+  vertical-align: middle;
+  color: white;
+  padding: 8px 25px;
+  background-color: #1d7cc0;
+  text-transform: uppercase;
+  font-family: quantify;
+  letter-spacing: 3px;
+  font-size: 14px;
+}
+.canvas .tradeup-results .results-scrollpane {
+  white-space: nowrap;
+  overflow: hidden;
+}
+.canvas .tradeup-data {
+  display: table;
+  width: 100%;
+  margin-top: 20px;
+  table-layout: fixed;
+}
+.canvas .tradeup-data .copy-button {
+  width: 45px;
+  display: table-cell;
+  padding: 15px;
+  background-color: #8c8c8c;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+}
+.canvas .tradeup-data .data-holder {
+  display: table-cell;
+  vertical-align: top;
+}
+.canvas .tradeup-data .data-holder .data {
+  border: solid 1px #494a4c;
+  background-color: #36373a;
+  padding: 17px;
+  font-size: 8px;
+  font-family: nexa;
+  font-weight: bold;
+  width: 100%;
+  color: white;
+  letter-spacing: 2px;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.canvas .tradeup-data .button-holder {
+  width: 280px;
+  text-align: right;
+  display: table-cell;
+  vertical-align: top;
+}
+.canvas .tradeup-data .import {
+  background-color: #169fc7;
+  font-size: 10px;
+  padding: 14px 75px;
+  color: white;
+  text-transform: uppercase;
+  font-family: quantify;
+  display: inline-block;
+  font-size: 16px;
+  letter-spacing: 3px;
+  cursor: pointer;
+}
+.canvas .tradeup-data .import:hover {
+  box-shadow: 0px 0px 0px 1px white;
+}
+.tradeup-item {
+  width: 130px;
+  position: relative;
+  display: inline-block;
+  text-align: left;
+  cursor: pointer;
+}
+.tradeup-item .tradeup-item-body {
+  padding: 5px 10px;
+  box-sizing: border-box;
+  background-color: #2b2c2f;
+  height: 105px;
+}
+.tradeup-item .collection-image-container {
+  top: -10px;
+  right: -10px;
+  position: absolute;
+  background-color: #333538;
+  border-radius: 5px;
+  padding: 2px;
+}
+.tradeup-item .collection-image-container img {
+  width: 30px;
+}
+.tradeup-item .wear-value {
+  font-family: nexa;
+  font-size: 10px;
+  font-weight: bold;
+  color: #afb0b1;
+}
+.tradeup-item .item-image-container {
+  text-align: center;
+}
+.tradeup-item .item-image-container img {
+  width: 96px;
+}
+.tradeup-item .tradeup-item-footer {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+.tradeup-item .price {
+  display: table-cell;
+  background-color: #faa819;
+  padding: 5px;
+  text-align: center;
+  font-weight: bold;
+  font-family: nexa;
+}
+.tradeup-item .item-location {
+  display: table-cell;
+  width: 40px;
+  background-color: #1d1e21;
+  background-image: url(chrome-extension://__MSG_@@extension_id__/images/tradeup/link-icon.png);
+  background-size: 12px auto;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.tradeup-item .item-location:hover {
+  background-image: url(chrome-extension://__MSG_@@extension_id__/images/tradeup/link-icon-hover.png);
+}
+.tradeup-result {
+  position: relative;
+  display: inline-block;
+  text-align: left;
+  cursor: default;
+  width: 200px;
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 0px 10px;
+  box-sizing: border-box;
+  border-right: solid 1px #303134;
+}
+.tradeup-result:last-child {
+  border-right: none;
+}
+.tradeup-result .collection-image-container {
+  display: inline-block;
+  vertical-align: bottom;
+  margin-right: 10px;
+}
+.tradeup-result .collection-image-container img {
+  width: 35px;
+}
+.tradeup-result .right-side {
+  display: inline-block;
+  vertical-align: bottom;
+  margin-top: 10px;
+}
+.tradeup-result .item-image-container {
+  text-align: center;
+}
+.tradeup-result .item-image-container img {
+  width: 96px;
+}
+.tradeup-result .name {
+  text-align: center;
+  overflow: hidden;
+  width: 90%;
+  margin: 0 auto;
+}
+.tradeup-result .name.default {
+  color: #6a6156;
+}
+.tradeup-result .name.common {
+  color: #b0c3d9;
+}
+.tradeup-result .name.uncommon {
+  color: #5e98d9;
+}
+.tradeup-result .name.rare {
+  color: #4b69ff;
+}
+.tradeup-result .name.mythical {
+  color: #8847ff;
+}
+.tradeup-result .name.legendary {
+  color: #d32ce6;
+}
+.tradeup-result .name.ancient {
+  color: #eb4b4b;
+}
+.tradeup-result .name.exceeding {
+  color: #ffd700;
+}
+.tradeup-result .name.immortal {
+  color: #e4ae39;
+}
+.tradeup-result .wear {
+  color: #d38e1d;
+  margin-top: 5px;
+}
+.tradeup-result .bottom {
+  font-size: 0px;
+}
+.tradeup-result .percentage {
+  display: inline-block;
+  color: #faa714;
+  padding-right: 10px;
+  border-right: 1px solid #333437;
+  font-weight: bold;
+  font-family: nexa;
+  margin-top: 10px;
+  font-size: 12px;
+}
+.tradeup-result .price {
+  margin-left: 9px;
+  display: inline-block;
+  color: white;
+  font-weight: bold;
+  font-family: nexa;
+  font-size: 12px;
+}
